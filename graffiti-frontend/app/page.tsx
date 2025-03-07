@@ -1,101 +1,119 @@
+"use client";
+
+import {useState} from "react";
 import Image from "next/image";
+import {Menu, Bell, Search, Plus} from "lucide-react";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import {Button} from "@/components/ui/button";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {MainNav} from "@/components/main-nav";
+import {WallGrid} from "@/components/wall-grid";
+import {MobileNav} from "@/components/mobile-nav";
+import {CreateWallModal} from "@/components/create-wall-modal";
+import {ThemeToggle} from "@/components/theme-toggle";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+export default function HomePage() {
+	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
+	return (
+		<div className="min-h-screen bg-[url('/images/concrete-texture.jpg')] bg-cover">
+			<div className="container mx-auto px-4 pb-20">
+				{/* Mobile Header */}
+				<header className="flex items-center justify-between py-4 md:hidden">
+					<Button variant="ghost" size="icon" className="relative">
+						<Menu className="h-6 w-6" />
+					</Button>
+					<h1 className="text-3xl font-bold text-primary font-graffiti">
+						Grafitti
+					</h1>
+					<div className="flex items-center gap-2">
+						<ThemeToggle />
+						<Button variant="ghost" size="icon" className="relative">
+							<Bell className="h-6 w-6" />
+							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
+						</Button>
+					</div>
+				</header>
+
+				{/* Desktop Header - Hidden on mobile */}
+				<header className="hidden md:flex items-center justify-between py-6">
+					<div className="flex items-center gap-6">
+						<h1 className="text-4xl font-bold text-primary font-graffiti">
+							Grafitti
+						</h1>
+						<MainNav />
+					</div>
+					<div className="flex items-center gap-4">
+						<div className="relative w-64">
+							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+							<input
+								placeholder="Search walls, friends..."
+								className="w-full rounded-md border border-input bg-background px-9 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							/>
+						</div>
+						<Button variant="ghost" size="icon" className="relative">
+							<Bell className="h-6 w-6" />
+							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
+						</Button>
+						<Avatar>
+							<AvatarImage src="/images/avatar.png" alt="User" />
+							<AvatarFallback>LA</AvatarFallback>
+						</Avatar>
+					</div>
+				</header>
+
+				{/* Home Content */}
+				<main className="mt-6">
+					<div className="relative mb-8 rounded-xl overflow-hidden">
+						<div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70"></div>
+						<Image
+							src="/mockbg.jpg"
+							alt="Home Banner"
+							width={1200}
+							height={400}
+							className="w-full h-[200px] md:h-[300px] object-cover"
+						/>
+						<div className="absolute bottom-0 left-0 p-4 md:p-8">
+							<h2 className="text-3xl md:text-5xl font-bold text-white font-graffiti mb-2">
+								Welcome to My Home
+							</h2>
+							<p className="text-white/80 max-w-md">
+								Express yourself through digital graffiti and connect with
+								friends
+							</p>
+							<div className="flex gap-3 mt-4">
+								<Button
+									className="bg-primary hover:bg-primary/90 text-white dark:text-black"
+									onClick={() => setCreateWallModalOpen(true)}
+								>
+									<Plus className="mr-2 h-4 w-4" /> Create Wall
+								</Button>
+								<Button
+									variant="outline"
+									className="bg-black/50 text-white border-white/20 hover:bg-black/70"
+								>
+									Edit Home
+								</Button>
+							</div>
+						</div>
+					</div>
+
+					{/* Walls */}
+					<WallGrid />
+				</main>
+			</div>
+
+			{/* Mobile Navigation */}
+			<MobileNav />
+			{/* Create Wall Modal */}
+			<CreateWallModal
+				isOpen={createWallModalOpen}
+				onClose={() => setCreateWallModalOpen(false)}
+				onCreateWall={(data) => {
+					console.log("Creating wall:", data);
+					// Here you would typically call an API to create the wall
+					setCreateWallModalOpen(false);
+				}}
+			/>
+		</div>
+	);
 }
