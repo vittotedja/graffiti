@@ -2,65 +2,17 @@
 
 import {useState} from "react";
 import Image from "next/image";
-import {Menu, Bell, Search, Plus} from "lucide-react";
+import {Plus} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {MainNav} from "@/components/main-nav";
 import {WallGrid} from "@/components/wall-grid";
-import {MobileNav} from "@/components/mobile-nav";
 import {CreateWallModal} from "@/components/create-wall-modal";
-import {ThemeToggle} from "@/components/theme-toggle";
 
 export default function HomePage() {
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
 	return (
 		<div className="min-h-screen bg-[url('/images/concrete-texture.jpg')] bg-cover">
 			<div className="container mx-auto px-4 pb-20">
-				{/* Mobile Header */}
-				<header className="flex items-center justify-between py-4 md:hidden">
-					<Button variant="ghost" size="icon" className="relative">
-						<Menu className="h-6 w-6" />
-					</Button>
-					<h1 className="text-3xl font-bold text-primary font-graffiti">
-						Grafitti
-					</h1>
-					<div className="flex items-center gap-2">
-						<ThemeToggle />
-						<Button variant="ghost" size="icon" className="relative">
-							<Bell className="h-6 w-6" />
-							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
-						</Button>
-					</div>
-				</header>
-
-				{/* Desktop Header - Hidden on mobile */}
-				<header className="hidden md:flex items-center justify-between py-6">
-					<div className="flex items-center gap-6">
-						<h1 className="text-4xl font-bold text-primary font-graffiti">
-							Grafitti
-						</h1>
-						<MainNav />
-					</div>
-					<div className="flex items-center gap-4">
-						<div className="relative w-64">
-							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-							<input
-								placeholder="Search walls, friends..."
-								className="w-full rounded-md border border-input bg-background px-9 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-							/>
-						</div>
-						<Button variant="ghost" size="icon" className="relative">
-							<Bell className="h-6 w-6" />
-							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
-						</Button>
-						<Avatar>
-							<AvatarImage src="/images/avatar.png" alt="User" />
-							<AvatarFallback>LA</AvatarFallback>
-						</Avatar>
-					</div>
-				</header>
-
 				{/* Home Content */}
 				<main className="mt-6">
 					<div className="relative mb-8 rounded-xl overflow-hidden">
@@ -101,9 +53,6 @@ export default function HomePage() {
 					<WallGrid />
 				</main>
 			</div>
-
-			{/* Mobile Navigation */}
-			<MobileNav />
 			{/* Create Wall Modal */}
 			<CreateWallModal
 				isOpen={createWallModalOpen}

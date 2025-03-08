@@ -11,7 +11,6 @@ import {Card, CardContent, CardFooter} from "@/components/ui/card";
 
 interface Post {
 	id: number;
-	content: string;
 	imageUrl: string;
 	createdAt: Date;
 	likes: number;
@@ -89,9 +88,6 @@ function PostCard({post}: {post: Post}) {
 						<Heart className={`h-5 w-5 ${liked ? "fill-red-500" : ""}`} />
 					</Button>
 				</div>
-				{post.content && (
-					<p className="text-sm text-muted-foreground">{post.content}</p>
-				)}
 			</CardFooter>
 		</Card>
 	);

@@ -13,6 +13,7 @@ import {
 import {PostGrid} from "@/components/post-grid";
 import {EnhancedPostModal} from "@/components/enhanced-post-modal";
 import {useParams} from "next/navigation";
+import {Switch} from "@/components/ui/switch";
 
 type SortOption = "latest" | "oldest" | "popular";
 type FilterOption = "all" | "photos" | "videos" | "text";
@@ -27,13 +28,13 @@ export default function WallPage() {
 		}
 	}, [params]);
 	const [createPostModalOpen, setCreatePostModalOpen] = useState(false);
+	const [isPrivate, setIsPrivate] = useState(false);
 	const [sortBy, setSortBy] = useState<SortOption>("latest");
 	const [filterBy, setFilterBy] = useState<FilterOption>("all");
 	const [posts, setPosts] = useState([
 		{
 			id: 1,
-			content: "This is an amazing memory! 🎉",
-			imageUrl: "/placeholder.svg?height=400&width=400",
+			imageUrl: "/mockimg.jpg",
 			createdAt: new Date(2024, 2, 7),
 			likes: 24,
 			comments: 5,
@@ -45,7 +46,6 @@ export default function WallPage() {
 		},
 		{
 			id: 2,
-			content: "Had such a great time! #memories",
 			imageUrl: "/placeholder.svg?height=400&width=400",
 			createdAt: new Date(2024, 2, 6),
 			likes: 18,
@@ -58,7 +58,6 @@ export default function WallPage() {
 		},
 		{
 			id: 3,
-			content: "Check out this awesome graffiti! 🎨",
 			imageUrl: "/placeholder.svg?height=400&width=400",
 			createdAt: new Date(2024, 2, 5),
 			likes: 32,
@@ -72,7 +71,6 @@ export default function WallPage() {
 		// Add more mock posts...
 		{
 			id: 4,
-			content: "Street art vibes ✨",
 			imageUrl: "/placeholder.svg?height=400&width=400",
 			createdAt: new Date(2024, 2, 4),
 			likes: 45,
@@ -85,7 +83,6 @@ export default function WallPage() {
 		},
 		{
 			id: 5,
-			content: "Urban exploration 🏙️",
 			imageUrl: "/placeholder.svg?height=400&width=400",
 			createdAt: new Date(2024, 2, 3),
 			likes: 29,
@@ -98,7 +95,6 @@ export default function WallPage() {
 		},
 		{
 			id: 6,
-			content: "City lights 🌃",
 			imageUrl: "/placeholder.svg?height=400&width=400",
 			createdAt: new Date(2024, 2, 2),
 			likes: 37,
@@ -203,6 +199,13 @@ export default function WallPage() {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
+					<div className="flex items-center gap-2">
+						<Switch
+							checked={isPrivate}
+							onCheckedChange={() => setIsPrivate(!isPrivate)}
+						/>
+						{isPrivate ? "Private" : "Public"}
+					</div>
 				</div>
 
 				{/* Posts Grid */}
