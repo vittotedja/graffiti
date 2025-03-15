@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -43,4 +45,74 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getUser = `-- name: GetUser :one
+SELECT id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at FROM users
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetUser(ctx context.Context, id pgtype.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Fullname,
+		&i.Email,
+		&i.HashedPassword,
+		&i.ProfilePicture,
+		&i.Bio,
+		&i.HasOnboarded,
+		&i.BackgroundImage,
+		&i.OnboardingAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const listUsers = `-- name: ListUsers :many
+SELECT id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at FROM users
+ORDER BY id
+LIMIT $1 
+OFFSET $2
+`
+
+type ListUsersParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
+	rows, err := q.db.Query(ctx, listUsers, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.Fullname,
+			&i.Email,
+			&i.HashedPassword,
+			&i.ProfilePicture,
+			&i.Bio,
+			&i.HasOnboarded,
+			&i.BackgroundImage,
+			&i.OnboardingAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

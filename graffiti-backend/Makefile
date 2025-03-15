@@ -7,4 +7,7 @@ createdb:
 dropdb:
 	docker exec -it postgres dropdb graffiti
 
-.PHONY: postgres createdb dropdb 
+sqlc:
+	sqlc generate
+
+.PHONY: postgres createdb dropdb sqlc
