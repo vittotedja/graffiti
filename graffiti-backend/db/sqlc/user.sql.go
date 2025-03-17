@@ -14,21 +14,28 @@ import (
 const createUser = `-- name: CreateUser :one
 INSERT INTO users(
  username,
+ fullname,
  email,
  hashed_password 
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4
 ) RETURNING id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at
 `
 
 type CreateUserParams struct {
 	Username       string
+	Fullname       pgtype.Text
 	Email          string
 	HashedPassword string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.Email, arg.HashedPassword)
+	row := q.db.QueryRow(ctx, createUser,
+		arg.Username,
+		arg.Fullname,
+		arg.Email,
+		arg.HashedPassword,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -45,6 +52,28 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users
+WHERE id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteUser, id)
+	return err
+}
+
+const finishOnboarding = `-- name: FinishOnboarding :exec
+UPDATE users
+  set has_onboarded = true,
+  onboarding_at = now()
+WHERE id = $1
+`
+
+func (q *Queries) FinishOnboarding(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, finishOnboarding, id)
+	return err
 }
 
 const getUser = `-- name: GetUser :one
@@ -108,4 +137,59 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateProfile = `-- name: UpdateProfile :exec
+UPDATE users
+  set profile_picture = $2,
+  bio = $3,
+  background_image = $4
+WHERE id = $1
+RETURNING id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at
+`
+
+type UpdateProfileParams struct {
+	ID              pgtype.UUID
+	ProfilePicture  pgtype.Text
+	Bio             pgtype.Text
+	BackgroundImage pgtype.Text
+}
+
+func (q *Queries) UpdateProfile(ctx context.Context, arg UpdateProfileParams) error {
+	_, err := q.db.Exec(ctx, updateProfile,
+		arg.ID,
+		arg.ProfilePicture,
+		arg.Bio,
+		arg.BackgroundImage,
+	)
+	return err
+}
+
+const updateUser = `-- name: UpdateUser :exec
+UPDATE users
+  set username = $2,
+  fullname = $3,
+  email = $4,
+  hashed_password = $5
+WHERE id = $1
+RETURNING id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at
+`
+
+type UpdateUserParams struct {
+	ID             pgtype.UUID
+	Username       string
+	Fullname       pgtype.Text
+	Email          string
+	HashedPassword string
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.Exec(ctx, updateUser,
+		arg.ID,
+		arg.Username,
+		arg.Fullname,
+		arg.Email,
+		arg.HashedPassword,
+	)
+	return err
 }

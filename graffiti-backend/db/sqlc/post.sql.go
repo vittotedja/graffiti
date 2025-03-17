@@ -11,6 +11,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const addLikesCount = `-- name: AddLikesCount :exec
+UPDATE posts
+  set likes_count = likes_count + 1
+WHERE id = $1
+RETURNING id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at
+`
+
+func (q *Queries) AddLikesCount(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, addLikesCount, id)
+	return err
+}
+
 const createPost = `-- name: CreatePost :one
 INSERT INTO posts(
  wall_id,
@@ -51,6 +63,53 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 	return i, err
 }
 
+const deletePost = `-- name: DeletePost :exec
+UPDATE posts
+  set is_deleted = true
+WHERE id = $1
+`
+
+func (q *Queries) DeletePost(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deletePost, id)
+	return err
+}
+
+const getHighlightedPosts = `-- name: GetHighlightedPosts :many
+SELECT id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at FROM posts
+WHERE is_highlighted = true
+ORDER BY id
+`
+
+func (q *Queries) GetHighlightedPosts(ctx context.Context) ([]Post, error) {
+	rows, err := q.db.Query(ctx, getHighlightedPosts)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.WallID,
+			&i.Author,
+			&i.MediaUrl,
+			&i.PostType,
+			&i.IsHighlighted,
+			&i.LikesCount,
+			&i.IsDeleted,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPost = `-- name: GetPost :one
 SELECT id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at FROM posts
 WHERE id = $1 LIMIT 1
@@ -71,6 +130,18 @@ func (q *Queries) GetPost(ctx context.Context, id pgtype.UUID) (Post, error) {
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const highlightPost = `-- name: HighlightPost :exec
+UPDATE posts
+  set is_highlighted = true
+WHERE id = $1
+RETURNING id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at
+`
+
+func (q *Queries) HighlightPost(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, highlightPost, id)
+	return err
 }
 
 const listPosts = `-- name: ListPosts :many
@@ -106,4 +177,59 @@ func (q *Queries) ListPosts(ctx context.Context) ([]Post, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const listPostsByWall = `-- name: ListPostsByWall :many
+SELECT id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at FROM posts
+WHERE wall_id = $1
+ORDER BY id DESC
+`
+
+func (q *Queries) ListPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Post, error) {
+	rows, err := q.db.Query(ctx, listPostsByWall, wallID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.WallID,
+			&i.Author,
+			&i.MediaUrl,
+			&i.PostType,
+			&i.IsHighlighted,
+			&i.LikesCount,
+			&i.IsDeleted,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updatePost = `-- name: UpdatePost :exec
+UPDATE posts
+  set media_url = $2,
+  post_type = $3
+WHERE id = $1
+RETURNING id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at
+`
+
+type UpdatePostParams struct {
+	ID       pgtype.UUID
+	MediaUrl pgtype.Text
+	PostType NullPostType
+}
+
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) error {
+	_, err := q.db.Exec(ctx, updatePost, arg.ID, arg.MediaUrl, arg.PostType)
+	return err
 }

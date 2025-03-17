@@ -41,6 +41,16 @@ func (q *Queries) CreateFriendship(ctx context.Context, arg CreateFriendshipPara
 	return i, err
 }
 
+const deleteFriendship = `-- name: DeleteFriendship :exec
+DELETE FROM friendships
+WHERE id = $1
+`
+
+func (q *Queries) DeleteFriendship(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteFriendship, id)
+	return err
+}
+
 const getFriendship = `-- name: GetFriendship :one
 SELECT id, user_id, friend_id, status, created_at, updated_at FROM friendships
 WHERE id = $1 LIMIT 1
@@ -114,4 +124,21 @@ func (q *Queries) ListFriendships(ctx context.Context) ([]Friendship, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateFriendship = `-- name: UpdateFriendship :exec
+UPDATE friendships
+  set status = $2
+WHERE id = $1
+RETURNING id, user_id, friend_id, status, created_at, updated_at
+`
+
+type UpdateFriendshipParams struct {
+	ID     pgtype.UUID
+	Status NullStatus
+}
+
+func (q *Queries) UpdateFriendship(ctx context.Context, arg UpdateFriendshipParams) error {
+	_, err := q.db.Exec(ctx, updateFriendship, arg.ID, arg.Status)
+	return err
 }

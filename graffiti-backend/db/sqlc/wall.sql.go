@@ -11,13 +11,24 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const archiveWall = `-- name: ArchiveWall :exec
+UPDATE walls
+    set is_archived = true
+WHERE id = $1
+`
+
+func (q *Queries) ArchiveWall(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, archiveWall, id)
+	return err
+}
+
 const createWall = `-- name: CreateWall :one
 INSERT INTO walls(
- user_id,
- description,
- background_image
+    user_id,
+    description,
+    background_image
 ) VALUES (
-  $1, $2, $3
+    $1, $2, $3
 ) RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
@@ -45,6 +56,17 @@ func (q *Queries) CreateWall(ctx context.Context, arg CreateWallParams) (Wall, e
 	return i, err
 }
 
+const deleteWall = `-- name: DeleteWall :exec
+UPDATE walls
+    set is_deleted = true
+WHERE id = $1
+`
+
+func (q *Queries) DeleteWall(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteWall, id)
+	return err
+}
+
 const getWall = `-- name: GetWall :one
 SELECT id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
 WHERE id = $1 LIMIT 1
@@ -70,7 +92,7 @@ func (q *Queries) GetWall(ctx context.Context, id pgtype.UUID) (Wall, error) {
 
 const listWalls = `-- name: ListWalls :many
 SELECT id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
-ORDER BY id
+ORDER BY id DESC
 `
 
 func (q *Queries) ListWalls(ctx context.Context) ([]Wall, error) {
@@ -102,4 +124,95 @@ func (q *Queries) ListWalls(ctx context.Context) ([]Wall, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const listWallsByUser = `-- name: ListWallsByUser :many
+SELECT id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
+WHERE user_id = $1
+ORDER BY id
+`
+
+func (q *Queries) ListWallsByUser(ctx context.Context, userID pgtype.UUID) ([]Wall, error) {
+	rows, err := q.db.Query(ctx, listWallsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Wall
+	for rows.Next() {
+		var i Wall
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Description,
+			&i.BackgroundImage,
+			&i.IsPublic,
+			&i.IsArchived,
+			&i.IsDeleted,
+			&i.PopularityScore,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const privatizeWall = `-- name: PrivatizeWall :exec
+UPDATE walls
+    set is_public = false
+WHERE id = $1
+RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+`
+
+func (q *Queries) PrivatizeWall(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, privatizeWall, id)
+	return err
+}
+
+const publicizeWall = `-- name: PublicizeWall :exec
+UPDATE walls
+    set is_public = true
+WHERE id = $1
+RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+`
+
+func (q *Queries) PublicizeWall(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, publicizeWall, id)
+	return err
+}
+
+const unarchiveWall = `-- name: UnarchiveWall :exec
+UPDATE walls
+    set is_archived = false
+WHERE id = $1
+`
+
+func (q *Queries) UnarchiveWall(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, unarchiveWall, id)
+	return err
+}
+
+const updateWall = `-- name: UpdateWall :exec
+UPDATE walls
+    set description = $2,
+    background_image = $3
+WHERE id = $1
+RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+`
+
+type UpdateWallParams struct {
+	ID              pgtype.UUID
+	Description     pgtype.Text
+	BackgroundImage pgtype.Text
+}
+
+func (q *Queries) UpdateWall(ctx context.Context, arg UpdateWallParams) error {
+	_, err := q.db.Exec(ctx, updateWall, arg.ID, arg.Description, arg.BackgroundImage)
+	return err
 }

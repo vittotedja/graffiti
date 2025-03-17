@@ -37,6 +37,21 @@ func (q *Queries) CreateLike(ctx context.Context, arg CreateLikeParams) (Like, e
 	return i, err
 }
 
+const deleteLike = `-- name: DeleteLike :exec
+DELETE FROM likes
+WHERE post_id = $1 AND user_id = $2
+`
+
+type DeleteLikeParams struct {
+	PostID pgtype.UUID
+	UserID pgtype.UUID
+}
+
+func (q *Queries) DeleteLike(ctx context.Context, arg DeleteLikeParams) error {
+	_, err := q.db.Exec(ctx, deleteLike, arg.PostID, arg.UserID)
+	return err
+}
+
 const getLike = `-- name: GetLike :one
 SELECT id, post_id, user_id, liked_at FROM likes
 WHERE id = $1 LIMIT 1
