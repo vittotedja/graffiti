@@ -139,7 +139,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
-const updateProfile = `-- name: UpdateProfile :exec
+const updateProfile = `-- name: UpdateProfile :one
 UPDATE users
   set profile_picture = $2,
   bio = $3,
@@ -155,17 +155,32 @@ type UpdateProfileParams struct {
 	BackgroundImage pgtype.Text
 }
 
-func (q *Queries) UpdateProfile(ctx context.Context, arg UpdateProfileParams) error {
-	_, err := q.db.Exec(ctx, updateProfile,
+func (q *Queries) UpdateProfile(ctx context.Context, arg UpdateProfileParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateProfile,
 		arg.ID,
 		arg.ProfilePicture,
 		arg.Bio,
 		arg.BackgroundImage,
 	)
-	return err
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Fullname,
+		&i.Email,
+		&i.HashedPassword,
+		&i.ProfilePicture,
+		&i.Bio,
+		&i.HasOnboarded,
+		&i.BackgroundImage,
+		&i.OnboardingAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
-const updateUser = `-- name: UpdateUser :exec
+const updateUser = `-- name: UpdateUser :one
 UPDATE users
   set username = $2,
   fullname = $3,
@@ -183,13 +198,28 @@ type UpdateUserParams struct {
 	HashedPassword string
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.Exec(ctx, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUser,
 		arg.ID,
 		arg.Username,
 		arg.Fullname,
 		arg.Email,
 		arg.HashedPassword,
 	)
-	return err
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Fullname,
+		&i.Email,
+		&i.HashedPassword,
+		&i.ProfilePicture,
+		&i.Bio,
+		&i.HasOnboarded,
+		&i.BackgroundImage,
+		&i.OnboardingAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

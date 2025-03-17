@@ -163,28 +163,54 @@ func (q *Queries) ListWallsByUser(ctx context.Context, userID pgtype.UUID) ([]Wa
 	return items, nil
 }
 
-const privatizeWall = `-- name: PrivatizeWall :exec
+const privatizeWall = `-- name: PrivatizeWall :one
 UPDATE walls
     set is_public = false
 WHERE id = $1
 RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
-func (q *Queries) PrivatizeWall(ctx context.Context, id pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, privatizeWall, id)
-	return err
+func (q *Queries) PrivatizeWall(ctx context.Context, id pgtype.UUID) (Wall, error) {
+	row := q.db.QueryRow(ctx, privatizeWall, id)
+	var i Wall
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Description,
+		&i.BackgroundImage,
+		&i.IsPublic,
+		&i.IsArchived,
+		&i.IsDeleted,
+		&i.PopularityScore,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
-const publicizeWall = `-- name: PublicizeWall :exec
+const publicizeWall = `-- name: PublicizeWall :one
 UPDATE walls
     set is_public = true
 WHERE id = $1
 RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
-func (q *Queries) PublicizeWall(ctx context.Context, id pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, publicizeWall, id)
-	return err
+func (q *Queries) PublicizeWall(ctx context.Context, id pgtype.UUID) (Wall, error) {
+	row := q.db.QueryRow(ctx, publicizeWall, id)
+	var i Wall
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Description,
+		&i.BackgroundImage,
+		&i.IsPublic,
+		&i.IsArchived,
+		&i.IsDeleted,
+		&i.PopularityScore,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const unarchiveWall = `-- name: UnarchiveWall :exec
@@ -198,7 +224,7 @@ func (q *Queries) UnarchiveWall(ctx context.Context, id pgtype.UUID) error {
 	return err
 }
 
-const updateWall = `-- name: UpdateWall :exec
+const updateWall = `-- name: UpdateWall :one
 UPDATE walls
     set description = $2,
     background_image = $3
@@ -212,7 +238,20 @@ type UpdateWallParams struct {
 	BackgroundImage pgtype.Text
 }
 
-func (q *Queries) UpdateWall(ctx context.Context, arg UpdateWallParams) error {
-	_, err := q.db.Exec(ctx, updateWall, arg.ID, arg.Description, arg.BackgroundImage)
-	return err
+func (q *Queries) UpdateWall(ctx context.Context, arg UpdateWallParams) (Wall, error) {
+	row := q.db.QueryRow(ctx, updateWall, arg.ID, arg.Description, arg.BackgroundImage)
+	var i Wall
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Description,
+		&i.BackgroundImage,
+		&i.IsPublic,
+		&i.IsArchived,
+		&i.IsDeleted,
+		&i.PopularityScore,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

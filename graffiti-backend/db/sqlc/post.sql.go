@@ -11,16 +11,28 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const addLikesCount = `-- name: AddLikesCount :exec
+const addLikesCount = `-- name: AddLikesCount :one
 UPDATE posts
   set likes_count = likes_count + 1
 WHERE id = $1
 RETURNING id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at
 `
 
-func (q *Queries) AddLikesCount(ctx context.Context, id pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, addLikesCount, id)
-	return err
+func (q *Queries) AddLikesCount(ctx context.Context, id pgtype.UUID) (Post, error) {
+	row := q.db.QueryRow(ctx, addLikesCount, id)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.WallID,
+		&i.Author,
+		&i.MediaUrl,
+		&i.PostType,
+		&i.IsHighlighted,
+		&i.LikesCount,
+		&i.IsDeleted,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const createPost = `-- name: CreatePost :one
@@ -132,16 +144,28 @@ func (q *Queries) GetPost(ctx context.Context, id pgtype.UUID) (Post, error) {
 	return i, err
 }
 
-const highlightPost = `-- name: HighlightPost :exec
+const highlightPost = `-- name: HighlightPost :one
 UPDATE posts
   set is_highlighted = true
 WHERE id = $1
 RETURNING id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at
 `
 
-func (q *Queries) HighlightPost(ctx context.Context, id pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, highlightPost, id)
-	return err
+func (q *Queries) HighlightPost(ctx context.Context, id pgtype.UUID) (Post, error) {
+	row := q.db.QueryRow(ctx, highlightPost, id)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.WallID,
+		&i.Author,
+		&i.MediaUrl,
+		&i.PostType,
+		&i.IsHighlighted,
+		&i.LikesCount,
+		&i.IsDeleted,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const listPosts = `-- name: ListPosts :many
@@ -215,7 +239,7 @@ func (q *Queries) ListPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Po
 	return items, nil
 }
 
-const updatePost = `-- name: UpdatePost :exec
+const updatePost = `-- name: UpdatePost :one
 UPDATE posts
   set media_url = $2,
   post_type = $3
@@ -229,7 +253,19 @@ type UpdatePostParams struct {
 	PostType NullPostType
 }
 
-func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) error {
-	_, err := q.db.Exec(ctx, updatePost, arg.ID, arg.MediaUrl, arg.PostType)
-	return err
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
+	row := q.db.QueryRow(ctx, updatePost, arg.ID, arg.MediaUrl, arg.PostType)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.WallID,
+		&i.Author,
+		&i.MediaUrl,
+		&i.PostType,
+		&i.IsHighlighted,
+		&i.LikesCount,
+		&i.IsDeleted,
+		&i.CreatedAt,
+	)
+	return i, err
 }

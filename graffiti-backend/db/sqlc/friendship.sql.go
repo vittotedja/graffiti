@@ -126,7 +126,7 @@ func (q *Queries) ListFriendships(ctx context.Context) ([]Friendship, error) {
 	return items, nil
 }
 
-const updateFriendship = `-- name: UpdateFriendship :exec
+const updateFriendship = `-- name: UpdateFriendship :one
 UPDATE friendships
   set status = $2
 WHERE id = $1
@@ -138,7 +138,16 @@ type UpdateFriendshipParams struct {
 	Status NullStatus
 }
 
-func (q *Queries) UpdateFriendship(ctx context.Context, arg UpdateFriendshipParams) error {
-	_, err := q.db.Exec(ctx, updateFriendship, arg.ID, arg.Status)
-	return err
+func (q *Queries) UpdateFriendship(ctx context.Context, arg UpdateFriendshipParams) (Friendship, error) {
+	row := q.db.QueryRow(ctx, updateFriendship, arg.ID, arg.Status)
+	var i Friendship
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.FriendID,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
