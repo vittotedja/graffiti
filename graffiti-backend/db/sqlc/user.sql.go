@@ -75,17 +75,10 @@ func (q *Queries) GetUser(ctx context.Context, id pgtype.UUID) (User, error) {
 const listUsers = `-- name: ListUsers :many
 SELECT id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at FROM users
 ORDER BY id
-LIMIT $1 
-OFFSET $2
 `
 
-type ListUsersParams struct {
-	Limit  int32
-	Offset int32
-}
-
-func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
-	rows, err := q.db.Query(ctx, listUsers, arg.Limit, arg.Offset)
+func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.db.Query(ctx, listUsers)
 	if err != nil {
 		return nil, err
 	}
