@@ -17,7 +17,7 @@ SELECT * FROM users
 ORDER BY id;
 
 
--- name: UpdateUser :exec
+-- name: UpdateUser :one
 UPDATE users
   set username = $2,
   fullname = $3,
@@ -26,7 +26,7 @@ UPDATE users
 WHERE id = $1
 RETURNING *;
 
--- name: UpdateProfile :exec
+-- name: UpdateProfile :one
 UPDATE users
   set profile_picture = $2,
   bio = $3,

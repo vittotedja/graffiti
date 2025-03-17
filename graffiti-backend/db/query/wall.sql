@@ -20,7 +20,7 @@ SELECT * FROM walls
 WHERE user_id = $1
 ORDER BY id;
 
--- name: UpdateWall :exec
+-- name: UpdateWall :one
 UPDATE walls
     set description = $2,
     background_image = $3
@@ -42,13 +42,13 @@ UPDATE walls
     set is_archived = false
 WHERE id = $1;
 
--- name: PublicizeWall :exec
+-- name: PublicizeWall :one
 UPDATE walls
     set is_public = true
 WHERE id = $1
 RETURNING *;
 
--- name: PrivatizeWall :exec
+-- name: PrivatizeWall :one
 UPDATE walls
     set is_public = false
 WHERE id = $1

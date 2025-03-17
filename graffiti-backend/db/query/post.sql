@@ -27,20 +27,20 @@ WHERE is_highlighted = true
 ORDER BY id;
 
 
--- name: UpdatePost :exec
+-- name: UpdatePost :one
 UPDATE posts
   set media_url = $2,
   post_type = $3
 WHERE id = $1
 RETURNING *;
 
--- name: HighlightPost :exec
+-- name: HighlightPost :one
 UPDATE posts
   set is_highlighted = true
 WHERE id = $1
 RETURNING *;
 
--- name: AddLikesCount :exec
+-- name: AddLikesCount :one
 UPDATE posts
   set likes_count = likes_count + 1
 WHERE id = $1

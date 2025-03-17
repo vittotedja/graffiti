@@ -23,7 +23,7 @@ WHERE user_id = $1 AND status = 'accepted';
 SELECT COUNT(*) FROM friendships
 WHERE friend_id = $1 AND status = 'pending';
 
--- name: UpdateFriendship :exec
+-- name: UpdateFriendship :one
 UPDATE friendships
   set status = $2
 WHERE id = $1
