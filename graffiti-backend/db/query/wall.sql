@@ -1,10 +1,10 @@
 -- name: CreateWall :one
 INSERT INTO walls(
- user_id,
- description,
- background_image
+    user_id,
+    description,
+    background_image
 ) VALUES (
-  $1, $2, $3
+    $1, $2, $3
 ) RETURNING *;
 
 -- name: GetWall :one
@@ -13,4 +13,43 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListWalls :many
 SELECT * FROM walls
+ORDER BY id DESC;
+
+-- name: ListWallsByUser :many
+SELECT * FROM walls
+WHERE user_id = $1
 ORDER BY id;
+
+-- name: UpdateWall :exec
+UPDATE walls
+    set description = $2,
+    background_image = $3
+WHERE id = $1
+RETURNING *;
+
+-- name: DeleteWall :exec
+UPDATE walls
+    set is_deleted = true
+WHERE id = $1;
+
+-- name: ArchiveWall :exec
+UPDATE walls
+    set is_archived = true
+WHERE id = $1;
+
+-- name: UnarchiveWall :exec
+UPDATE walls
+    set is_archived = false
+WHERE id = $1;
+
+-- name: PublicizeWall :exec
+UPDATE walls
+    set is_public = true
+WHERE id = $1
+RETURNING *;
+
+-- name: PrivatizeWall :exec
+UPDATE walls
+    set is_public = false
+WHERE id = $1
+RETURNING *;

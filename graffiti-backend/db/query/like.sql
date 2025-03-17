@@ -28,4 +28,8 @@ ORDER BY liked_at DESC;
 SELECT COUNT(*) FROM likes
 WHERE post_id = $1;
 
+-- name: DeleteLike :exec
+DELETE FROM likes
+WHERE post_id = $1 AND user_id = $2;
+
 
