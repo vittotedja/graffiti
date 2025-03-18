@@ -7,6 +7,9 @@ createdb:
 dropdb:
 	docker exec -it postgres dropdb graffiti
 
+sqlc:
+	sqlc generate
+
 migrateup:
 	migrate -path db/migration -database "postgresql://root:secret1234@localhost:5432/graffiti?sslmode=disable" -verbose up
 
@@ -19,4 +22,5 @@ test:
 server:
 	go run main.go
 
-.PHONY: postgres createdb dropdb test server migrateup migratedown
+.PHONY: postgres createdb dropdb sqlc test server migrateup migratedown
+
