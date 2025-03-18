@@ -23,13 +23,13 @@ func NewServer (hub *db.Hub) *Server {
 	// add routes to router
 	
 	// Set up routes for the user API
-	router.POST("/api/v1/users", server.createUser)
-	router.GET("api/v1/users/:id", server.getUser)
-	router.GET("/api/v1/users", server.listUsers)
-	router.PUT("/users/:id", server.updateUser)
-	router.DELETE("/users/:id", server.deleteUser)
-	router.PUT("/users/:id/profile", server.updateProfile)
-	router.PUT("/users/:id/onboarding", server.finishOnboarding)
+	router.POST("/api/v1/users", server.createUser) // working
+	router.GET("api/v1/users/:id", server.getUser) // working
+	router.GET("/api/v1/users", server.listUsers) // working
+	router.PUT("/api/v1/users/:id", server.updateUser)
+	router.DELETE("/api/v1/users/:id", server.deleteUser)
+	router.PUT("/api/v1/users/:id/profile", server.updateProfile)
+	router.PUT("/api/v1/users/:id/onboarding", server.finishOnboarding)
 
 	// Set up routes for the wall API
 	router.POST("/api/v1/walls", server.createWall)
