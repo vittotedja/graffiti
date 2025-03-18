@@ -10,4 +10,7 @@ dropdb:
 sqlc:
 	sqlc generate
 
-.PHONY: postgres createdb dropdb sqlc
+server:
+	go run main.go
+
+.PHONY: postgres createdb dropdb sqlc server

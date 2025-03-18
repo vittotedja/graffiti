@@ -4,7 +4,7 @@ CREATE TYPE "post_type" AS ENUM ('image', 'video', 'text', 'gif');
 
 CREATE TABLE
   "users" (
-    "id" uuid PRIMARY KEY,
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "username" varchar UNIQUE NOT NULL,
     "fullname" varchar,
     "email" varchar NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE
 
 CREATE TABLE
   "walls" (
-    "id" uuid PRIMARY KEY,
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "user_id" uuid NOT NULL,
     "description" varchar,
     "background_image" varchar,
@@ -35,7 +35,7 @@ CREATE TABLE
 
 CREATE TABLE
   "posts" (
-    "id" uuid PRIMARY KEY,
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "wall_id" uuid,
     "author" uuid NOT NULL, -- ✅ Changed from varchar to uuid
     "media_url" varchar,
@@ -50,7 +50,7 @@ CREATE TABLE
 
 CREATE TABLE
   "likes" (
-    "id" uuid PRIMARY KEY,
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "post_id" uuid NOT NULL,
     "user_id" uuid NOT NULL,
     "liked_at" timestamp DEFAULT now (),
@@ -60,7 +60,7 @@ CREATE TABLE
 
 CREATE TABLE
   "friendships" (
-    "id" uuid PRIMARY KEY,
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "user_id" uuid NOT NULL,
     "friend_id" uuid NOT NULL,
     "status" status,
