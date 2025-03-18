@@ -24,7 +24,7 @@ CREATE TABLE
     "user_id" uuid NOT NULL,
     "description" varchar,
     "background_image" varchar,
-    "is_public" boolean DEFAULT true,
+    "is_public" boolean DEFAULT false,
     "is_archived" boolean DEFAULT false,
     "is_deleted" boolean DEFAULT false,
     "popularity_score" float DEFAULT 0,

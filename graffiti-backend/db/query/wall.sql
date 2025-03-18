@@ -35,12 +35,14 @@ WHERE id = $1;
 -- name: ArchiveWall :exec
 UPDATE walls
     set is_archived = true
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
 -- name: UnarchiveWall :exec
 UPDATE walls
     set is_archived = false
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
 -- name: PublicizeWall :one
 UPDATE walls

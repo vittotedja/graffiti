@@ -27,21 +27,21 @@ func NewServer (hub *db.Hub) *Server {
 	router.GET("api/v1/users/:id", server.getUser) // working
 	router.GET("/api/v1/users", server.listUsers) // working
 	router.PUT("/api/v1/users/:id", server.updateUser)
-	router.DELETE("/api/v1/users/:id", server.deleteUser)
-	router.PUT("/api/v1/users/:id/profile", server.updateProfile)
+	router.DELETE("/api/v1/users/:id", server.deleteUser) // working, but maybe need to add id of the deleted item in the response
+	router.PUT("/api/v1/users/:id/profile", server.updateProfile)  // working, but need fixing so that i can just edit 1 field at a time, not having to fill all fields just to edit 1 field
 	router.PUT("/api/v1/users/:id/onboarding", server.finishOnboarding)
 
 	// Set up routes for the wall API
-	router.POST("/api/v1/walls", server.createWall)
-	router.GET("/api/v1/walls/:id", server.getWall)
-	router.GET("/api/v1/walls", server.listWalls)
-	router.GET("/api/v1/users/:id/walls", server.listWallsByUser)
-	router.PUT("/api/v1/walls/:id", server.updateWall)
-	router.PUT("/api/v1/walls/:id/publicize", server.publicizeWall)
-	router.PUT("/api/v1/walls/:id/privatize", server.privatizeWall)
-	router.PUT("/api/v1/walls/:id/archive", server.archiveWall)
-	router.PUT("/api/v1/walls/:id/unarchive", server.unarchiveWall)
-	router.DELETE("/api/v1/walls/:id", server.deleteWall)
+	router.POST("/api/v1/walls", server.createWall) 
+	router.GET("/api/v1/walls/:id", server.getWall) // working
+	router.GET("/api/v1/walls", server.listWalls) // working
+	router.GET("/api/v1/users/:id/walls", server.listWallsByUser) // working
+	router.PUT("/api/v1/walls/:id", server.updateWall) // working
+	router.PUT("/api/v1/walls/:id/publicize", server.publicizeWall) // working
+	router.PUT("/api/v1/walls/:id/privatize", server.privatizeWall) // working
+	router.PUT("/api/v1/walls/:id/archive", server.archiveWall) // need to add wall id and archive status
+	router.PUT("/api/v1/walls/:id/unarchive", server.unarchiveWall) // need to add wall id and archive status
+	router.DELETE("/api/v1/walls/:id", server.deleteWall) // working
 
 	// Set up routes for the post API
 	router.POST("/api/v1/posts", server.createPost)

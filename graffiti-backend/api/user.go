@@ -358,7 +358,10 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "user deleted"})
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":      id.String(),
+		"message": "User deleted successfully!",
+	})
 }
 
 // Helper function to hash passwords (you should implement a proper password hashing algorithm)

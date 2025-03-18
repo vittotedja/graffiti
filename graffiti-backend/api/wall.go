@@ -128,7 +128,7 @@ func (server *Server) listWalls(ctx *gin.Context) {
 // ListWallsByUser handler
 func (server *Server) listWallsByUser(ctx *gin.Context) {
 	var uri struct {
-		UserID string `uri:"user_id" binding:"required,uuid"`
+		UserID string `uri:"id" binding:"required,uuid"`
 	}
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
@@ -331,5 +331,8 @@ func (server *Server) deleteWall(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Wall deleted successfully"})
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":      id.String(),
+		"message": "Wall deleted successfully",
+	})
 }
