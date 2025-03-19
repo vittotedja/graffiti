@@ -48,16 +48,20 @@ export function WallGrid() {
 											<Button
 												variant="ghost"
 												size="icon"
-												className="h-8 w-8 bg-black/30 text-white hover:bg-black/50 rounded-full"
+												className="h-8 w-8 bg-black/30 text-white hover:bg-black/50 rounded-full cursor-pointer"
 											>
 												<MoreVertical className="h-4 w-4" />
 											</Button>
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end">
-											<DropdownMenuItem>Edit Wall</DropdownMenuItem>
-											<DropdownMenuItem>Change Privacy</DropdownMenuItem>
+											<DropdownMenuItem className="cursor-pointer">
+												Edit Wall
+											</DropdownMenuItem>
+											<DropdownMenuItem className="cursor-pointer">
+												Change Privacy
+											</DropdownMenuItem>
 											<DropdownMenuSeparator />
-											<DropdownMenuItem className="text-destructive">
+											<DropdownMenuItem className="text-destructive cursor-pointer">
 												Delete Wall
 											</DropdownMenuItem>
 										</DropdownMenuContent>
