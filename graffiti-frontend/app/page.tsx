@@ -1,16 +1,42 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Image from "next/image";
-import {Plus} from "lucide-react";
+import {Archive, Menu, Pencil, Plus, X} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
 import {WallGrid} from "@/components/wall-grid";
 import {CreateWallModal} from "@/components/create-wall-modal";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
+import {cn} from "@/lib/utils";
+
 export default function HomePage() {
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
+	const [fabOpen, setFabOpen] = useState(false);
+
+	// Optional ripple effect when FAB is clicked
+	useEffect(() => {
+		if (fabOpen) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const handleClickOutside = (e: any) => {
+				const fabElement = document.querySelector(".fab-container");
+				if (fabElement && !fabElement.contains(e.target)) {
+					setFabOpen(false);
+				}
+			};
+
+			document.addEventListener("mousedown", handleClickOutside);
+			return () => {
+				document.removeEventListener("mousedown", handleClickOutside);
+			};
+		}
+	}, [fabOpen]);
+
+	const toggleFab = () => {
+		setFabOpen(!fabOpen);
+	};
+
 	return (
 		<div className="min-h-screen bg-[url('/images/concrete-texture.jpg')] bg-cover">
 			<div className="container mx-auto px-4 pb-20">
@@ -40,27 +66,19 @@ export default function HomePage() {
 								</Avatar>
 								<div className="mb-1 md:mb-2">
 									<h2 className="text-2xl md:text-3xl font-bold text-white font-graffiti">
-										Welcome to My Home
+										@JohnDoe
 									</h2>
-									<p className="text-white/80 text-sm md:text-base">
-										Express yourself through digital graffiti
-									</p>
+									{/* <p className="text-white/80 text-sm md:text-base">@JohnDoe</p> */}
 								</div>
 							</div>
 
 							{/* Buttons on bottom right */}
 							<div className="flex gap-2 md:gap-3">
 								<Button
-									className="bg-primary hover:bg-primary/90 text-white dark:text-black text-xs md:text-sm h-8 md:h-9"
-									onClick={() => setCreateWallModalOpen(true)}
-								>
-									<Plus className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" /> Create
-									Wall
-								</Button>
-								<Button
 									variant="outline"
 									className="bg-black/50 text-white border-white/20 hover:bg-black/70 text-xs md:text-sm h-8 md:h-9"
 								>
+									<Pencil />
 									Edit Home
 								</Button>
 							</div>
@@ -69,6 +87,80 @@ export default function HomePage() {
 					{/* Walls */}
 					<WallGrid />
 				</main>
+			</div>
+			<div
+				className={cn(
+					"fixed inset-0 bg-black/60 z-40 transition-opacity duration-300",
+					fabOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+				)}
+				onClick={() => setFabOpen(false)}
+			/>
+
+			{/* Floating Action Button with Radial Menu */}
+			<div className="fixed bottom-6 right-6 z-50 fab-container">
+				{/* Main FAB Button */}
+				<Button
+					onClick={toggleFab}
+					variant={"special"}
+					className="h-14 w-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-50 relative"
+				>
+					<span className="relative z-10 transition-transform duration-300">
+						{fabOpen ? (
+							<X className="h-6 w-6 text-white transition-all duration-300" />
+						) : (
+							<Menu className="h-6 w-6 text-white transition-all duration-300" />
+						)}
+					</span>
+				</Button>
+
+				{/* Radial Menu Items */}
+				<div className="absolute inset-0 z-40">
+					{/* Expanding Circle Animation */}
+					<div
+						className={cn(
+							"absolute inset-0 rounded-full bg-gray-700/20 transition-transform duration-300",
+							fabOpen ? "scale-[4.5]" : "scale-0"
+						)}
+					></div>
+					{/* Create New Wall Option */}
+					<div
+						className={cn(
+							"absolute flex items-center gap-3 transition-all duration-500",
+							fabOpen
+								? "opacity-100 translate-x-[-200px] translate-y-[-100px]"
+								: "opacity-0 translate-x-0 translate-y-0 pointer-events-none"
+						)}
+						style={{transitionDelay: fabOpen ? "0.1s" : "0s"}}
+					>
+						<div className="bg-white text-xs font-medium text-black px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+							Create New Wall
+						</div>
+						<Button
+							className="h-12 w-12 rounded-full flex items-center justify-center shadow-lg z-100 hover:scale-110"
+							onClick={() => setCreateWallModalOpen(true)}
+						>
+							<Plus className="h-5 w-5" />
+						</Button>
+					</div>
+
+					{/* View Archives Option */}
+					<div
+						className={cn(
+							"absolute flex items-center gap-3 transition-all duration-500",
+							fabOpen
+								? "opacity-100 translate-x-[-225px] translate-y-[-40px]"
+								: "opacity-0 translate-x-0 translate-y-0 pointer-events-none"
+						)}
+						style={{transitionDelay: fabOpen ? "0.2s" : "0s"}}
+					>
+						<div className="bg-white text-xs font-medium text-black px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+							View Archives
+						</div>
+						<Button className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-lg z-100 hover:scale-110">
+							<Archive className="h-5 w-5" />
+						</Button>
+					</div>
+				</div>
 			</div>
 			{/* Create Wall Modal */}
 			<CreateWallModal
