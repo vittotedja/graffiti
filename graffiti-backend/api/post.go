@@ -14,7 +14,7 @@ type createPostRequest struct {
 	WallID   string `json:"wall_id" binding:"required,uuid"`
 	Author   string `json:"author" binding:"required,uuid"`
 	MediaURL string `json:"media_url" binding:"required"`
-	PostType string `json:"post_type" binding:"required,oneof=image video text gif"`
+	PostType string `json:"post_type" binding:"required,oneof=media embed_link"`
 }
 
 type postResponse struct {

@@ -1,6 +1,6 @@
 CREATE TYPE "status" AS ENUM ('pending', 'friends', 'blocked');
 
-CREATE TYPE "post_type" AS ENUM ('image', 'video', 'text', 'gif');
+CREATE TYPE "post_type" AS ENUM ('media', 'embed_link');
 
 CREATE TABLE
   "users" (

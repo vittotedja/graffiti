@@ -26,7 +26,7 @@ func NewServer (hub *db.Hub) *Server {
 	router.POST("/api/v1/users", server.createUser) // working
 	router.GET("api/v1/users/:id", server.getUser) // working
 	router.GET("/api/v1/users", server.listUsers) // working
-	router.PUT("/api/v1/users/:id", server.updateUser)
+	router.PUT("/api/v1/users/:id", server.updateUser) 
 	router.DELETE("/api/v1/users/:id", server.deleteUser) // working, but maybe need to add id of the deleted item in the response
 	router.PUT("/api/v1/users/:id/profile", server.updateProfile)  // working, but need fixing so that i can just edit 1 field at a time, not having to fill all fields just to edit 1 field
 	router.PUT("/api/v1/users/:id/onboarding", server.finishOnboarding)
@@ -44,8 +44,8 @@ func NewServer (hub *db.Hub) *Server {
 	router.DELETE("/api/v1/walls/:id", server.deleteWall) // working
 
 	// Set up routes for the post API
-	router.POST("/api/v1/posts", server.createPost)
-	router.GET("/api/v1/posts/:id", server.getPost)
+	router.POST("/api/v1/posts", server.createPost) // working
+	router.GET("/api/v1/posts/:id", server.getPost) // 
 	router.GET("/api/v1/posts", server.listPosts)
 	router.GET("/api/v1/walls/:id/posts", server.listPostsByWall)
 	router.PUT("/api/v1/posts/:id", server.updatePost)
