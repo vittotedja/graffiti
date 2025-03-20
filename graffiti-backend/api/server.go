@@ -1,12 +1,12 @@
 package api
 
 import (
-	"errors"
-	"fmt"
+	// "errors"
+	// "fmt"
 
-	"github.com/google/uuid"
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"github.com/gin-gonic/gin"
+	// "github.com/google/uuid"
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 )
 
 // Server serves HTTP requests
@@ -26,10 +26,10 @@ func NewServer (hub *db.Hub) *Server {
 	router.POST("/api/v1/users", server.createUser) // working
 	router.GET("api/v1/users/:id", server.getUser) // working
 	router.GET("/api/v1/users", server.listUsers) // working
-	router.PUT("/api/v1/users/:id", server.updateUser) 
+	router.PUT("/api/v1/users/:id", server.updateUser) // working
 	router.DELETE("/api/v1/users/:id", server.deleteUser) // working, but maybe need to add id of the deleted item in the response
 	router.PUT("/api/v1/users/:id/profile", server.updateProfile)  // working, but need fixing so that i can just edit 1 field at a time, not having to fill all fields just to edit 1 field
-	router.PUT("/api/v1/users/:id/onboarding", server.finishOnboarding)
+	router.PUT("/api/v1/users/:id/onboarding", server.finishOnboarding) // working
 
 	// Set up routes for the wall API
 	router.POST("/api/v1/walls", server.createWall) 
@@ -45,12 +45,15 @@ func NewServer (hub *db.Hub) *Server {
 
 	// Set up routes for the post API
 	router.POST("/api/v1/posts", server.createPost) // working
-	router.GET("/api/v1/posts/:id", server.getPost) // 
-	router.GET("/api/v1/posts", server.listPosts)
-	router.GET("/api/v1/walls/:id/posts", server.listPostsByWall)
-	router.PUT("/api/v1/posts/:id", server.updatePost)
-	router.PUT("/api/v1/posts/:id/highlight", server.highlightPost)
-	router.DELETE("/api/v1/posts/:id", server.deletePost)
+	router.GET("/api/v1/posts/:id", server.getPost) // working
+	router.GET("/api/v1/posts", server.listPosts) // working
+	router.GET("/api/v1/walls/:id/posts", server.listPostsByWall) // working
+	router.GET("/api/v1/posts/highlighted", server.getHighlightedPosts) // working
+	router.GET("/api/v1/walls/:id/posts/highlighted", server.getHighlightedPostsByWall) // working
+	router.PUT("/api/v1/posts/:id", server.updatePost) // working
+	router.PUT("/api/v1/posts/:id/highlight", server.highlightPost) // working
+	router.PUT("/api/v1/posts/:id/unhighlight", server.unhighlightPost) // working
+	router.DELETE("/api/v1/posts/:id", server.deletePost) // working
 
 	// Set up routes for the friendship API
 	router.POST("/api/v1/friendships", server.createFriendship)
@@ -84,15 +87,15 @@ func errorResponse(err error) gin.H {
 }
 
 // parseUUID converts a string to UUID
-func parseUUID(s string) (uuid.UUID, error) {
-	if s == "" {
-		return uuid.Nil, errors.New("empty UUID string")
-	}
+// func parseUUID(s string) (uuid.UUID, error) {
+// 	if s == "" {
+// 		return uuid.Nil, errors.New("empty UUID string")
+// 	}
 	
-	id, err := uuid.Parse(s)
-	if err != nil {
-		return uuid.Nil, fmt.Errorf("invalid UUID format: %w", err)
-	}
+// 	id, err := uuid.Parse(s)
+// 	if err != nil {
+// 		return uuid.Nil, fmt.Errorf("invalid UUID format: %w", err)
+// 	}
 	
-	return id, nil
-}
+// 	return id, nil
+// }
