@@ -30,8 +30,8 @@ type wallResponse struct {
 }
 
 type updateWallRequest struct {
-	Description     string `json:"description"`
-	BackgroundImage string `json:"background_image"`
+	Description     *string `json:"description"`
+	BackgroundImage *string `json:"background_image"`
 }
 
 // Convert DB wall to API response
@@ -181,10 +181,26 @@ func (server *Server) updateWall(ctx *gin.Context) {
 		return
 	}
 
+	// Fetch the current user data to retain non-nullable fields
+    currentWall, err := server.hub.GetWall(ctx, id)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+        return
+    }
+
+	// Prepare the UpdateWallParams struct
 	arg := db.UpdateWallParams{
 		ID:              id,
-		Description:     pgtype.Text{String: req.Description, Valid: req.Description != ""},
-		BackgroundImage: pgtype.Text{String: req.BackgroundImage, Valid: req.BackgroundImage != ""},
+		Description:     currentWall.Description, // Default to current value
+		BackgroundImage: currentWall.BackgroundImage, // Default to current value
+	}
+
+	// Update the fields if they are not nil
+	if req.Description != nil && *req.Description != ""{
+		arg.Description = pgtype.Text{String: *req.Description, Valid: true}
+	}
+	if req.BackgroundImage != nil && *req.BackgroundImage != ""{
+		arg.BackgroundImage = pgtype.Text{String: *req.BackgroundImage, Valid: true}
 	}
 
 	wall, err := server.hub.UpdateWall(ctx, arg)
