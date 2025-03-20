@@ -6,7 +6,6 @@ import {useState, useRef, useEffect} from "react";
 import {
 	Upload,
 	ImageIcon,
-	Camera,
 	Brush,
 	Eraser,
 	Save,
@@ -16,7 +15,6 @@ import {
 	X,
 	ChevronLeft,
 } from "lucide-react";
-import NextImage from "next/image";
 
 import {Button} from "@/components/ui/button";
 import {
@@ -30,6 +28,8 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Slider} from "@/components/ui/slider";
 import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea";
+import {Input} from "./ui/input";
+import {toast} from "sonner";
 
 interface EnhancedPostModalProps {
 	isOpen: boolean;
@@ -38,6 +38,8 @@ interface EnhancedPostModalProps {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	onPostCreated: (post: any) => void;
 }
+
+type Platform = "youtube" | "tiktok" | "spotify" | "others";
 
 export function EnhancedPostModal({
 	isOpen,
@@ -55,9 +57,16 @@ export function EnhancedPostModal({
 	const [drawingHistory, setDrawingHistory] = useState<ImageData[]>([]);
 	const [historyIndex, setHistoryIndex] = useState(-1);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
+
+	const [compositeDataUrl, setCompositeDataUrl] = useState<string | null>(null);
+	const [mediaUrl, setMediaUrl] = useState<string>("");
+	const [tiktokHtml, setTiktokHtml] = useState<string | null>(null);
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+
+	const bgCanvasRef = useRef<HTMLCanvasElement>(null);
+	const drawCanvasRef = useRef<HTMLCanvasElement>(null);
 
 	const colors = [
 		"#ff3b30", // Red
@@ -72,40 +81,86 @@ export function EnhancedPostModal({
 		"#ffffff", // White
 	];
 
-	// Initialize canvas when image is selected
 	useEffect(() => {
-		if (selectedImage && canvasRef.current) {
-			const canvas = canvasRef.current;
-			const context = canvas.getContext("2d");
+		if (selectedImage && bgCanvasRef.current && drawCanvasRef.current) {
+			const bgCanvas = bgCanvasRef.current;
+			const drawCanvas = drawCanvasRef.current;
+			const bgContext = bgCanvas.getContext("2d");
+			const drawContext = drawCanvas.getContext("2d");
 
-			if (context) {
-				contextRef.current = context;
+			if (!bgContext) {
+				// Handle the error or return early
+				return;
+			}
 
-				// Load the image onto canvas
+			if (!drawContext) {
+				return;
+			}
+
+			// Define maximum canvas dimensions
+			const MAX_WIDTH = 480;
+			const MAX_HEIGHT = 480;
+
+			// Check if we're using a placeholder (empty canvas) scenario
+			if (selectedImage.includes("placeholder.svg")) {
+				// Instead of loading an image, set a fixed canvas size
+				bgCanvas.width = MAX_WIDTH;
+				bgCanvas.height = MAX_HEIGHT;
+				drawCanvas.width = MAX_WIDTH;
+				drawCanvas.height = MAX_HEIGHT;
+
+				// Fill the background canvas with white
+				bgContext.fillStyle = "#ffffff";
+				bgContext.fillRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
+
+				// Clear the drawing canvas (or you can fill with transparent pixels)
+				drawContext.clearRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
+
+				// Initialize drawing history with this blank state
+				const initialDrawingState = drawContext.getImageData(
+					0,
+					0,
+					MAX_WIDTH,
+					MAX_HEIGHT
+				);
+				setDrawingHistory([initialDrawingState]);
+				setHistoryIndex(0);
+			} else {
+				// For a real uploaded image, load and scale it if needed
 				const img = new Image();
 				img.crossOrigin = "anonymous";
 				img.onload = () => {
-					// Set canvas dimensions to match image
-					canvas.width = img.width;
-					canvas.height = img.height;
+					let width = img.width;
+					let height = img.height;
+					// Calculate a scale factor so that the image fits within our max dimensions
+					const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height, 1); // don't upscale if smaller than max
+					width = width * scale;
+					height = height * scale;
 
-					// Draw image on canvas
-					context.drawImage(img, 0, 0, canvas.width, canvas.height);
+					// Set both canvases to these dimensions
+					bgCanvas.width = width;
+					bgCanvas.height = height;
+					drawCanvas.width = width;
+					drawCanvas.height = height;
 
-					// Save initial state to history
-					const initialState = context.getImageData(
+					// Draw the image on the background canvas, scaled
+					bgContext.drawImage(img, 0, 0, width, height);
+
+					// Initialize drawing canvas with a cleared (transparent) state
+					drawContext.clearRect(0, 0, width, height);
+					const initialDrawingState = drawContext.getImageData(
 						0,
 						0,
-						canvas.width,
-						canvas.height
+						width,
+						height
 					);
-					setDrawingHistory([initialState]);
+					setDrawingHistory([initialDrawingState]);
 					setHistoryIndex(0);
 				};
 				img.src = selectedImage;
 			}
 		}
-	}, [selectedImage]);
+	}, [selectedImage, activeTab]);
 
 	// Handle file upload
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,84 +182,95 @@ export function EnhancedPostModal({
 		setActiveTab("draw");
 	};
 
-	// Drawing functions
 	const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
-		if (!contextRef.current) return;
+		if (!drawCanvasRef.current) return;
 
-		const canvas = canvasRef.current;
-		if (!canvas) return;
+		const canvas = drawCanvasRef.current;
+		const context = canvas.getContext("2d");
+		if (!context) return;
 
 		const rect = canvas.getBoundingClientRect();
 		const x = (e.clientX - rect.left) * (canvas.width / rect.width);
 		const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
-		contextRef.current.beginPath();
-		contextRef.current.moveTo(x, y);
+		context.beginPath();
+		context.moveTo(x, y);
 
 		if (drawingMode === "brush") {
-			contextRef.current.strokeStyle = brushColor;
-			contextRef.current.lineWidth = brushSize;
-			contextRef.current.lineCap = "round";
+			context.globalCompositeOperation = "source-over";
+			context.strokeStyle = brushColor;
+			context.lineWidth = brushSize;
+			context.lineCap = "round";
 		} else if (drawingMode === "eraser") {
-			contextRef.current.strokeStyle = "#ffffff";
-			contextRef.current.lineWidth = brushSize;
-			contextRef.current.lineCap = "round";
+			// Use destination-out so it only clears drawing on the top layer
+			context.globalCompositeOperation = "destination-out";
+			context.lineWidth = brushSize;
+			context.lineCap = "round";
 		}
 
 		setIsDrawing(true);
 	};
 
 	const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-		if (!isDrawing || !contextRef.current || !canvasRef.current) return;
+		if (!isDrawing || !drawCanvasRef.current) return;
 
-		const canvas = canvasRef.current;
+		const canvas = drawCanvasRef.current;
+		const context = canvas.getContext("2d");
+		if (!context) return;
+
 		const rect = canvas.getBoundingClientRect();
 		const x = (e.clientX - rect.left) * (canvas.width / rect.width);
 		const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
-		contextRef.current.lineTo(x, y);
-		contextRef.current.stroke();
+		context.lineTo(x, y);
+		context.stroke();
 	};
 
 	const stopDrawing = () => {
-		if (!isDrawing || !contextRef.current || !canvasRef.current) return;
+		if (!isDrawing || !drawCanvasRef.current) return;
 
-		contextRef.current.closePath();
+		const canvas = drawCanvasRef.current;
+		const context = canvas.getContext("2d");
+		if (!context) return;
+
+		context.closePath();
 		setIsDrawing(false);
 
-		// Save current state to history
-		const canvas = canvasRef.current;
-		const currentState = contextRef.current.getImageData(
+		// Save the drawing canvas state to your history for undo/redo functionality
+		const currentState = context.getImageData(
 			0,
 			0,
 			canvas.width,
 			canvas.height
 		);
-
-		// Remove any states after current index (if we've undone and then drawn something new)
 		const newHistory = drawingHistory.slice(0, historyIndex + 1);
 		setDrawingHistory([...newHistory, currentState]);
 		setHistoryIndex(newHistory.length);
 	};
 
+	// Undo function: Restores the previous state
 	const undo = () => {
-		if (historyIndex > 0 && contextRef.current && canvasRef.current) {
-			setHistoryIndex(historyIndex - 1);
-			contextRef.current.putImageData(drawingHistory[historyIndex - 1], 0, 0);
+		if (historyIndex > 0 && drawCanvasRef.current) {
+			const newIndex = historyIndex - 1;
+			setHistoryIndex(newIndex);
+			const context = drawCanvasRef.current.getContext("2d");
+			if (context) {
+				context.putImageData(drawingHistory[newIndex], 0, 0);
+			}
 		}
 	};
 
+	// Redo function: Restores the next state if available
 	const redo = () => {
-		if (
-			historyIndex < drawingHistory.length - 1 &&
-			contextRef.current &&
-			canvasRef.current
-		) {
-			setHistoryIndex(historyIndex + 1);
-			contextRef.current.putImageData(drawingHistory[historyIndex + 1], 0, 0);
+		if (historyIndex < drawingHistory.length - 1 && drawCanvasRef.current) {
+			const newIndex = historyIndex + 1;
+			setHistoryIndex(newIndex);
+			const context = drawCanvasRef.current.getContext("2d");
+			if (context) {
+				context.putImageData(drawingHistory[newIndex], 0, 0);
+			}
 		}
 	};
-
 	// Handle post submission
 	const handleSubmit = () => {
 		if (!selectedImage) return;
@@ -252,6 +318,164 @@ export function EnhancedPostModal({
 		setCaption("");
 		setActiveTab("upload");
 		onClose();
+	};
+
+	const handleNext = () => {
+		const bgCanvas = bgCanvasRef.current;
+		const drawCanvas = drawCanvasRef.current;
+
+		if (!bgCanvas || !drawCanvas) return;
+		const offscreenCanvas = document.createElement("canvas");
+		offscreenCanvas.width = bgCanvas.width;
+		offscreenCanvas.height = bgCanvas.height;
+		const offscreenCtx = offscreenCanvas.getContext("2d");
+
+		if (offscreenCtx) {
+			// Draw the background layer first...
+			offscreenCtx.drawImage(bgCanvas, 0, 0);
+			// ...then the drawing layer on top
+			offscreenCtx.drawImage(drawCanvas, 0, 0);
+			// Store the combined result as a data URL
+			setCompositeDataUrl(offscreenCanvas.toDataURL("image/png"));
+		}
+	};
+
+	// Functions for Media URL
+	const getEmbedUrl = (
+		url: string
+	): {embedUrl: string | null; type: Platform} => {
+		// YouTube
+		if (url.includes("youtube.com") || url.includes("youtu.be")) {
+			const videoId = url.includes("youtube.com")
+				? url.split("v=")[1]?.split("&")[0]
+				: url.split("youtu.be/")[1]?.split("?")[0];
+			return {
+				embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : null,
+				type: "youtube",
+			};
+		}
+		// Spotify
+		else if (url.includes("spotify.com")) {
+			// Convert spotify URL to embed URL
+			if (
+				url.includes("/track/") ||
+				url.includes("/album/") ||
+				url.includes("/playlist/")
+			) {
+				const parts = url.split(".com/");
+				if (parts.length > 1) {
+					const path = parts[1];
+					return {
+						embedUrl: `https://open.spotify.com/embed/${path}`,
+						type: "spotify",
+					};
+				}
+			}
+			return {embedUrl: url, type: "spotify"};
+		} else if (url.includes("tiktok.com")) {
+			return {
+				embedUrl: url,
+				type: "tiktok",
+			};
+		}
+		// Other media types
+		return {embedUrl: url, type: "others"};
+	};
+
+	const handlePreview = async () => {
+		if (!mediaUrl) {
+			toast.warning("No Media URL found", {
+				description: "Please enter a valid URL",
+			});
+			return;
+		}
+
+		const {type} = getEmbedUrl(mediaUrl);
+
+		if (type === "tiktok") {
+			try {
+				const response = await fetch(
+					`https://www.tiktok.com/oembed?url=${mediaUrl}`
+				);
+				const data = await response.json();
+				if (data.html) {
+					setTiktokHtml(data.html);
+					setIsPreviewLoaded(true);
+
+					// Ensure TikTok script is loaded dynamically after setting the HTML
+					setTimeout(() => {
+						const script = document.createElement("script");
+						script.src = "https://www.tiktok.com/embed.js";
+						script.async = true;
+						document.body.appendChild(script);
+					}, 500);
+				} else {
+					toast.error("TikTok embed failed", {
+						description: "Could not fetch the TikTok embed.",
+					});
+				}
+			} catch (error) {
+				toast.error("TikTok fetch error", {
+					description: "Failed to fetch the TikTok embed URL.",
+				});
+				console.error("Error fetching TikTok embed:", error);
+			}
+		} else {
+			setIsPreviewLoaded(true);
+		}
+	};
+
+	const handleReset = () => {
+		setMediaUrl("");
+		setCaption("");
+		setIsPreviewLoaded(false);
+	};
+
+	const renderIframe = () => {
+		const {embedUrl, type} = getEmbedUrl(mediaUrl);
+		if (!embedUrl) return null;
+
+		switch (type) {
+			case "youtube":
+				return (
+					<iframe
+						src={embedUrl}
+						className="w-full h-full aspect-video"
+						allowFullScreen
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+					></iframe>
+				);
+			case "spotify":
+				return (
+					<iframe
+						className="border-r-[12px]"
+						src={embedUrl}
+						width="100%"
+						height="352"
+						frameBorder="0"
+						allowFullScreen
+						allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+						loading="lazy"
+					></iframe>
+				);
+			case "tiktok":
+				if (!tiktokHtml) return <p>Loading TikTok preview...</p>;
+				return (
+					<div className="w-full">
+						<div dangerouslySetInnerHTML={{__html: tiktokHtml}} />
+					</div>
+				);
+			default:
+				return (
+					<div className="p-4 text-center text-sm text-muted-foreground">
+						<p>Preview for {mediaUrl}</p>
+						<p className="mt-2">
+							(Non-YouTube/Spotify previews would be implemented based on
+							specific platform APIs)
+						</p>
+					</div>
+				);
+		}
 	};
 
 	return (
@@ -320,7 +544,7 @@ export function EnhancedPostModal({
 						<Tabs defaultValue="upload" className="w-full">
 							<TabsList className="grid w-full grid-cols-2">
 								<TabsTrigger value="upload">Upload</TabsTrigger>
-								<TabsTrigger value="camera">Camera</TabsTrigger>
+								<TabsTrigger value="embedlink">Embed Link</TabsTrigger>
 							</TabsList>
 
 							<TabsContent value="upload" className="mt-4">
@@ -332,22 +556,20 @@ export function EnhancedPostModal({
 										</div>
 										<div className="flex gap-2">
 											<Button
-												// as="label"
-												// htmlFor="file-upload"
 												variant="outline"
 												size="sm"
-												className="mt-2 cursor-pointer"
+												className="mt-2 cursor-pointer relative"
 											>
 												<Upload className="h-4 w-4 mr-2" />
 												Upload Image
 												<input
-													id="file-upload"
 													type="file"
 													accept="image/*"
-													className="hidden"
+													className="absolute inset-0 w-full h-full opacity-0"
 													onChange={handleFileUpload}
 												/>
 											</Button>
+
 											<Button
 												onClick={handleMockUpload}
 												variant="default"
@@ -361,23 +583,60 @@ export function EnhancedPostModal({
 								</div>
 							</TabsContent>
 
-							<TabsContent value="camera" className="mt-4">
+							<TabsContent value="embedlink" className="mt-4">
 								<div className="border-2 border-primary/20 rounded-md p-8 text-center bg-black/5">
-									<div className="flex flex-col items-center gap-3">
-										<Camera className="h-12 w-12 text-muted-foreground" />
-										<div className="text-sm text-muted-foreground">
-											Take a photo with your camera
+									<div className="space-y-2">
+										<Label htmlFor="url">Media URL</Label>
+										<div className="flex gap-2">
+											<Input
+												id="url"
+												placeholder="Paste YouTube, TikTok or other media URL"
+												value={mediaUrl}
+												onChange={(e) => setMediaUrl(e.target.value)}
+											/>
+											<Button
+												type="button"
+												variant="outline"
+												onClick={handlePreview}
+												disabled={!mediaUrl}
+											>
+												Preview
+											</Button>
 										</div>
-										<Button
-											variant="outline"
-											size="sm"
-											className="mt-2"
-											onClick={handleMockUpload}
-										>
-											<Camera className="h-4 w-4 mr-2" />
-											Simulate Camera
-										</Button>
 									</div>
+
+									{isPreviewLoaded && (
+										<div className="space-y-2 mt-4">
+											<div className="flex items-center justify-between">
+												<Label>Preview</Label>
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon"
+													onClick={handleReset}
+													className="h-6 w-6"
+												>
+													<X className="h-4 w-4" />
+												</Button>
+											</div>
+											<div className="rounded-md overflow-hidden border bg-muted">
+												{renderIframe()}
+											</div>
+										</div>
+									)}
+
+									{isPreviewLoaded && (
+										<div className="space-y-2 mt-4">
+											<Label htmlFor="caption">Caption</Label>
+											<Textarea
+												id="caption"
+												placeholder="Add a caption to your media..."
+												value={caption}
+												onChange={(e) => setCaption(e.target.value)}
+												rows={3}
+											/>
+										</div>
+									)}
 								</div>
 							</TabsContent>
 						</Tabs>
@@ -388,20 +647,31 @@ export function EnhancedPostModal({
 				{activeTab === "draw" && selectedImage && (
 					<div className="grid gap-4 md:grid-cols-[1fr_250px]">
 						{/* Canvas Area */}
-						<div className="relative border rounded-md overflow-hidden bg-white">
-							<div
-								className="relative w-full"
-								style={{maxHeight: "60vh", overflow: "auto"}}
-							>
-								<canvas
-									ref={canvasRef}
-									onMouseDown={startDrawing}
-									onMouseMove={draw}
-									onMouseUp={stopDrawing}
-									onMouseLeave={stopDrawing}
-									className="max-w-full h-auto"
-								/>
-							</div>
+						<div
+							className="relative border rounded-md overflow-hidden bg-white"
+							style={{
+								width: selectedImage
+									? drawCanvasRef.current?.width || 600
+									: "auto",
+								height: selectedImage
+									? drawCanvasRef.current?.height || 400
+									: "auto",
+							}}
+						>
+							<canvas
+								ref={bgCanvasRef}
+								className="absolute inset-0"
+								style={{zIndex: 0}}
+							/>
+							<canvas
+								ref={drawCanvasRef}
+								className="absolute inset-0"
+								style={{zIndex: 1}}
+								onMouseDown={startDrawing}
+								onMouseMove={draw}
+								onMouseUp={stopDrawing}
+								onMouseLeave={stopDrawing}
+							/>
 						</div>
 
 						{/* Drawing Tools */}
@@ -465,7 +735,7 @@ export function EnhancedPostModal({
 												className={`h-8 w-8 rounded-full ${
 													brushColor === color
 														? "ring-2 ring-offset-2 ring-primary"
-														: ""
+														: "ring-2 ring-offset-1 ring-gray-700"
 												}`}
 												style={{backgroundColor: color}}
 												onClick={() => setBrushColor(color)}
@@ -483,7 +753,13 @@ export function EnhancedPostModal({
 										<X className="h-4 w-4 mr-2" />
 										Cancel
 									</Button>
-									<Button size="sm" onClick={() => setActiveTab("details")}>
+									<Button
+										size="sm"
+										onClick={() => {
+											setActiveTab("details");
+											handleNext();
+										}}
+									>
 										<Check className="h-4 w-4 mr-2" />
 										Next
 									</Button>
@@ -497,21 +773,15 @@ export function EnhancedPostModal({
 				{activeTab === "details" && selectedImage && (
 					<div className="grid gap-6 md:grid-cols-[1fr_1fr]">
 						<div className="relative border rounded-md overflow-hidden bg-white">
-							{canvasRef.current ? (
-								<div
-									className="relative w-full"
-									style={{maxHeight: "60vh", overflow: "auto"}}
-								>
-									<canvas ref={canvasRef} className="max-w-full h-auto" />
-								</div>
-							) : (
-								<NextImage
-									src={selectedImage || "/placeholder.svg"}
-									alt="Preview"
-									width={600}
-									height={600}
+							{compositeDataUrl ? (
+								// eslint-disable-next-line @next/next/no-img-element
+								<img
+									src={compositeDataUrl}
+									alt="Combined Preview"
 									className="max-w-full h-auto"
 								/>
+							) : (
+								<p>Loading preview...</p>
 							)}
 						</div>
 

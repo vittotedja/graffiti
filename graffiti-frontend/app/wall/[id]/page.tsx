@@ -1,6 +1,6 @@
 "use client";
 import {useEffect, useState} from "react";
-import {Plus, Filter, ArrowUpDown} from "lucide-react";
+import {Plus, Filter, ArrowUpDown, Lock, Globe} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
 import {
@@ -150,7 +150,7 @@ export default function WallPage() {
 			<div className="container mx-auto px-4 py-8">
 				{/* Wall Title */}
 				<div className="mb-8">
-					<h1 className="text-4xl font-bold font-graffiti">Summer Wall 2024</h1>
+					<h1 className="text-5xl font-bold font-graffiti">Summer Wall 2024</h1>
 					<p className="text-muted-foreground mt-2">{posts.length} posts</p>
 				</div>
 
@@ -204,7 +204,18 @@ export default function WallPage() {
 							checked={isPrivate}
 							onCheckedChange={() => setIsPrivate(!isPrivate)}
 						/>
-						{isPrivate ? "Private" : "Public"}
+						{/* {isPrivate ? "Private" : "Public"} */}
+						{isPrivate ? (
+							<div className="flex gap-2 items-center">
+								<Lock className="h-4 w-4 text-primary" />
+								Private
+							</div>
+						) : (
+							<div className="flex gap-2 items-center">
+								<Globe className="h-4 w-4 text-primary" />
+								Public
+							</div>
+						)}
 					</div>
 				</div>
 
@@ -213,8 +224,9 @@ export default function WallPage() {
 
 				{/* Floating Add Post Button */}
 				<Button
-					className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
+					className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg cursor-pointer"
 					onClick={() => setCreatePostModalOpen(true)}
+					variant={"special"}
 				>
 					<Plus className="h-6 w-6" />
 				</Button>

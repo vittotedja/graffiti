@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {MoreVertical, Lock, Globe, Plus} from "lucide-react";
+import {MoreVertical, Lock, Globe, Plus, Pin} from "lucide-react";
 import {useState} from "react";
 
 import {Button} from "@/components/ui/button";
@@ -20,12 +20,54 @@ export function WallGrid() {
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
 	// Mock data for walls
 	const walls = [
-		{id: 1, title: "Birthday Wall", year: "2023", isPrivate: false, posts: 12},
-		{id: 2, title: "Graduation", year: "2022", isPrivate: true, posts: 8},
-		{id: 3, title: "Summer Trip", year: "2023", isPrivate: false, posts: 24},
-		{id: 4, title: "Art Projects", year: "2021", isPrivate: false, posts: 15},
-		{id: 5, title: "Family Reunion", year: "2022", isPrivate: true, posts: 18},
-		{id: 6, title: "Music Festival", year: "2023", isPrivate: false, posts: 9},
+		{
+			id: 1,
+			title: "Birthday Wall",
+			year: "2023",
+			isPrivate: false,
+			posts: 12,
+			isPinned: true,
+		},
+		{
+			id: 2,
+			title: "Graduation",
+			year: "2022",
+			isPrivate: true,
+			posts: 8,
+			isPinned: true,
+		},
+		{
+			id: 3,
+			title: "Summer Trip",
+			year: "2023",
+			isPrivate: false,
+			posts: 24,
+			isPinned: false,
+		},
+		{
+			id: 4,
+			title: "Art Projects",
+			year: "2021",
+			isPrivate: false,
+			posts: 15,
+			isPinned: false,
+		},
+		{
+			id: 5,
+			title: "Family Reunion",
+			year: "2022",
+			isPrivate: true,
+			posts: 18,
+			isPinned: false,
+		},
+		{
+			id: 6,
+			title: "Music Festival",
+			year: "2023",
+			isPrivate: false,
+			posts: 9,
+			isPinned: false,
+		},
 	];
 
 	return (
@@ -33,6 +75,11 @@ export function WallGrid() {
 			{walls.map((wall) => (
 				<Link href={`/wall/${wall.id}`} key={wall.id}>
 					<Card className="overflow-hidden border-2 border-primary/20 bg-background/80 backdrop-blur-sm hover:shadow-lg transition-all">
+						{wall.isPinned && (
+							<div className="absolute top-2 left-2 z-40 bg-black/35 p-1 rounded-full">
+								<Pin className="h-4 w-4 text-red-600 fill-red-600" />
+							</div>
+						)}
 						<CardContent className="p-0">
 							<div className="relative">
 								<Image
@@ -48,16 +95,20 @@ export function WallGrid() {
 											<Button
 												variant="ghost"
 												size="icon"
-												className="h-8 w-8 bg-black/30 text-white hover:bg-black/50 rounded-full"
+												className="h-8 w-8 bg-black/30 text-white hover:bg-black/50 rounded-full cursor-pointer"
 											>
 												<MoreVertical className="h-4 w-4" />
 											</Button>
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end">
-											<DropdownMenuItem>Edit Wall</DropdownMenuItem>
-											<DropdownMenuItem>Change Privacy</DropdownMenuItem>
+											<DropdownMenuItem className="cursor-pointer">
+												Edit Wall
+											</DropdownMenuItem>
+											<DropdownMenuItem className="cursor-pointer">
+												Change Privacy
+											</DropdownMenuItem>
 											<DropdownMenuSeparator />
-											<DropdownMenuItem className="text-destructive">
+											<DropdownMenuItem className="text-destructive cursor-pointer">
 												Delete Wall
 											</DropdownMenuItem>
 										</DropdownMenuContent>
