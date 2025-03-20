@@ -59,6 +59,7 @@ func TestGetUser(t *testing.T) {
 }
 
 // TestUpdateUserOnlyFullname tests updating only the fullname of a user
+// TODO: still buggy and  apply update to all field even if i only want to edit one field
 func TestUpdateUserOnlyFullname(t *testing.T) {
 	oldUser := createRandomUser(t)
 
