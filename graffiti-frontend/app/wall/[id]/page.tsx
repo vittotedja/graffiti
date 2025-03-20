@@ -207,12 +207,12 @@ export default function WallPage() {
 						{/* {isPrivate ? "Private" : "Public"} */}
 						{isPrivate ? (
 							<div className="flex gap-2 items-center">
-								<Lock className="h-4 w-4 text-white/80" />
+								<Lock className="h-4 w-4 text-primary" />
 								Private
 							</div>
 						) : (
 							<div className="flex gap-2 items-center">
-								<Globe className="h-4 w-4 text-white/80" />
+								<Globe className="h-4 w-4 text-primary" />
 								Public
 							</div>
 						)}

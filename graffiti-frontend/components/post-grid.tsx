@@ -50,7 +50,7 @@ function PostCard({post}: {post: Post}) {
 	};
 
 	return (
-		<Card className="overflow-hidden border border-border/40 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-colors shadow-amber-200">
+		<Card className="overflow-hidden border border-border/40 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-colors shadow-cyan-200">
 			<CardContent className="p-0">
 				{post.imageUrl && (
 					<div className="relative aspect-square">
