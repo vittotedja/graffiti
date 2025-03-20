@@ -29,8 +29,9 @@ ORDER BY id;
 
 -- name: UpdatePost :one
 UPDATE posts
-  set media_url = $2,
-  post_type = $3
+  set
+    media_url = COALESCE($2, media_url),
+    post_type = COALESCE($3, post_type)
 WHERE id = $1
 RETURNING *;
 

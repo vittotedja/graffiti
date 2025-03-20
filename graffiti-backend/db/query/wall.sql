@@ -22,8 +22,9 @@ ORDER BY id;
 
 -- name: UpdateWall :one
 UPDATE walls
-    set description = $2,
-    background_image = $3
+SET 
+    description = COALESCE($2, description),
+    background_image = COALESCE($3, background_image)
 WHERE id = $1
 RETURNING *;
 
@@ -35,12 +36,14 @@ WHERE id = $1;
 -- name: ArchiveWall :exec
 UPDATE walls
     set is_archived = true
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
 -- name: UnarchiveWall :exec
 UPDATE walls
     set is_archived = false
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
 -- name: PublicizeWall :one
 UPDATE walls

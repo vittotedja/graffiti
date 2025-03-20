@@ -31,10 +31,10 @@ type getUserResponse struct {
 }
 
 type updateUserRequest struct {
-	Username       string `json:"username" binding:"required"`
-	Fullname       string `json:"fullname" binding:"required"`
-	Email          string `json:"email" binding:"required"`
-	Password       string `json:"password" binding:"required"`
+	Username       *string `json:"username"`
+	Fullname       *string `json:"fullname"`
+	Email          *string `json:"email"`
+	Password       *string `json:"password"`
 }
 
 type updateProfileRequest struct {
@@ -183,6 +183,7 @@ func (server *Server) listUsers(ctx *gin.Context) {
 
 // updateUser handles updating a user's basic information
 func (server *Server) updateUser(ctx *gin.Context) {
+	// Extract the user ID from the URI
 	var idReq struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -191,12 +192,14 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
+	// Parse the request body
 	var req updateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
+	// Convert the ID to pgtype.UUID
 	var id pgtype.UUID
 	err := id.Scan(idReq.ID)
 	if err != nil {
@@ -204,16 +207,47 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
-	// Hash the password (you should implement password hashing)
-	hashedPassword := hashPassword(req.Password)
 
-	arg := db.UpdateUserParams{
-		ID:             id,
-		Username:       req.Username,
-		Fullname:       pgtype.Text{String: req.Fullname, Valid: true},
-		Email:          req.Email,
-		HashedPassword: hashedPassword,
+	// Fetch the current user data to retain non-nullable fields
+    currentUser, err := server.hub.GetUser(ctx, id)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+        return
+    }
+
+    // Prepare the UpdateUserParams struct
+    arg := db.UpdateUserParams{
+        ID:       id,
+        Username: currentUser.Username, // Default to current value
+        Fullname: currentUser.Fullname, // Default to current value
+        Email:    currentUser.Email, // Default to current value
+		HashedPassword: currentUser.HashedPassword, // Default to current value
+    }
+
+    // Update Username if provided
+    if req.Username != nil && *req.Username != "" {
+        arg.Username = *req.Username
+    }
+
+	// Update Fullname if provided
+	if req.Fullname != nil && *req.Fullname != "" {
+		arg.Fullname = pgtype.Text{String: *req.Fullname, Valid: true}
 	}
+
+    // Update Email if provided
+    if req.Email != nil && *req.Email != "" {
+        arg.Email = *req.Email
+    }
+
+    // Hash the password if it is provided
+    if req.Password != nil {
+        hashedPassword := hashPassword(*req.Password)
+        arg.HashedPassword = hashedPassword // Set the hashed password
+    } else {
+        // If no password is provided, pass the existing hashed password
+        arg.HashedPassword = currentUser.HashedPassword
+    }
+
 
 	user, err := server.hub.UpdateUser(ctx, arg)
 	if err != nil {
@@ -358,7 +392,10 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "user deleted"})
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":      id.String(),
+		"message": "User deleted successfully!",
+	})
 }
 
 // Helper function to hash passwords (you should implement a proper password hashing algorithm)

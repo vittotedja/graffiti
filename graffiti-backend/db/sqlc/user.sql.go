@@ -66,8 +66,9 @@ func (q *Queries) DeleteUser(ctx context.Context, id pgtype.UUID) error {
 
 const finishOnboarding = `-- name: FinishOnboarding :exec
 UPDATE users
-  set has_onboarded = true,
-  onboarding_at = now()
+SET 
+    has_onboarded = true,
+    onboarding_at = now()
 WHERE id = $1
 `
 
@@ -141,9 +142,10 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 
 const updateProfile = `-- name: UpdateProfile :one
 UPDATE users
-  set profile_picture = $2,
-  bio = $3,
-  background_image = $4
+SET 
+    profile_picture = COALESCE($2, profile_picture),
+    bio = COALESCE($3, bio),
+    background_image = COALESCE($4, background_image)
 WHERE id = $1
 RETURNING id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at
 `
@@ -182,10 +184,11 @@ func (q *Queries) UpdateProfile(ctx context.Context, arg UpdateProfileParams) (U
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-  set username = $2,
-  fullname = $3,
-  email = $4,
-  hashed_password = $5
+SET 
+    username = COALESCE($2, username),
+    fullname = COALESCE($3, fullname),
+    email = COALESCE($4, email),
+    hashed_password = COALESCE($5, hashed_password)
 WHERE id = $1
 RETURNING id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at
 `

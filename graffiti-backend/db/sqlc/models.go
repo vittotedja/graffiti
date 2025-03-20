@@ -14,10 +14,8 @@ import (
 type PostType string
 
 const (
-	PostTypeImage PostType = "image"
-	PostTypeVideo PostType = "video"
-	PostTypeText  PostType = "text"
-	PostTypeGif   PostType = "gif"
+	PostTypeMedia     PostType = "media"
+	PostTypeEmbedLink PostType = "embed_link"
 )
 
 func (e *PostType) Scan(src interface{}) error {

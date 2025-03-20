@@ -14,7 +14,7 @@ type createPostRequest struct {
 	WallID   string `json:"wall_id" binding:"required,uuid"`
 	Author   string `json:"author" binding:"required,uuid"`
 	MediaURL string `json:"media_url" binding:"required"`
-	PostType string `json:"post_type" binding:"required,oneof=image video text gif"`
+	PostType string `json:"post_type" binding:"required,oneof=media embed_link"`
 }
 
 type postResponse struct {
@@ -30,8 +30,8 @@ type postResponse struct {
 }
 
 type updatePostRequest struct {
-	MediaURL string `json:"media_url" binding:"required"`
-	PostType string `json:"post_type" binding:"required,oneof=image video text gif"`
+	MediaURL *string `json:"media_url"`
+	PostType *string `json:"post_type" binding:"oneof=media embed_link"`
 }
 
 // Convert DB post to API response
@@ -184,35 +184,53 @@ func (server *Server) getHighlightedPosts(ctx *gin.Context) {
 
 // UpdatePost handler
 func (server *Server) updatePost(ctx *gin.Context) {
+	// Extract the user ID from the URI
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
-
 	if err := ctx.ShouldBindUri(&uri); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
+	// Parse the request body
 	var req updatePostRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
+	// Convert the ID to pgtype.UUID
 	var id pgtype.UUID
 	err := id.Scan(uri.ID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-
-	postType := db.PostType(req.PostType)
 	
+	// Fetch the current post data to retain non-nullable fields
+    currentPost, err := server.hub.GetPost(ctx, id)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+        return
+    }
+
+	// Prepare the UpdatePostParams struct
 	arg := db.UpdatePostParams{
 		ID:       id,
-		MediaUrl: pgtype.Text{String: req.MediaURL, Valid: true},
-		PostType: db.NullPostType{PostType: postType, Valid: true},
+		MediaUrl: currentPost.MediaUrl,
+		PostType: currentPost.PostType,
 	}
+
+	 // Update the post if fields provided
+	 if req.MediaURL != nil {
+        arg.MediaUrl = pgtype.Text{String: *req.MediaURL, Valid: true}
+    }
+    
+    if req.PostType != nil {
+        postType := db.PostType(*req.PostType)
+        arg.PostType = db.NullPostType{PostType: postType, Valid: true}
+    }
 
 	post, err := server.hub.UpdatePost(ctx, arg)
 	if err != nil {

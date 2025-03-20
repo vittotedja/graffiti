@@ -241,8 +241,9 @@ func (q *Queries) ListPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Po
 
 const updatePost = `-- name: UpdatePost :one
 UPDATE posts
-  set media_url = $2,
-  post_type = $3
+  set
+    media_url = COALESCE($2, media_url),
+    post_type = COALESCE($3, post_type)
 WHERE id = $1
 RETURNING id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at
 `
