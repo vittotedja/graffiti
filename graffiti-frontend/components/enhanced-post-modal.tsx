@@ -39,6 +39,8 @@ interface EnhancedPostModalProps {
 	onPostCreated: (post: any) => void;
 }
 
+type Platform = "youtube" | "tiktok" | "spotify" | "others";
+
 export function EnhancedPostModal({
 	isOpen,
 	onClose,
@@ -59,6 +61,7 @@ export function EnhancedPostModal({
 
 	const [compositeDataUrl, setCompositeDataUrl] = useState<string | null>(null);
 	const [mediaUrl, setMediaUrl] = useState<string>("");
+	const [tiktokHtml, setTiktokHtml] = useState<string | null>(null);
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -338,36 +341,88 @@ export function EnhancedPostModal({
 	};
 
 	// Functions for Media URL
-	const getEmbedUrl = (url: string) => {
+	const getEmbedUrl = (
+		url: string
+	): {embedUrl: string | null; type: Platform} => {
 		// YouTube
 		if (url.includes("youtube.com") || url.includes("youtu.be")) {
 			const videoId = url.includes("youtube.com")
 				? url.split("v=")[1]?.split("&")[0]
 				: url.split("youtu.be/")[1]?.split("?")[0];
-			return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+			return {
+				embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : null,
+				type: "youtube",
+			};
 		}
-		// TikTok
-		else if (url.includes("tiktok.com")) {
-			// For TikTok, we'd normally use their embed API, but for demo purposes:
-			return url;
+		// Spotify
+		else if (url.includes("spotify.com")) {
+			// Convert spotify URL to embed URL
+			if (
+				url.includes("/track/") ||
+				url.includes("/album/") ||
+				url.includes("/playlist/")
+			) {
+				const parts = url.split(".com/");
+				if (parts.length > 1) {
+					const path = parts[1];
+					return {
+						embedUrl: `https://open.spotify.com/embed/${path}`,
+						type: "spotify",
+					};
+				}
+			}
+			return {embedUrl: url, type: "spotify"};
+		} else if (url.includes("tiktok.com")) {
+			return {
+				embedUrl: url,
+				type: "tiktok",
+			};
 		}
-		// Other media types could be added here
-		return url;
+		// Other media types
+		return {embedUrl: url, type: "others"};
 	};
 
-	const handlePreview = () => {
+	const handlePreview = async () => {
 		if (!mediaUrl) {
-			toast("Event has been created", {
-				description: "Sunday, December 03, 2023 at 9:00 AM",
-				action: {
-					label: "Undo",
-					onClick: () => console.log("Undo"),
-				},
+			toast.warning("No Media URL found", {
+				description: "Please enter a valid URL",
 			});
 			return;
 		}
 
-		setIsPreviewLoaded(true);
+		const {type} = getEmbedUrl(mediaUrl);
+
+		if (type === "tiktok") {
+			try {
+				const response = await fetch(
+					`https://www.tiktok.com/oembed?url=${mediaUrl}`
+				);
+				const data = await response.json();
+				if (data.html) {
+					setTiktokHtml(data.html);
+					setIsPreviewLoaded(true);
+
+					// Ensure TikTok script is loaded dynamically after setting the HTML
+					setTimeout(() => {
+						const script = document.createElement("script");
+						script.src = "https://www.tiktok.com/embed.js";
+						script.async = true;
+						document.body.appendChild(script);
+					}, 500);
+				} else {
+					toast.error("TikTok embed failed", {
+						description: "Could not fetch the TikTok embed.",
+					});
+				}
+			} catch (error) {
+				toast.error("TikTok fetch error", {
+					description: "Failed to fetch the TikTok embed URL.",
+				});
+				console.error("Error fetching TikTok embed:", error);
+			}
+		} else {
+			setIsPreviewLoaded(true);
+		}
 	};
 
 	const handleReset = () => {
@@ -376,9 +431,52 @@ export function EnhancedPostModal({
 		setIsPreviewLoaded(false);
 	};
 
-	const isYouTube =
-		mediaUrl.includes("youtube.com") || mediaUrl.includes("youtu.be");
-	const embedUrl = getEmbedUrl(mediaUrl);
+	const renderIframe = () => {
+		const {embedUrl, type} = getEmbedUrl(mediaUrl);
+		if (!embedUrl) return null;
+
+		switch (type) {
+			case "youtube":
+				return (
+					<iframe
+						src={embedUrl}
+						className="w-full h-full aspect-video"
+						allowFullScreen
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+					></iframe>
+				);
+			case "spotify":
+				return (
+					<iframe
+						className="border-r-[12px]"
+						src={embedUrl}
+						width="100%"
+						height="352"
+						frameBorder="0"
+						allowFullScreen
+						allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+						loading="lazy"
+					></iframe>
+				);
+			case "tiktok":
+				if (!tiktokHtml) return <p>Loading TikTok preview...</p>;
+				return (
+					<div className="w-full">
+						<div dangerouslySetInnerHTML={{__html: tiktokHtml}} />
+					</div>
+				);
+			default:
+				return (
+					<div className="p-4 text-center text-sm text-muted-foreground">
+						<p>Preview for {mediaUrl}</p>
+						<p className="mt-2">
+							(Non-YouTube/Spotify previews would be implemented based on
+							specific platform APIs)
+						</p>
+					</div>
+				);
+		}
+	};
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleClose}>
@@ -446,7 +544,7 @@ export function EnhancedPostModal({
 						<Tabs defaultValue="upload" className="w-full">
 							<TabsList className="grid w-full grid-cols-2">
 								<TabsTrigger value="upload">Upload</TabsTrigger>
-								<TabsTrigger value="camera">Embed Link</TabsTrigger>
+								<TabsTrigger value="embedlink">Embed Link</TabsTrigger>
 							</TabsList>
 
 							<TabsContent value="upload" className="mt-4">
@@ -485,79 +583,60 @@ export function EnhancedPostModal({
 								</div>
 							</TabsContent>
 
-							<TabsContent value="camera" className="mt-4">
+							<TabsContent value="embedlink" className="mt-4">
 								<div className="border-2 border-primary/20 rounded-md p-8 text-center bg-black/5">
-									<div className="flex flex-col items-center gap-3">
-										<div className="space-y-2">
-											<Label htmlFor="url">Media URL</Label>
-											<div className="flex gap-2">
-												<Input
-													id="url"
-													placeholder="Paste YouTube, TikTok or other media URL"
-													value={mediaUrl}
-													onChange={(e) => setMediaUrl(e.target.value)}
-												/>
+									<div className="space-y-2">
+										<Label htmlFor="url">Media URL</Label>
+										<div className="flex gap-2">
+											<Input
+												id="url"
+												placeholder="Paste YouTube, TikTok or other media URL"
+												value={mediaUrl}
+												onChange={(e) => setMediaUrl(e.target.value)}
+											/>
+											<Button
+												type="button"
+												variant="outline"
+												onClick={handlePreview}
+												disabled={!mediaUrl}
+											>
+												Preview
+											</Button>
+										</div>
+									</div>
+
+									{isPreviewLoaded && (
+										<div className="space-y-2 mt-4">
+											<div className="flex items-center justify-between">
+												<Label>Preview</Label>
 												<Button
 													type="button"
-													variant="outline"
-													onClick={handlePreview}
-													disabled={!mediaUrl}
+													variant="ghost"
+													size="icon"
+													onClick={handleReset}
+													className="h-6 w-6"
 												>
-													Preview
+													<X className="h-4 w-4" />
 												</Button>
 											</div>
+											<div className="rounded-md overflow-hidden border bg-muted">
+												{renderIframe()}
+											</div>
 										</div>
+									)}
 
-										{isPreviewLoaded && embedUrl && (
-											<div className="space-y-2">
-												<div className="flex items-center justify-between">
-													<Label>Preview</Label>
-													<Button
-														type="button"
-														variant="ghost"
-														size="icon"
-														onClick={handleReset}
-														className="h-6 w-6"
-													>
-														<X className="h-4 w-4" />
-													</Button>
-												</div>
-												<div className="rounded-md overflow-hidden border bg-muted">
-													{isYouTube ? (
-														<div className="aspect-video">
-															<iframe
-																src={embedUrl}
-																className="w-full h-full"
-																allowFullScreen
-																allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-															></iframe>
-														</div>
-													) : (
-														<div className="p-4 text-center text-sm text-muted-foreground">
-															<p>Preview for {mediaUrl}</p>
-															<p className="mt-2">
-																(Non-YouTube previews would be implemented based
-																on specific platform APIs)
-															</p>
-														</div>
-													)}
-												</div>
-											</div>
-										)}
-
-										{isPreviewLoaded && (
-											<div className="space-y-2">
-												<Label htmlFor="caption">Caption</Label>
-												<Textarea
-													id="caption"
-													placeholder="Add a caption to your media..."
-													value={caption}
-													onChange={(e) => setCaption(e.target.value)}
-													rows={3}
-												/>
-											</div>
-										)}
-									</div>
+									{isPreviewLoaded && (
+										<div className="space-y-2 mt-4">
+											<Label htmlFor="caption">Caption</Label>
+											<Textarea
+												id="caption"
+												placeholder="Add a caption to your media..."
+												value={caption}
+												onChange={(e) => setCaption(e.target.value)}
+												rows={3}
+											/>
+										</div>
+									)}
 								</div>
 							</TabsContent>
 						</Tabs>

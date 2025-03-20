@@ -31,7 +31,7 @@ export default function RootLayout({
 				<ThemeProvider defaultTheme="system" storageKey="streetwalls-theme">
 					<Navbar />
 					{children}
-					<Toaster />
+					<Toaster richColors />
 				</ThemeProvider>
 			</body>
 		</html>
