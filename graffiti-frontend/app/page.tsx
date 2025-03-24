@@ -37,6 +37,16 @@ export default function HomePage() {
 		setFabOpen(!fabOpen);
 	};
 
+	const fetchWallData = async () => {
+		const response = await fetch("http://localhost:8080/api/v1/walls");
+		const data = await response.json();
+		console.log(data);
+	};
+
+	useEffect(() => {
+		fetchWallData();
+	}, []);
+
 	return (
 		<div className="min-h-screen bg-[url('/images/concrete-texture.jpg')] bg-cover">
 			<div className="container mx-auto px-4 pb-20">

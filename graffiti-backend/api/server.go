@@ -3,49 +3,61 @@ package api
 import (
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
-	"github.com/gin-gonic/gin"
 )
 
 // Server serves HTTP requests
 type Server struct {
-	hub *db.Hub
+	hub    *db.Hub
 	router *gin.Engine // helps us send each API request to the correct handler for processing
 }
 
 // NewServer creates a new HTTP server and sets up all routes
-func NewServer (hub *db.Hub) *Server {
+func NewServer(hub *db.Hub) *Server {
 	server := &Server{hub: hub}
 	router := gin.Default()
 
+	// Apply CORS middleware
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // React app URL
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	// add routes to router
-	
+
 	// Set up routes for the user API
 	router.POST("/api/v1/users", server.createUser) // working
-	router.GET("api/v1/users/:id", server.getUser) // working
-	router.GET("/api/v1/users", server.listUsers) // working
-	router.PUT("/api/v1/users/:id", server.updateUser) 
-	router.DELETE("/api/v1/users/:id", server.deleteUser) // working, but maybe need to add id of the deleted item in the response
-	router.PUT("/api/v1/users/:id/profile", server.updateProfile)  // working, but need fixing so that i can just edit 1 field at a time, not having to fill all fields just to edit 1 field
+	router.GET("api/v1/users/:id", server.getUser)  // working
+	router.GET("/api/v1/users", server.listUsers)   // working
+	router.PUT("/api/v1/users/:id", server.updateUser)
+	router.DELETE("/api/v1/users/:id", server.deleteUser)         // working, but maybe need to add id of the deleted item in the response
+	router.PUT("/api/v1/users/:id/profile", server.updateProfile) // working, but need fixing so that i can just edit 1 field at a time, not having to fill all fields just to edit 1 field
 	router.PUT("/api/v1/users/:id/onboarding", server.finishOnboarding)
 
 	// Set up routes for the wall API
-	router.POST("/api/v1/walls", server.createWall) 
-	router.GET("/api/v1/walls/:id", server.getWall) // working
-	router.GET("/api/v1/walls", server.listWalls) // working
-	router.GET("/api/v1/users/:id/walls", server.listWallsByUser) // working
-	router.PUT("/api/v1/walls/:id", server.updateWall) // working
+	router.POST("/api/v1/walls", server.createWall)
+	router.GET("/api/v1/walls/:id", server.getWall)                 // working
+	router.GET("/api/v1/walls", server.listWalls)                   // working
+	router.GET("/api/v1/users/:id/walls", server.listWallsByUser)   // working
+	router.PUT("/api/v1/walls/:id", server.updateWall)              // working
 	router.PUT("/api/v1/walls/:id/publicize", server.publicizeWall) // working
 	router.PUT("/api/v1/walls/:id/privatize", server.privatizeWall) // working
-	router.PUT("/api/v1/walls/:id/archive", server.archiveWall) // need to add wall id and archive status
+	router.PUT("/api/v1/walls/:id/archive", server.archiveWall)     // need to add wall id and archive status
 	router.PUT("/api/v1/walls/:id/unarchive", server.unarchiveWall) // need to add wall id and archive status
-	router.DELETE("/api/v1/walls/:id", server.deleteWall) // working
+	router.DELETE("/api/v1/walls/:id", server.deleteWall)           // working
 
 	// Set up routes for the post API
 	router.POST("/api/v1/posts", server.createPost) // working
-	router.GET("/api/v1/posts/:id", server.getPost) // 
+	router.GET("/api/v1/posts/:id", server.getPost) //
 	router.GET("/api/v1/posts", server.listPosts)
 	router.GET("/api/v1/walls/:id/posts", server.listPostsByWall)
 	router.PUT("/api/v1/posts/:id", server.updatePost)
@@ -88,11 +100,11 @@ func parseUUID(s string) (uuid.UUID, error) {
 	if s == "" {
 		return uuid.Nil, errors.New("empty UUID string")
 	}
-	
+
 	id, err := uuid.Parse(s)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("invalid UUID format: %w", err)
 	}
-	
+
 	return id, nil
 }

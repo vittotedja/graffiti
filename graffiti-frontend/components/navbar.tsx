@@ -47,6 +47,8 @@ export function Navbar() {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
+	if (pathname.includes("/login")) return null;
+
 	return (
 		<header
 			className={`sticky top-0 z-50 w-full transition-all duration-200 ${
