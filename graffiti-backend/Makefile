@@ -22,5 +22,13 @@ test:
 server:
 	go run main.go
 
-.PHONY: postgres createdb dropdb sqlc test server migrateup migratedown
+rebuildbackend:
+	docker rm graffiti && \
+    docker rmi graffiti && \
+    docker build -t graffiti:latest .
+
+runbackend:
+	docker run --name graffiti -p 8080:8080 graffiti:latest
+
+.PHONY: postgres createdb dropdb sqlc test server migrateup migratedown rebuild
 
