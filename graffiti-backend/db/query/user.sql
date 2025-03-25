@@ -16,6 +16,9 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM users
 ORDER BY id;
 
+-- name: GetUserByEmail :one
+SELECT * FROM users
+WHERE email = $1 LIMIT 1;
 
 -- name: UpdateUser :one
 UPDATE users

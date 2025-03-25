@@ -5,14 +5,14 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
-	"github.com/vittotedja/graffiti/graffiti-backend/api"
 	_ "github.com/lib/pq"
+	"github.com/vittotedja/graffiti/graffiti-backend/api"
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 )
 
 const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret1234@localhost:5432/graffiti?sslmode=disable"
+	dbDriver      = "postgres"
+	dbSource      = "postgresql://root:secret1234@localhost:5432/graffiti?sslmode=disable"
 	serverAddress = "0.0.0.0:8080"
 )
 

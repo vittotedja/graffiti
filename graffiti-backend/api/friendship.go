@@ -1,8 +1,9 @@
 package api
 
 import (
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"net/http"
+
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -38,8 +39,8 @@ func (server *Server) createFriendship(ctx *gin.Context) {
 	}
 
 	arg := db.CreateFriendshipParams{
-		UserID:   userID,
-		FriendID: friendID,
+		FromUser: userID,
+		ToUser:   friendID,
 		Status:   db.NullStatus{Status: db.Status(req.Status), Valid: true},
 	}
 

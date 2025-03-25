@@ -1,7 +1,7 @@
 -- name: CreateFriendship :one
 INSERT INTO friendships(
- user_id,
- friend_id,
+ from_user,
+ to_user,
  status
 ) VALUES (
   $1, $2, $3
@@ -17,11 +17,11 @@ ORDER BY id;
 
 -- name: GetNumberOfFriends :one
 SELECT COUNT(*) FROM friendships
-WHERE user_id = $1 AND status = 'accepted';
+WHERE from_user = $1 AND status = 'accepted';
 
 -- name: GetNumberOfPendingFriendRequests :one
 SELECT COUNT(*) FROM friendships
-WHERE friend_id = $1 AND status = 'pending';
+WHERE from_user = $1 AND status = 'pending';
 
 -- name: UpdateFriendship :one
 UPDATE friendships

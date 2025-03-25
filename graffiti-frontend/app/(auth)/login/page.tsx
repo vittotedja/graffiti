@@ -12,6 +12,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {toast} from "sonner";
 
 export default function Home() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +42,7 @@ export default function Home() {
 			confirmPassword === ""
 		) {
 			alert("Please fill in all fields");
+			return;
 		}
 
 		if (!email.includes("@")) {
@@ -60,7 +62,11 @@ export default function Home() {
 
 		try {
 			setIsLoading(true);
-			const res = await fetch("http://localhost:8080/api/v1/users", {
+			console.log(
+				"Sending:",
+				JSON.stringify({username, fullname, email, password})
+			);
+			const res = await fetch("http://localhost:8080/api/v1/auth/register", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -69,14 +75,16 @@ export default function Home() {
 			});
 
 			const data = await res.json();
+			console.log(data);
 
 			if (!res.ok) {
 				throw new Error(data.message || "Registration failed");
 			}
-
-			alert("Registration successful!");
+			toast.success("Registration successful!");
 		} catch (err) {
-			alert((err as Error).message);
+			toast.warning("Something wrong happened", {
+				description: (err as Error).message,
+			});
 		} finally {
 			setIsLoading(false);
 		}

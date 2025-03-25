@@ -20,6 +20,7 @@ type Server struct {
 // NewServer creates a new HTTP server and sets up all routes
 func NewServer(hub *db.Hub) *Server {
 	server := &Server{hub: hub}
+	gin.SetMode(gin.DebugMode)
 	router := gin.Default()
 
 	// Apply CORS middleware
@@ -33,6 +34,10 @@ func NewServer(hub *db.Hub) *Server {
 	}))
 
 	// add routes to router
+
+	//Set up routes for Auth
+	router.POST("/api/v1/auth/register", server.Register)
+	router.POST("/api/v1/auth/login", server.Login)
 
 	// Set up routes for the user API
 	router.POST("/api/v1/users", server.createUser) // working

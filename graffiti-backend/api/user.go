@@ -1,21 +1,21 @@
 package api
 
 import (
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"net/http"
 	"time"
+
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type createUserRequest struct {
-	Username       string `json:"username" binding:"required"`
-	Fullname       string `json:"fullname" binding:"required"`
-	Email          string `json:"email" binding:"required"`
-	Password       string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required"`
+	Fullname string `json:"fullname" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
-
 type getUserResponse struct {
 	ID              string `json:"id"`
 	Username        string `json:"username"`
@@ -31,10 +31,10 @@ type getUserResponse struct {
 }
 
 type updateUserRequest struct {
-	Username       *string `json:"username"`
-	Fullname       *string `json:"fullname"`
-	Email          *string `json:"email"`
-	Password       *string `json:"password"`
+	Username *string `json:"username"`
+	Fullname *string `json:"fullname"`
+	Email    *string `json:"email"`
+	Password *string `json:"password"`
 }
 
 type updateProfileRequest struct {
@@ -207,47 +207,45 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
-
 	// Fetch the current user data to retain non-nullable fields
-    currentUser, err := server.hub.GetUser(ctx, id)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-        return
-    }
+	currentUser, err := server.hub.GetUser(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 
-    // Prepare the UpdateUserParams struct
-    arg := db.UpdateUserParams{
-        ID:       id,
-        Username: currentUser.Username, // Default to current value
-        Fullname: currentUser.Fullname, // Default to current value
-        Email:    currentUser.Email, // Default to current value
+	// Prepare the UpdateUserParams struct
+	arg := db.UpdateUserParams{
+		ID:             id,
+		Username:       currentUser.Username,       // Default to current value
+		Fullname:       currentUser.Fullname,       // Default to current value
+		Email:          currentUser.Email,          // Default to current value
 		HashedPassword: currentUser.HashedPassword, // Default to current value
-    }
+	}
 
-    // Update Username if provided
-    if req.Username != nil && *req.Username != "" {
-        arg.Username = *req.Username
-    }
+	// Update Username if provided
+	if req.Username != nil && *req.Username != "" {
+		arg.Username = *req.Username
+	}
 
 	// Update Fullname if provided
 	if req.Fullname != nil && *req.Fullname != "" {
 		arg.Fullname = pgtype.Text{String: *req.Fullname, Valid: true}
 	}
 
-    // Update Email if provided
-    if req.Email != nil && *req.Email != "" {
-        arg.Email = *req.Email
-    }
+	// Update Email if provided
+	if req.Email != nil && *req.Email != "" {
+		arg.Email = *req.Email
+	}
 
-    // Hash the password if it is provided
-    if req.Password != nil {
-        hashedPassword := hashPassword(*req.Password)
-        arg.HashedPassword = hashedPassword // Set the hashed password
-    } else {
-        // If no password is provided, pass the existing hashed password
-        arg.HashedPassword = currentUser.HashedPassword
-    }
-
+	// Hash the password if it is provided
+	if req.Password != nil {
+		hashedPassword := hashPassword(*req.Password)
+		arg.HashedPassword = hashedPassword // Set the hashed password
+	} else {
+		// If no password is provided, pass the existing hashed password
+		arg.HashedPassword = currentUser.HashedPassword
+	}
 
 	user, err := server.hub.UpdateUser(ctx, arg)
 	if err != nil {

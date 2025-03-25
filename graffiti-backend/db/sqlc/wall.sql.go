@@ -15,7 +15,7 @@ const archiveWall = `-- name: ArchiveWall :exec
 UPDATE walls
     set is_archived = true
 WHERE id = $1
-RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
 func (q *Queries) ArchiveWall(ctx context.Context, id pgtype.UUID) error {
@@ -30,7 +30,7 @@ INSERT INTO walls(
     background_image
 ) VALUES (
     $1, $2, $3
-) RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+) RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
 type CreateWallParams struct {
@@ -45,6 +45,7 @@ func (q *Queries) CreateWall(ctx context.Context, arg CreateWallParams) (Wall, e
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.Title,
 		&i.Description,
 		&i.BackgroundImage,
 		&i.IsPublic,
@@ -69,7 +70,7 @@ func (q *Queries) DeleteWall(ctx context.Context, id pgtype.UUID) error {
 }
 
 const getWall = `-- name: GetWall :one
-SELECT id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
+SELECT id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
 WHERE id = $1 LIMIT 1
 `
 
@@ -79,6 +80,7 @@ func (q *Queries) GetWall(ctx context.Context, id pgtype.UUID) (Wall, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.Title,
 		&i.Description,
 		&i.BackgroundImage,
 		&i.IsPublic,
@@ -92,7 +94,7 @@ func (q *Queries) GetWall(ctx context.Context, id pgtype.UUID) (Wall, error) {
 }
 
 const listWalls = `-- name: ListWalls :many
-SELECT id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
+SELECT id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
 ORDER BY id DESC
 `
 
@@ -108,6 +110,7 @@ func (q *Queries) ListWalls(ctx context.Context) ([]Wall, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
+			&i.Title,
 			&i.Description,
 			&i.BackgroundImage,
 			&i.IsPublic,
@@ -128,7 +131,7 @@ func (q *Queries) ListWalls(ctx context.Context) ([]Wall, error) {
 }
 
 const listWallsByUser = `-- name: ListWallsByUser :many
-SELECT id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
+SELECT id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at FROM walls
 WHERE user_id = $1
 ORDER BY id
 `
@@ -145,6 +148,7 @@ func (q *Queries) ListWallsByUser(ctx context.Context, userID pgtype.UUID) ([]Wa
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
+			&i.Title,
 			&i.Description,
 			&i.BackgroundImage,
 			&i.IsPublic,
@@ -168,7 +172,7 @@ const privatizeWall = `-- name: PrivatizeWall :one
 UPDATE walls
     set is_public = false
 WHERE id = $1
-RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
 func (q *Queries) PrivatizeWall(ctx context.Context, id pgtype.UUID) (Wall, error) {
@@ -177,6 +181,7 @@ func (q *Queries) PrivatizeWall(ctx context.Context, id pgtype.UUID) (Wall, erro
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.Title,
 		&i.Description,
 		&i.BackgroundImage,
 		&i.IsPublic,
@@ -193,7 +198,7 @@ const publicizeWall = `-- name: PublicizeWall :one
 UPDATE walls
     set is_public = true
 WHERE id = $1
-RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
 func (q *Queries) PublicizeWall(ctx context.Context, id pgtype.UUID) (Wall, error) {
@@ -202,6 +207,7 @@ func (q *Queries) PublicizeWall(ctx context.Context, id pgtype.UUID) (Wall, erro
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.Title,
 		&i.Description,
 		&i.BackgroundImage,
 		&i.IsPublic,
@@ -218,7 +224,7 @@ const unarchiveWall = `-- name: UnarchiveWall :exec
 UPDATE walls
     set is_archived = false
 WHERE id = $1
-RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
 func (q *Queries) UnarchiveWall(ctx context.Context, id pgtype.UUID) error {
@@ -232,7 +238,7 @@ SET
     description = COALESCE($2, description),
     background_image = COALESCE($3, background_image)
 WHERE id = $1
-RETURNING id, user_id, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
 type UpdateWallParams struct {
@@ -247,6 +253,7 @@ func (q *Queries) UpdateWall(ctx context.Context, arg UpdateWallParams) (Wall, e
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.Title,
 		&i.Description,
 		&i.BackgroundImage,
 		&i.IsPublic,
