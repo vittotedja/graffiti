@@ -1,0 +1,16 @@
+name: graffitiapp
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret1234
+      - POSTGRES_DB=graffiti
+  api:
+    build: 
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SOURCE=postgresql://root:secret1234@postgres:5432/graffiti?sslmode=disable #change this for prod later, Wait ini perlu compose ga si artinya since we only need the api app lowkey
