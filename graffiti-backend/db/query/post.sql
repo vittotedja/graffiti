@@ -26,6 +26,10 @@ SELECT * FROM posts
 WHERE is_highlighted = true
 ORDER BY id;
 
+-- name: GetHighlightedPostsByWall :many
+SELECT * FROM posts
+WHERE wall_id = $1 AND is_highlighted = true
+ORDER BY id;
 
 -- name: UpdatePost :one
 UPDATE posts
@@ -38,6 +42,12 @@ RETURNING *;
 -- name: HighlightPost :one
 UPDATE posts
   set is_highlighted = true
+WHERE id = $1
+RETURNING *;
+
+-- name: UnhighlightPost :one
+UPDATE posts
+  set is_highlighted = false
 WHERE id = $1
 RETURNING *;
 
