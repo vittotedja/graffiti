@@ -3,32 +3,37 @@ package api
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+	"github.com/vittotedja/graffiti/graffiti-backend/token"
 )
 
 // Server serves HTTP requests
 type Server struct {
-	hub    *db.Hub
-	router *gin.Engine // helps us send each API request to the correct handler for processing
+	hub        *db.Hub
+	router     *gin.Engine // helps us send each API request to the correct handler for processing
+	tokenMaker token.Maker
 }
 
 // NewServer creates a new HTTP server and sets up all routes
 func NewServer(hub *db.Hub) *Server {
-	server := &Server{hub: hub}
-	gin.SetMode(gin.DebugMode)
+	tokenMaker, err := token.NewJWTMaker("veryverysecretkey")
+	if err != nil {
+		log.Fatal("cannot create token maker", err)
+	}
+	server := &Server{hub: hub, tokenMaker: tokenMaker}
 	router := gin.Default()
 
 	// Apply CORS middleware
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // React app URL
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowOrigins:     []string{"http://localhost:3000"}, // frontend URL
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -38,6 +43,7 @@ func NewServer(hub *db.Hub) *Server {
 	//Set up routes for Auth
 	router.POST("/api/v1/auth/register", server.Register)
 	router.POST("/api/v1/auth/login", server.Login)
+	router.POST("/api/v1/auth/me", server.Me)
 
 	// Set up routes for the user API
 	router.POST("/api/v1/users", server.createUser) // working

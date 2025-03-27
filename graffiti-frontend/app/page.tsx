@@ -10,8 +10,11 @@ import {CreateWallModal} from "@/components/create-wall-modal";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 import {cn} from "@/lib/utils";
+import {fetchWithAuth} from "@/lib/auth";
+import {useUser} from "@/hooks/useUser";
 
 export default function HomePage() {
+	const {user, loading} = useUser();
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
 	const [fabOpen, setFabOpen] = useState(false);
 
@@ -38,14 +41,25 @@ export default function HomePage() {
 	};
 
 	const fetchWallData = async () => {
-		const response = await fetch("http://localhost:8080/api/v1/walls");
-		const data = await response.json();
-		console.log(data);
+		try {
+			const response = await fetchWithAuth(
+				"http://localhost:8080/api/v1/walls"
+			);
+			if (!response) return; // already redirected if 401
+
+			const data = await response.json();
+			console.log("Wall data:", data);
+		} catch (err) {
+			console.error("Failed to fetch wall data:", err);
+		}
 	};
 
 	useEffect(() => {
 		fetchWallData();
 	}, []);
+
+	if (loading) return <p>Loading...</p>;
+	if (!user) return <p>Not logged in</p>;
 
 	return (
 		<div className="min-h-screen bg-[url('/images/concrete-texture.jpg')] bg-cover">

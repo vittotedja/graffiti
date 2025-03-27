@@ -3,13 +3,13 @@ package api
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
-	"github.com/vittotedja/graffiti/graffiti-backend/token"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 )
 
@@ -23,11 +23,6 @@ type registerRequest struct {
 type loginRequest struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
-}
-
-type loginResponse struct {
-	Token string  `json:"token"`
-	User  db.User `json:"user"`
 }
 
 func (server *Server) Register(ctx *gin.Context) {
@@ -88,44 +83,66 @@ func (server *Server) Register(ctx *gin.Context) {
 func (server *Server) Login(ctx *gin.Context) {
 	var req loginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, errorResponse(err))
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	//check if user exists already
 	user, err := server.hub.GetUserByEmail(ctx, req.Email)
-
 	if err != nil {
-		ctx.JSON(500, errorResponse(err))
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	//check password
-	err = util.CheckPassword(req.Password, user.HashedPassword)
-	if err != nil {
-		ctx.JSON(400, errors.New("invalid password"))
+	if err := util.CheckPassword(req.Password, user.HashedPassword); err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	// create token
-	maker, err := token.NewJWTMaker("veryverysecretkey")
+	token, _, err := server.tokenMaker.CreateToken(user.Username, time.Hour)
 	if err != nil {
-		ctx.JSON(500, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	token, _, err := maker.CreateToken(user.Username, time.Hour)
+	ctx.SetCookie("token", token, 3600*72, "", "", false, true)
 
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "login successful",
+		"user":    user,
+	})
+}
+
+func (server *Server) Me(ctx *gin.Context) {
+	token, err := ctx.Cookie("token")
 	if err != nil {
-		ctx.JSON(500, errorResponse(err))
+		log.Println(err)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
-	resp := loginResponse{
-		Token: token,
-		User:  user,
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unathorized"})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, resp)
+	user, err := server.hub.GetUserByUsername(ctx, payload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+		return
+	}
 
+	resp := getUserResponse{
+		ID:           user.ID.String(),
+		Username:     user.Username,
+		Fullname:     user.Fullname.String,
+		Email:        user.Email,
+		HasOnboarded: user.HasOnboarded.Bool,
+		CreatedAt:    user.CreatedAt.Time.Format(time.RFC3339),
+		UpdatedAt:    user.UpdatedAt.Time.Format(time.RFC3339),
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"user": resp,
+	})
 }

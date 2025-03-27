@@ -13,8 +13,10 @@ import {
 } from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {toast} from "sonner";
+import {useRouter} from "next/navigation";
 
-export default function Home() {
+export default function Login() {
+	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [registerData, setRegisterData] = useState({
 		username: "",
@@ -23,12 +25,49 @@ export default function Home() {
 		password: "",
 		confirmPassword: "",
 	});
+	const [loginData, setLoginData] = useState({
+		email: "",
+		password: "",
+	});
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setIsLoading(true);
-		// Add authentication logic here
-		setTimeout(() => setIsLoading(false), 1000);
+		const {email, password} = loginData;
+		if (email === "" || password === "") {
+			alert("Please fill in all fields");
+			setIsLoading(false);
+			return;
+		}
+
+		try {
+			const res = await fetch("http://localhost:8080/api/v1/auth/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({email, password}),
+				credentials: "include",
+			});
+
+			const data = await res.json();
+
+			if (!res.ok) {
+				throw new Error(data.message || "Login failed");
+			}
+			toast.success("Login successful!");
+			router.push("/");
+		} catch (err) {
+			toast.warning("Something wrong happened", {
+				description: (err as Error).message,
+			});
+		} finally {
+			setIsLoading(false);
+			setLoginData({
+				email: "",
+				password: "",
+			});
+		}
 	};
 
 	const handleRegister = async (e: React.FormEvent) => {
@@ -75,7 +114,6 @@ export default function Home() {
 			});
 
 			const data = await res.json();
-			console.log(data);
 
 			if (!res.ok) {
 				throw new Error(data.message || "Registration failed");
@@ -87,6 +125,13 @@ export default function Home() {
 			});
 		} finally {
 			setIsLoading(false);
+			setRegisterData({
+				username: "",
+				fullname: "",
+				email: "",
+				password: "",
+				confirmPassword: "",
+			});
 		}
 	};
 
@@ -123,10 +168,32 @@ export default function Home() {
 							</TabsList>
 
 							<TabsContent value="login">
-								<form onSubmit={handleSubmit}>
+								<form onSubmit={handleLogin} className="text-black">
 									<div className="space-y-4">
-										<Input type="email" placeholder="Email" required />
-										<Input type="password" placeholder="Password" required />
+										<Input
+											type="email"
+											placeholder="Email"
+											required
+											value={loginData.email}
+											onChange={(e) => {
+												setLoginData({
+													...loginData,
+													email: e.target.value,
+												});
+											}}
+										/>
+										<Input
+											type="password"
+											placeholder="Password"
+											required
+											value={loginData.password}
+											onChange={(e) => {
+												setLoginData({
+													...loginData,
+													password: e.target.value,
+												});
+											}}
+										/>
 										<Button
 											variant={"special"}
 											className="w-full"
