@@ -45,19 +45,13 @@ jobs:
         curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.2/migrate.linux-amd64.tar.gz | tar xvz
         sudo mv migrate /usr/bin/migrate
         which migrate 
-    
-    - name: Change directory to graffiti-backend
-      run: |
-        cd graffiti-backend
-        
-    - name: Print debug statements
-      run: |
-        ls -l -a
-        cat Makefile
-        pwd
 
     - name: Run migrations
-      run: make migrateup
+      run: |
+        cd graffiti-backend
+        make migrateup
 
     - name: Test
-      run: GOFLAGS=-mod=mod make test
+      run: |
+        cd graffiti-backend 
+        GOFLAGS=-mod=mod make test
