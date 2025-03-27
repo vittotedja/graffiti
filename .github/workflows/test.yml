@@ -49,6 +49,7 @@ jobs:
     - name: Change directory to graffiti-backend
       run: |
         cd graffiti-backend
+        ls -l -a
         pwd
 
     - name: Run migrations
