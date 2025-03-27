@@ -49,6 +49,9 @@ jobs:
     - name: Change directory to graffiti-backend
       run: |
         cd graffiti-backend
+        
+    - name: Print debug statements
+      run: |
         ls -l -a
         cat Makefile
         pwd
