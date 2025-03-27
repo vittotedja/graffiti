@@ -31,6 +31,12 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      ENV: devlocal
+      DB_DRIVER: postgres
+      DB_SOURCE: postgresql://root:secret1234@localhost:5432/graffiti?sslmode=disable
+      SERVER_ADDRESS: 0.0.0.0:8080
+
     steps:
     - uses: actions/checkout@v4
 
