@@ -50,6 +50,7 @@ jobs:
       run: |
         cd graffiti-backend
         ls -l -a
+        cat Makefile
         pwd
 
     - name: Run migrations
