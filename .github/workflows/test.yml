@@ -47,7 +47,9 @@ jobs:
         which migrate 
     
     - name: Change directory to graffiti-backend
-      run: cd graffiti-backend
+      run: |
+        cd graffiti-backend
+        pwd
 
     - name: Run migrations
       run: make migrateup
