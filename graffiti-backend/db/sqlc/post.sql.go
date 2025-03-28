@@ -122,6 +122,42 @@ func (q *Queries) GetHighlightedPosts(ctx context.Context) ([]Post, error) {
 	return items, nil
 }
 
+const getHighlightedPostsByWall = `-- name: GetHighlightedPostsByWall :many
+SELECT id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at FROM posts
+WHERE wall_id = $1 AND is_highlighted = true
+ORDER BY id
+`
+
+func (q *Queries) GetHighlightedPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Post, error) {
+	rows, err := q.db.Query(ctx, getHighlightedPostsByWall, wallID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.WallID,
+			&i.Author,
+			&i.MediaUrl,
+			&i.PostType,
+			&i.IsHighlighted,
+			&i.LikesCount,
+			&i.IsDeleted,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPost = `-- name: GetPost :one
 SELECT id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at FROM posts
 WHERE id = $1 LIMIT 1
@@ -292,6 +328,30 @@ func (q *Queries) ListPostsByWallWithAuthorsDetails(ctx context.Context, wallID 
 		return nil, err
 	}
 	return items, nil
+}
+
+const unhighlightPost = `-- name: UnhighlightPost :one
+UPDATE posts
+  set is_highlighted = false
+WHERE id = $1
+RETURNING id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at
+`
+
+func (q *Queries) UnhighlightPost(ctx context.Context, id pgtype.UUID) (Post, error) {
+	row := q.db.QueryRow(ctx, unhighlightPost, id)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.WallID,
+		&i.Author,
+		&i.MediaUrl,
+		&i.PostType,
+		&i.IsHighlighted,
+		&i.LikesCount,
+		&i.IsDeleted,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const updatePost = `-- name: UpdatePost :one
