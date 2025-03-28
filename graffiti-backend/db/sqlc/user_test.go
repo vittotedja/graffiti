@@ -170,7 +170,6 @@ func TestUpdateUserPartialFields(t *testing.T) {
 			oldUser := createRandomUser(t)
 			
 			updateParams := tc.updateFunction(oldUser)
-			fmt.Println(updateParams)
 			updatedUser, err := testHub.UpdateUser(context.Background(), updateParams)
 			
 			require.NoError(t, err, "Should update %s successfully", tc.updateField)
