@@ -10,8 +10,8 @@ import {CreateWallModal} from "@/components/create-wall-modal";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 import {cn} from "@/lib/utils";
-import {fetchWithAuth} from "@/lib/auth";
 import {useUser} from "@/hooks/useUser";
+import {formatFullName} from "@/lib/formatter";
 
 export default function HomePage() {
 	const {user, loading} = useUser();
@@ -39,24 +39,6 @@ export default function HomePage() {
 	const toggleFab = () => {
 		setFabOpen(!fabOpen);
 	};
-
-	const fetchWallData = async () => {
-		try {
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v1/walls"
-			);
-			if (!response) return; // already redirected if 401
-
-			const data = await response.json();
-			console.log("Wall data:", data);
-		} catch (err) {
-			console.error("Failed to fetch wall data:", err);
-		}
-	};
-
-	useEffect(() => {
-		fetchWallData();
-	}, []);
 
 	if (loading) return <p>Loading...</p>;
 	if (!user) return <p>Not logged in</p>;
@@ -86,11 +68,16 @@ export default function HomePage() {
 										src="/placeholder.svg?height=96&width=96"
 										alt="User Avatar"
 									/>
-									<AvatarFallback>UN</AvatarFallback>
+									<AvatarFallback>
+										{formatFullName(user.fullname)}
+									</AvatarFallback>
 								</Avatar>
 								<div className="mb-1 md:mb-2">
 									<h2 className="text-2xl md:text-3xl font-bold text-white font-graffiti">
-										@JohnDoe
+										{user.fullname}
+									</h2>
+									<h2 className="text-md md:text-md font-medium text-white/55 font-graffiti">
+										@{user.username}
 									</h2>
 								</div>
 							</div>
@@ -189,11 +176,6 @@ export default function HomePage() {
 			<CreateWallModal
 				isOpen={createWallModalOpen}
 				onClose={() => setCreateWallModalOpen(false)}
-				onCreateWall={(data) => {
-					console.log("Creating wall:", data);
-					// Here you would typically call an API to create the wall
-					setCreateWallModalOpen(false);
-				}}
 			/>
 		</div>
 	);

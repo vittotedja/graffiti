@@ -23,6 +23,48 @@ func (q *Queries) ArchiveWall(ctx context.Context, id pgtype.UUID) error {
 	return err
 }
 
+const createTestWall = `-- name: CreateTestWall :one
+INSERT INTO walls(
+    user_id,
+    title,
+    description,
+    is_public
+) VALUES (
+    $1, $2, $3, $4
+) RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
+`
+
+type CreateTestWallParams struct {
+	UserID      pgtype.UUID
+	Title       string
+	Description pgtype.Text
+	IsPublic    pgtype.Bool
+}
+
+func (q *Queries) CreateTestWall(ctx context.Context, arg CreateTestWallParams) (Wall, error) {
+	row := q.db.QueryRow(ctx, createTestWall,
+		arg.UserID,
+		arg.Title,
+		arg.Description,
+		arg.IsPublic,
+	)
+	var i Wall
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Title,
+		&i.Description,
+		&i.BackgroundImage,
+		&i.IsPublic,
+		&i.IsArchived,
+		&i.IsDeleted,
+		&i.PopularityScore,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createWall = `-- name: CreateWall :one
 INSERT INTO walls(
     user_id,

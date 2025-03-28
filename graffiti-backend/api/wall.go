@@ -1,9 +1,11 @@
 package api
 
 import (
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+	"log"
 	"net/http"
 	"time"
+
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -16,9 +18,16 @@ type createWallRequest struct {
 	BackgroundImage string `json:"background_image"`
 }
 
+type createTestWallRequest struct {
+	Title           string `json:"title"`
+	Description     string `json:"description"`
+	BackgroundImage string `json:"background_image"`
+	IsPublic        bool   `json:"is_public"`
+}
 type wallResponse struct {
 	ID              string    `json:"id"`
 	UserID          string    `json:"user_id"`
+	Title           string    `json:"title"`
 	Description     string    `json:"description,omitempty"`
 	BackgroundImage string    `json:"background_image,omitempty"`
 	IsPublic        bool      `json:"is_public"`
@@ -39,6 +48,7 @@ func newWallResponse(wall db.Wall) wallResponse {
 	return wallResponse{
 		ID:              wall.ID.String(),
 		UserID:          wall.UserID.String(),
+		Title:           wall.Title,
 		Description:     wall.Description.String,
 		BackgroundImage: wall.BackgroundImage.String,
 		IsPublic:        wall.IsPublic.Bool,
@@ -72,6 +82,51 @@ func (server *Server) createWall(ctx *gin.Context) {
 	}
 
 	wall, err := server.hub.CreateWall(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	response := newWallResponse(wall)
+	ctx.JSON(http.StatusCreated, response)
+}
+
+// CreateNewWall handler
+func (server *Server) createNewWall(ctx *gin.Context) {
+	var req createTestWallRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	token, err := ctx.Cookie("token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unathorized"})
+		return
+	}
+
+	user, err := server.hub.GetUserByUsername(ctx, payload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+		return
+	}
+
+	log.Println(req)
+
+	arg := db.CreateTestWallParams{
+		UserID:      user.ID,
+		Description: pgtype.Text{String: req.Description, Valid: req.Description != ""},
+		Title:       req.Title,
+		IsPublic:    pgtype.Bool{Bool: req.IsPublic, Valid: true},
+	}
+
+	wall, err := server.hub.CreateTestWall(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -154,7 +209,7 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 		responses = append(responses, newWallResponse(wall))
 	}
 
-    ctx.JSON(http.StatusOK, responses)
+	ctx.JSON(http.StatusOK, responses)
 }
 
 // UpdateWall handler
@@ -182,24 +237,24 @@ func (server *Server) updateWall(ctx *gin.Context) {
 	}
 
 	// Fetch the current user data to retain non-nullable fields
-    currentWall, err := server.hub.GetWall(ctx, id)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-        return
-    }
+	currentWall, err := server.hub.GetWall(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 
 	// Prepare the UpdateWallParams struct
 	arg := db.UpdateWallParams{
 		ID:              id,
-		Description:     currentWall.Description, // Default to current value
+		Description:     currentWall.Description,     // Default to current value
 		BackgroundImage: currentWall.BackgroundImage, // Default to current value
 	}
 
 	// Update the fields if they are not nil
-	if req.Description != nil && *req.Description != ""{
+	if req.Description != nil && *req.Description != "" {
 		arg.Description = pgtype.Text{String: *req.Description, Valid: true}
 	}
-	if req.BackgroundImage != nil && *req.BackgroundImage != ""{
+	if req.BackgroundImage != nil && *req.BackgroundImage != "" {
 		arg.BackgroundImage = pgtype.Text{String: *req.BackgroundImage, Valid: true}
 	}
 

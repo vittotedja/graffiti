@@ -56,6 +56,7 @@ func NewServer(hub *db.Hub) *Server {
 
 	// Set up routes for the wall API
 	router.POST("/api/v1/walls", server.createWall)
+	router.POST("/api/v2/walls", server.createNewWall)              //
 	router.GET("/api/v1/walls/:id", server.getWall)                 // working
 	router.GET("/api/v1/walls", server.listWalls)                   // working
 	router.GET("/api/v1/users/:id/walls", server.listWallsByUser)   // working
