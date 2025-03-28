@@ -11,6 +11,48 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const acceptFriendship = `-- name: AcceptFriendship :one
+UPDATE friendships
+  SET status = 'friends'
+WHERE id = $1
+RETURNING id, from_user, to_user, status, created_at, updated_at
+`
+
+func (q *Queries) AcceptFriendship(ctx context.Context, id pgtype.UUID) (Friendship, error) {
+	row := q.db.QueryRow(ctx, acceptFriendship, id)
+	var i Friendship
+	err := row.Scan(
+		&i.ID,
+		&i.FromUser,
+		&i.ToUser,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const blockFriendship = `-- name: BlockFriendship :one
+UPDATE friendships
+  SET status = 'blocked'
+WHERE id = $1
+RETURNING id, from_user, to_user, status, created_at, updated_at
+`
+
+func (q *Queries) BlockFriendship(ctx context.Context, id pgtype.UUID) (Friendship, error) {
+	row := q.db.QueryRow(ctx, blockFriendship, id)
+	var i Friendship
+	err := row.Scan(
+		&i.ID,
+		&i.FromUser,
+		&i.ToUser,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createFriendship = `-- name: CreateFriendship :one
 INSERT INTO friendships(
  from_user,
@@ -72,7 +114,7 @@ func (q *Queries) GetFriendship(ctx context.Context, id pgtype.UUID) (Friendship
 
 const getNumberOfFriends = `-- name: GetNumberOfFriends :one
 SELECT COUNT(*) FROM friendships
-WHERE from_user = $1 AND status = 'accepted'
+WHERE ((from_user = $1) OR (to_user = $1)) AND status = 'friends'
 `
 
 func (q *Queries) GetNumberOfFriends(ctx context.Context, fromUser pgtype.UUID) (int64, error) {
@@ -84,14 +126,38 @@ func (q *Queries) GetNumberOfFriends(ctx context.Context, fromUser pgtype.UUID) 
 
 const getNumberOfPendingFriendRequests = `-- name: GetNumberOfPendingFriendRequests :one
 SELECT COUNT(*) FROM friendships
-WHERE from_user = $1 AND status = 'pending'
+WHERE to_user = $1 AND status = 'pending'
 `
 
-func (q *Queries) GetNumberOfPendingFriendRequests(ctx context.Context, fromUser pgtype.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, getNumberOfPendingFriendRequests, fromUser)
+func (q *Queries) GetNumberOfPendingFriendRequests(ctx context.Context, toUser pgtype.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, getNumberOfPendingFriendRequests, toUser)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const listFriendshipByUserPairs = `-- name: ListFriendshipByUserPairs :one
+SELECT id, from_user, to_user, status, created_at, updated_at FROM friendships
+WHERE (from_user = $1 AND to_user = $2) OR (from_user = $2 AND to_user = $1)
+`
+
+type ListFriendshipByUserPairsParams struct {
+	FromUser pgtype.UUID
+	ToUser   pgtype.UUID
+}
+
+func (q *Queries) ListFriendshipByUserPairs(ctx context.Context, arg ListFriendshipByUserPairsParams) (Friendship, error) {
+	row := q.db.QueryRow(ctx, listFriendshipByUserPairs, arg.FromUser, arg.ToUser)
+	var i Friendship
+	err := row.Scan(
+		&i.ID,
+		&i.FromUser,
+		&i.ToUser,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const listFriendships = `-- name: ListFriendships :many
@@ -126,9 +192,90 @@ func (q *Queries) ListFriendships(ctx context.Context) ([]Friendship, error) {
 	return items, nil
 }
 
+const listFriendshipsByUserId = `-- name: ListFriendshipsByUserId :many
+SELECT id, from_user, to_user, status, created_at, updated_at FROM friendships
+WHERE (from_user = $1 OR to_user = $1)
+ORDER BY id
+`
+
+func (q *Queries) ListFriendshipsByUserId(ctx context.Context, fromUser pgtype.UUID) ([]Friendship, error) {
+	rows, err := q.db.Query(ctx, listFriendshipsByUserId, fromUser)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Friendship
+	for rows.Next() {
+		var i Friendship
+		if err := rows.Scan(
+			&i.ID,
+			&i.FromUser,
+			&i.ToUser,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFriendshipsByUserIdAndStatus = `-- name: ListFriendshipsByUserIdAndStatus :many
+SELECT id, from_user, to_user, status, created_at, updated_at FROM friendships
+WHERE (from_user = $1 OR to_user = $1) AND status = $2
+ORDER BY id
+`
+
+type ListFriendshipsByUserIdAndStatusParams struct {
+	FromUser pgtype.UUID
+	Status   NullStatus
+}
+
+func (q *Queries) ListFriendshipsByUserIdAndStatus(ctx context.Context, arg ListFriendshipsByUserIdAndStatusParams) ([]Friendship, error) {
+	rows, err := q.db.Query(ctx, listFriendshipsByUserIdAndStatus, arg.FromUser, arg.Status)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Friendship
+	for rows.Next() {
+		var i Friendship
+		if err := rows.Scan(
+			&i.ID,
+			&i.FromUser,
+			&i.ToUser,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const rejectFriendship = `-- name: RejectFriendship :exec
+DELETE FROM friendships
+WHERE id = $1
+`
+
+func (q *Queries) RejectFriendship(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, rejectFriendship, id)
+	return err
+}
+
 const updateFriendship = `-- name: UpdateFriendship :one
 UPDATE friendships
-  set status = $2
+  SET status = $2
 WHERE id = $1
 RETURNING id, from_user, to_user, status, created_at, updated_at
 `

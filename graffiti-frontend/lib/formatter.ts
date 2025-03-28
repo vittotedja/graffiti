@@ -14,6 +14,14 @@ export function formatDate(
 }
 
 export function formatFullName(fullname: string): string {
-	const [firstName, lastName] = fullname.split(" ");
-	return `${firstName.charAt(0)}${lastName.charAt(0)}`;
+	const separatedNames = fullname.split(" ");
+	const firstName = separatedNames[0];
+	const lastName = separatedNames[separatedNames.length - 1];
+	if (separatedNames.length >= 2) {
+		return `${firstName.charAt(0).toUpperCase()}${lastName
+			.charAt(0)
+			.toUpperCase()}`;
+	}
+
+	return firstName.charAt(0).toUpperCase();
 }

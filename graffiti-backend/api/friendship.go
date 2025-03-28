@@ -9,139 +9,73 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// Friendship handlers
+// Friendship Request Structs
 
-type createFriendshipRequest struct {
-	UserID   string `json:"user_id" binding:"required"`
-	FriendID string `json:"friend_id" binding:"required"`
-	Status   string `json:"status" binding:"required"`
+type createFriendRequestRequest struct {
+	FromUserID string `json:"from_user_id" binding:"required"`
+	ToUserID   string `json:"to_user_id" binding:"required"`
 }
 
-func (server *Server) createFriendship(ctx *gin.Context) {
-	var req createFriendshipRequest
+type acceptFriendRequestRequest struct {
+	FriendshipID string `json:"friendship_id" binding:"required"`
+}
+
+type blockUserRequest struct {
+	FromUserID string `json:"from_user_id" binding:"required"`
+	ToUserID   string `json:"to_user_id" binding:"required"`
+}
+
+type unblockUserRequest struct {
+	FromUserID string `json:"from_user_id" binding:"required"`
+	ToUserID   string `json:"to_user_id" binding:"required"`
+}
+
+// CreateFriendRequest handles creating a new friend request
+func (server *Server) createFriendRequest(ctx *gin.Context) {
+	var req createFriendRequestRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+
+	// Validate user IDs
+	var fromUserID, toUserID pgtype.UUID
+	if err := fromUserID.Scan(req.FromUserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if err := toUserID.Scan(req.ToUserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// Prevent self-friending
+	if fromUserID == toUserID {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Cannot send friend request to yourself"})
+		return
+	}
+
+	// Use transaction method from hub
+	friendship, err := server.hub.CreateFriendRequestTx(ctx, fromUserID, toUserID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, friendship)
+}
+
+// ListFriendshipsByUserId retrieves all friendships for a specific user
+func (server *Server) listFriendshipsByUserId(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
 
 	var userID pgtype.UUID
-	err := userID.Scan(req.UserID)
-	if err != nil {
+	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	var friendID pgtype.UUID
-	err = friendID.Scan(req.FriendID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	arg := db.CreateFriendshipParams{
-		FromUser: userID,
-		ToUser:   friendID,
-		Status:   db.NullStatus{Status: db.Status(req.Status), Valid: true},
-	}
-
-	friendship, err := server.hub.CreateFriendship(ctx, arg)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, friendship)
-}
-
-type getFriendshipRequest struct {
-	ID string `uri:"id" binding:"required"`
-}
-
-func (server *Server) getFriendship(ctx *gin.Context) {
-	var req getFriendshipRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	var id pgtype.UUID
-	err := id.Scan(req.ID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	friendship, err := server.hub.GetFriendship(ctx, id)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, errorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, friendship)
-}
-
-type updateFriendshipRequest struct {
-	ID     string `json:"id" binding:"required"`
-	Status string `json:"status" binding:"required"`
-}
-
-func (server *Server) updateFriendship(ctx *gin.Context) {
-	var req updateFriendshipRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	var id pgtype.UUID
-	err := id.Scan(req.ID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	arg := db.UpdateFriendshipParams{
-		ID:     id,
-		Status: db.NullStatus{Status: db.Status(req.Status), Valid: true},
-	}
-
-	friendship, err := server.hub.UpdateFriendship(ctx, arg)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, friendship)
-}
-
-type deleteFriendshipRequest struct {
-	ID string `uri:"id" binding:"required"`
-}
-
-func (server *Server) deleteFriendship(ctx *gin.Context) {
-	var req deleteFriendshipRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	var id pgtype.UUID
-	err := id.Scan(req.ID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	err = server.hub.DeleteFriendship(ctx, id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"message": "Friendship deleted successfully"})
-}
-
-func (server *Server) listFriendships(ctx *gin.Context) {
-	friendships, err := server.hub.ListFriendships(ctx)
+	friendships, err := server.hub.ListFriendshipsByUserId(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -150,20 +84,12 @@ func (server *Server) listFriendships(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, friendships)
 }
 
-type getNumberOfFriendsRequest struct {
-	UserID string `uri:"user_id" binding:"required"`
-}
-
+// GetNumberOfFriends retrieves the number of friends for a specific user
 func (server *Server) getNumberOfFriends(ctx *gin.Context) {
-	var req getNumberOfFriendsRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
+	userIDStr := ctx.Param("id")
 
 	var userID pgtype.UUID
-	err := userID.Scan(req.UserID)
-	if err != nil {
+	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -177,29 +103,193 @@ func (server *Server) getNumberOfFriends(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"count": count})
 }
 
-type getNumberOfPendingFriendRequestsRequest struct {
-	FriendID string `uri:"friend_id" binding:"required"`
+// AcceptFriendRequest handles accepting a pending friend request
+func (server *Server) acceptFriendRequest(ctx *gin.Context) {
+	var req acceptFriendRequestRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var friendshipID pgtype.UUID
+	if err := friendshipID.Scan(req.FriendshipID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	if err := server.hub.AcceptFriendRequestTx(ctx, friendshipID); err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Friend request accepted"})
 }
 
-func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
-	var req getNumberOfPendingFriendRequestsRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
+// BlockUser handles blocking a user
+func (server *Server) blockUser(ctx *gin.Context) {
+	var req blockUserRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	var friendID pgtype.UUID
-	err := friendID.Scan(req.FriendID)
+	// Validate user IDs
+	var fromUserID, toUserID pgtype.UUID
+	if err := fromUserID.Scan(req.FromUserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if err := toUserID.Scan(req.ToUserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// Prevent self-blocking
+	if fromUserID == toUserID {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Cannot block yourself"})
+		return
+	}
+
+	if err := server.hub.BlockUserTx(ctx, fromUserID, toUserID); err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "User blocked successfully"})
+}
+
+// UnblockUser handles unblocking a previously blocked user
+func (server *Server) unblockUser(ctx *gin.Context) {
+	var req unblockUserRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// Validate user IDs
+	var fromUserID, toUserID pgtype.UUID
+	if err := fromUserID.Scan(req.FromUserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if err := toUserID.Scan(req.ToUserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	if err := server.hub.UnblockUserTx(ctx, fromUserID, toUserID); err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "User unblocked successfully"})
+}
+
+// GetFriends retrieves all friends for a specific user
+func (server *Server) getFriends(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
+
+	var userID pgtype.UUID
+	if err := userID.Scan(userIDStr); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	friends, err := server.hub.GetFriendsTx(ctx, userID)
 	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, friends)
+}
+
+// GetPendingFriendRequests retrieves pending friend requests for a user
+func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
+
+	var userID pgtype.UUID
+	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	count, err := server.hub.GetNumberOfPendingFriendRequests(ctx, friendID)
+	pendingRequests, err := server.hub.GetPendingFriendRequestsTx(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, pendingRequests)
+}
+
+// GetNumberOfPendingFriendRequests retrieves the number of pending friend requests for a user
+func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
+
+	var userID pgtype.UUID
+	if err := userID.Scan(userIDStr); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	count, err := server.hub.GetNumberOfPendingFriendRequests(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"count": count})
+}
+
+// GetSentFriendRequests retrieves friend requests sent by a user
+func (server *Server) getSentFriendRequests(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
+
+	var userID pgtype.UUID
+	if err := userID.Scan(userIDStr); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	sentRequests, err := server.hub.GetSentFriendRequestsTx(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, sentRequests)
+}
+
+// ListFriendshipByUserPairs retrieves a friendship by user pairs
+func (server *Server) listFriendshipByUserPairs(ctx *gin.Context) {
+	var req createFriendRequestRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// Validate user IDs
+	var fromUserID, toUserID pgtype.UUID
+	if err := fromUserID.Scan(req.FromUserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if err := toUserID.Scan(req.ToUserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	params := db.ListFriendshipByUserPairsParams{
+		FromUser: fromUserID,
+		ToUser:   toUserID,
+	}
+
+	friendship, err := server.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, friendship)
 }
