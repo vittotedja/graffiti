@@ -150,7 +150,6 @@ func (server *Server) listUsers(ctx *gin.Context) {
 
 	log.Info("Listing users")
 	log.Debug("Request ID: %s", meta.RequestID)
-	log.Error("Error message")
 
 	users, err := server.hub.ListUsers(ctx)
 	if err != nil {
