@@ -2,11 +2,15 @@ package util
 
 import (
 	"fmt"
-	"math/rand"
+    "math/rand"
 	"strings"
+	"time"
 )
 
-const alphabet = "abcdefghijklmnopqrstuvwxyz"
+const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+// Create a global random number generator
+var globalRng = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // RandomInt generates a random integer between min and max
 func RandomInt(min, max int64) int64 {
@@ -18,11 +22,12 @@ func RandomString(n int) string {
 	var sb strings.Builder
 	k := len(alphabet)
 
+	// Use the global random number generator with a seed
+	globalRng.Seed(time.Now().UnixNano())
 	for i := 0; i < n; i++ {
-		c := alphabet[rand.Intn(k)]
-		sb.WriteByte(c)
+		idx := globalRng.Intn(k)
+		sb.WriteByte(alphabet[idx])
 	}
-
 	return sb.String()
 }
 
