@@ -239,6 +239,61 @@ func (q *Queries) ListPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Po
 	return items, nil
 }
 
+const listPostsByWallWithAuthorsDetails = `-- name: ListPostsByWallWithAuthorsDetails :many
+SELECT p.id, p.wall_id, p.author, p.media_url, p.post_type, p.is_highlighted, p.likes_count, p.is_deleted, p.created_at, u.username, u.profile_picture, u.fullname FROM posts p
+JOIN users u ON p.author = u.id
+WHERE p.wall_id = $1
+ORDER BY p.created_at DESC
+`
+
+type ListPostsByWallWithAuthorsDetailsRow struct {
+	ID             pgtype.UUID
+	WallID         pgtype.UUID
+	Author         pgtype.UUID
+	MediaUrl       pgtype.Text
+	PostType       NullPostType
+	IsHighlighted  pgtype.Bool
+	LikesCount     pgtype.Int4
+	IsDeleted      pgtype.Bool
+	CreatedAt      pgtype.Timestamp
+	Username       string
+	ProfilePicture pgtype.Text
+	Fullname       pgtype.Text
+}
+
+func (q *Queries) ListPostsByWallWithAuthorsDetails(ctx context.Context, wallID pgtype.UUID) ([]ListPostsByWallWithAuthorsDetailsRow, error) {
+	rows, err := q.db.Query(ctx, listPostsByWallWithAuthorsDetails, wallID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPostsByWallWithAuthorsDetailsRow
+	for rows.Next() {
+		var i ListPostsByWallWithAuthorsDetailsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.WallID,
+			&i.Author,
+			&i.MediaUrl,
+			&i.PostType,
+			&i.IsHighlighted,
+			&i.LikesCount,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.Username,
+			&i.ProfilePicture,
+			&i.Fullname,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updatePost = `-- name: UpdatePost :one
 UPDATE posts
   set

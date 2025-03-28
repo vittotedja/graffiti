@@ -1,14 +1,11 @@
 package api
 
 import (
-	"errors"
-	"fmt"
 	"log"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"github.com/vittotedja/graffiti/graffiti-backend/token"
 )
@@ -56,7 +53,7 @@ func NewServer(hub *db.Hub) *Server {
 
 	// Set up routes for the wall API
 	router.POST("/api/v1/walls", server.createWall)
-	router.POST("/api/v2/walls", server.createNewWall)              //
+	router.POST("/api/v2/walls", server.createNewWall)              // no test yet
 	router.GET("/api/v1/walls/:id", server.getWall)                 // working
 	router.GET("/api/v1/walls", server.listWalls)                   // working
 	router.GET("/api/v1/users/:id/walls", server.listWallsByUser)   // working
@@ -72,6 +69,7 @@ func NewServer(hub *db.Hub) *Server {
 	router.GET("/api/v1/posts/:id", server.getPost) //
 	router.GET("/api/v1/posts", server.listPosts)
 	router.GET("/api/v1/walls/:id/posts", server.listPostsByWall)
+	router.GET("/api/v2/walls/:id/posts", server.listPostsByWallWithAuthorsDetails) // no test yet
 	router.PUT("/api/v1/posts/:id", server.updatePost)
 	router.PUT("/api/v1/posts/:id/highlight", server.highlightPost)
 	router.DELETE("/api/v1/posts/:id", server.deletePost)
@@ -108,15 +106,15 @@ func errorResponse(err error) gin.H {
 }
 
 // parseUUID converts a string to UUID
-func parseUUID(s string) (uuid.UUID, error) {
-	if s == "" {
-		return uuid.Nil, errors.New("empty UUID string")
-	}
+// func parseUUID(s string) (uuid.UUID, error) {
+// 	if s == "" {
+// 		return uuid.Nil, errors.New("empty UUID string")
+// 	}
 
-	id, err := uuid.Parse(s)
-	if err != nil {
-		return uuid.Nil, fmt.Errorf("invalid UUID format: %w", err)
-	}
+// 	id, err := uuid.Parse(s)
+// 	if err != nil {
+// 		return uuid.Nil, fmt.Errorf("invalid UUID format: %w", err)
+// 	}
 
-	return id, nil
-}
+// 	return id, nil
+// }
