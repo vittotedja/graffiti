@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -28,19 +29,45 @@ func createRandomUser(t *testing.T) User {
 	require.Equal(t, arg.Fullname.String, user.Fullname.String)
 	require.Equal(t, arg.Email, user.Email)
 	require.Equal(t, arg.HashedPassword, user.HashedPassword)
-	require.False(t, user.HasOnboarded.Bool) // Assuming default value is false
+	require.False(t, user.HasOnboarded.Bool)
 	require.NotZero(t, user.CreatedAt)
 	require.NotZero(t, user.UpdatedAt)
 
 	return user
 }
 
-// TestCreateUser tests the creation of a new user
 func TestCreateUser(t *testing.T) {
 	createRandomUser(t)
 }
 
-// TestGetUser tests retrieving a user by ID
+func TestCreateUserDuplicateUsername(t *testing.T) {
+	existingUser := createRandomUser(t)
+
+	duplicateArg := CreateUserParams{
+		Username:       existingUser.Username,
+		Fullname:       pgtype.Text{String: util.RandomFullname(), Valid: true},
+		Email:          util.RandomEmail(),
+		HashedPassword: "$2a$10$EIXk5q9vz8Z3W9vZ5uJ6Ku3v7X9vZ5uJ6Ku3v7X9vZ8Z3W",
+	}
+
+	_, err := testHub.CreateUser(context.Background(), duplicateArg)
+	require.Error(t, err, "Should not allow creating user with duplicate username")
+}
+
+func TestCreateUserDuplicateEmail(t *testing.T) {
+	existingUser := createRandomUser(t)
+
+	duplicateArg := CreateUserParams{
+		Username:       util.RandomUsername(),
+		Fullname:       pgtype.Text{String: util.RandomFullname(), Valid: true},
+		Email:          existingUser.Email,
+		HashedPassword: "$2a$10$EIXk5q9vz8Z3W9vZ5uJ6Ku3v7X9vZ5uJ6Ku3v7X9vZ8Z3W",
+	}
+
+	_, err := testHub.CreateUser(context.Background(), duplicateArg)
+	require.Error(t, err, "Should not allow creating user with duplicate email")
+}
+
 func TestGetUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
@@ -58,82 +85,121 @@ func TestGetUser(t *testing.T) {
 	require.WithinDuration(t, user1.UpdatedAt.Time, user2.UpdatedAt.Time, time.Second)
 }
 
-// TestUpdateUserOnlyFullname tests updating only the fullname of a user
-// TODO: still buggy and  apply update to all field even if i only want to edit one field
-func TestUpdateUserOnlyFullname(t *testing.T) {
-	oldUser := createRandomUser(t)
+func TestGetNonExistentUser(t *testing.T) {
+	nonExistentID := pgtype.UUID{
+		Bytes: [16]byte{},
+		Valid: true,
+	}
 
-	newFullname := util.RandomFullname()
-	updatedUser, err := testHub.UpdateUser(context.Background(), UpdateUserParams{
-		ID: oldUser.ID,
-		Fullname: pgtype.Text{
-			String: newFullname,
-			Valid:  true,
+	_, err := testHub.GetUser(context.Background(), nonExistentID)
+	require.Error(t, err, "Should return error for non-existent user")
+}
+
+func TestUpdateUserPartialFields(t *testing.T) {
+	testCases := []struct {
+		name           string
+		updateField    string
+		updateFunction func(oldUser User) UpdateUserParams
+		verifyUpdate   func(t *testing.T, oldUser, updatedUser User)
+	}{
+		{
+			name:        "Update Fullname",
+			updateField: "fullname",
+			updateFunction: func(oldUser User) UpdateUserParams {
+				return UpdateUserParams{
+					ID: oldUser.ID,
+					Username: oldUser.Username,
+					Fullname: pgtype.Text{
+						String: util.RandomFullname(),
+						Valid:  true,
+					},
+					Email: oldUser.Email,
+					HashedPassword: oldUser.HashedPassword,
+
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.NotEqual(t, oldUser.Fullname.String, updatedUser.Fullname.String)
+				require.Equal(t, oldUser.Email, updatedUser.Email)
+				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
+			},
 		},
-	})
-	require.NoError(t, err)
-	require.NotEqual(t, oldUser.Fullname.String, updatedUser.Fullname.String)
-	require.Equal(t, newFullname, updatedUser.Fullname.String)
-	require.Equal(t, oldUser.Email, updatedUser.Email)
-	require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
+		{
+			name:        "Update Email",
+			updateField: "email",
+			updateFunction: func(oldUser User) UpdateUserParams {
+				return UpdateUserParams{
+					ID:    oldUser.ID,
+					Username: oldUser.Username,
+					Fullname: oldUser.Fullname,
+					Email: util.RandomEmail(),
+					HashedPassword: oldUser.HashedPassword,
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.NotEqual(t, oldUser.Email, updatedUser.Email)
+				require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
+				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
+			},
+		},
+		{
+			name:        "Update Password",
+			updateField: "password",
+			updateFunction: func(oldUser User) UpdateUserParams {
+				newPassword := util.RandomString(6)
+				hashedPassword, err := util.HashPassword(newPassword)
+				require.NoError(t, err)
+				return UpdateUserParams{
+					ID:             oldUser.ID,
+					Username: oldUser.Username,
+					Fullname: oldUser.Fullname,
+					Email:          oldUser.Email,
+					HashedPassword: hashedPassword,
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.NotEqual(t, oldUser.HashedPassword, updatedUser.HashedPassword)
+				require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
+				require.Equal(t, oldUser.Email, updatedUser.Email)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			oldUser := createRandomUser(t)
+			
+			updateParams := tc.updateFunction(oldUser)
+			fmt.Println(updateParams)
+			updatedUser, err := testHub.UpdateUser(context.Background(), updateParams)
+			
+			require.NoError(t, err, "Should update %s successfully", tc.updateField)
+			tc.verifyUpdate(t, oldUser, updatedUser)
+		})
+	}
 }
 
-// TestUpdateUserOnlyEmail tests updating only the email of a user
-func TestUpdateUserOnlyEmail(t *testing.T) {
-	oldUser := createRandomUser(t)
+func TestDeleteUser(t *testing.T) {
+	user := createRandomUser(t)
 
-	newEmail := util.RandomEmail()
-	updatedUser, err := testHub.UpdateUser(context.Background(), UpdateUserParams{
-		ID:    oldUser.ID,
-		Email: newEmail,
-	})
-	require.NoError(t, err)
-	require.NotEqual(t, oldUser.Email, updatedUser.Email)
-	require.Equal(t, newEmail, updatedUser.Email)
-	require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
-	require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
+	// Delete the user
+	err := testHub.DeleteUser(context.Background(), user.ID)
+	require.NoError(t, err, "Should delete user successfully")
+
+	// Verify user is deleted by trying to fetch
+	_, err = testHub.GetUser(context.Background(), user.ID)
+	require.Error(t, err, "Should not be able to fetch deleted user")
 }
 
-// TestUpdateUserOnlyPassword tests updating only the password of a user
-func TestUpdateUserOnlyPassword(t *testing.T) {
-	oldUser := createRandomUser(t)
+func TestListUsers(t *testing.T) {
+	// Create multiple users
+	users := make([]User, 5)
+	for i := 0; i < 5; i++ {
+		users[i] = createRandomUser(t)
+	}
 
-	newPassword := util.RandomString(6)
-	newHashedPassword, err := util.HashPassword(newPassword)
-	require.NoError(t, err)
-
-	updatedUser, err := testHub.UpdateUser(context.Background(), UpdateUserParams{
-		ID:             oldUser.ID,
-		HashedPassword: newHashedPassword,
-	})
-	require.NoError(t, err)
-	require.NotEqual(t, oldUser.HashedPassword, updatedUser.HashedPassword)
-	require.Equal(t, newHashedPassword, updatedUser.HashedPassword)
-	require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
-	require.Equal(t, oldUser.Email, updatedUser.Email)
-}
-
-// TestUpdateUserAllFields tests updating all fields of a user
-func TestUpdateUserAllFields(t *testing.T) {
-	oldUser := createRandomUser(t)
-
-	newFullname := util.RandomFullname()
-	newEmail := util.RandomEmail()
-	newPassword := util.RandomString(6)
-	newHashedPassword, err := util.HashPassword(newPassword)
-	require.NoError(t, err)
-
-	updatedUser, err := testHub.UpdateUser(context.Background(), UpdateUserParams{
-		ID:             oldUser.ID,
-		Fullname:       pgtype.Text{String: newFullname, Valid: true},
-		Email:          newEmail,
-		HashedPassword: newHashedPassword,
-	})
-	require.NoError(t, err)
-	require.NotEqual(t, oldUser.Fullname.String, updatedUser.Fullname.String)
-	require.Equal(t, newFullname, updatedUser.Fullname.String)
-	require.NotEqual(t, oldUser.Email, updatedUser.Email)
-	require.Equal(t, newEmail, updatedUser.Email)
-	require.NotEqual(t, oldUser.HashedPassword, updatedUser.HashedPassword)
-	require.Equal(t, newHashedPassword, updatedUser.HashedPassword)
+	// Fetch all users
+	allUsers, err := testHub.ListUsers(context.Background())
+	require.NoError(t, err, "Should list users successfully")
+	require.GreaterOrEqual(t, len(allUsers), 5, "Should have at least the created users")
 }

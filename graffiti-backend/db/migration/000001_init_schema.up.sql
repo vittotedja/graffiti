@@ -7,7 +7,7 @@ CREATE TABLE
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "username" varchar UNIQUE NOT NULL,
     "fullname" varchar,
-    "email" varchar NOT NULL,
+    "email" varchar UNIQUE NOT NULL,
     "hashed_password" varchar NOT NULL,
     "profile_picture" varchar,
     "bio" varchar,
