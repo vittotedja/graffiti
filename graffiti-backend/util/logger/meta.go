@@ -44,6 +44,11 @@ func (l *Logger) Fatal(format string, args ...interface{}) {
 	l.entry.Fatalf(format, args...)
 }
 
+// Global returns a logger instance with no metadata
+func Global() *Logger {
+	return &Logger{entry: logrus.StandardLogger().WithFields(nil)}
+}
+
 func (m *Meta) GetLogger() *Logger {
 	entry := logrus.WithFields(logrus.Fields{
 		"request_id": m.RequestID,
