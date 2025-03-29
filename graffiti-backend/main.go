@@ -1,9 +1,7 @@
 package main
 
 import (
-	"errors"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -47,7 +45,7 @@ func main() {
 
 	go func() {
 		log.Printf("Starting server on port %s...", config.ServerAddress)
-		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := server.Start(); err != nil {
 			log.Fatalf("Server encountered an error: %v", err)
 		}
 	}()
@@ -61,9 +59,10 @@ func main() {
 	log.Println("Received shutdown signal, shutting down gracefully...")
 
 	// Gracefully shut down the server
-	if err := server.Shutdown(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	if err := server.Shutdown(); err != nil {
 		log.Fatalf("Graceful shutdown failed: %v", err)
 	}
+
 	log.Println("Server shut down successfully")
 
 }
