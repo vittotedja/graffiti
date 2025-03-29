@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"github.com/sirupsen/logrus"
+	"os"
 )
 
 type ctxKey string
@@ -38,6 +39,11 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 	l.entry.Errorf(format, args...)
 }
 
+// Fatal logs a fatal message and exits
+func (l *Logger) Fatal(format string, args ...interface{}) {
+	l.entry.Fatalf(format, args...)
+}
+
 func (m *Meta) GetLogger() *Logger {
 	entry := logrus.WithFields(logrus.Fields{
 		"request_id": m.RequestID,
@@ -52,4 +58,47 @@ func GetMetadata(ctx context.Context) *Meta {
 		return &Meta{}
 	}
 	return meta
+}
+
+func Setup() error {
+	// Open log files
+	infoFile, err := os.OpenFile("info.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+
+	errorFile, err := os.OpenFile("error.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+
+	// Base logger config
+	logrus.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
+	logrus.SetLevel(logrus.DebugLevel)
+
+	// Prevent logs from going to stdout
+	logrus.SetOutput(os.Stdout)
+
+	// Add hooks
+	logrus.AddHook(&LevelHook{
+		Writer: infoFile,
+		LogLevels: []logrus.Level{
+			logrus.InfoLevel,
+			logrus.DebugLevel,
+		},
+	})
+
+	logrus.AddHook(&LevelHook{
+		Writer: errorFile,
+		LogLevels: []logrus.Level{
+			logrus.WarnLevel,
+			logrus.ErrorLevel,
+			logrus.FatalLevel,
+			logrus.PanicLevel,
+		},
+	})
+
+	return nil
 }
