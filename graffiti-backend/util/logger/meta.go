@@ -78,7 +78,7 @@ func Setup() error {
 	})
 	logrus.SetLevel(logrus.DebugLevel)
 
-	// Prevent logs from going to stdout
+	// Allow logs from going to stdout
 	logrus.SetOutput(os.Stdout)
 
 	// Add hooks
