@@ -44,7 +44,7 @@ func (s *Server) Start() error {
 
 	// Set up HTTP server
 	s.httpServer = &http.Server{
-		Addr:    fmt.Sprintf(":%s", s.config.ServerAddress),
+		Addr:    s.config.ServerAddress,
 		Handler: s.router,
 	}
 
