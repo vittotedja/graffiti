@@ -7,13 +7,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 )
 
 type createUserRequest struct {
-	Username       string `json:"username" binding:"required"`
-	Fullname       string `json:"fullname" binding:"required"`
-	Email          string `json:"email" binding:"required"`
-	Password       string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required"`
+	Fullname string `json:"fullname" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type getUserResponse struct {
@@ -31,10 +32,10 @@ type getUserResponse struct {
 }
 
 type updateUserRequest struct {
-	Username       *string `json:"username"`
-	Fullname       *string `json:"fullname"`
-	Email          *string `json:"email"`
-	Password       *string `json:"password"`
+	Username *string `json:"username"`
+	Fullname *string `json:"fullname"`
+	Email    *string `json:"email"`
+	Password *string `json:"password"`
 }
 
 type updateProfileRequest struct {
@@ -45,8 +46,12 @@ type updateProfileRequest struct {
 
 // createUser handles the creation of a new user
 func (server *Server) createUser(ctx *gin.Context) {
+	log := logger.GetMetadata(ctx).GetLogger()
+	log.Info("Received create user request")
+
 	var req createUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -63,6 +68,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 
 	user, err := server.hub.CreateUser(ctx, arg)
 	if err != nil {
+		log.Error("Failed to create user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -90,15 +96,20 @@ func (server *Server) createUser(ctx *gin.Context) {
 		resp.OnboardingAt = user.OnboardingAt.Time.Format(time.RFC3339)
 	}
 
+	log.Info("User created successfully")
 	ctx.JSON(http.StatusOK, resp)
 }
 
 // getUser handles retrieving a user by ID
 func (server *Server) getUser(ctx *gin.Context) {
+	log := logger.GetMetadata(ctx).GetLogger()
+	log.Info("Received get user request")
+
 	var idReq struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 	if err := ctx.ShouldBindUri(&idReq); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -106,12 +117,14 @@ func (server *Server) getUser(ctx *gin.Context) {
 	var id pgtype.UUID
 	err := id.Scan(idReq.ID)
 	if err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	user, err := server.hub.GetUser(ctx, id)
 	if err != nil {
+		log.Error("Failed to get user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -139,13 +152,18 @@ func (server *Server) getUser(ctx *gin.Context) {
 		resp.OnboardingAt = user.OnboardingAt.Time.Format(time.RFC3339)
 	}
 
+	log.Info("User retrieved successfully")
 	ctx.JSON(http.StatusOK, resp)
 }
 
 // listUsers handles retrieving a list of users
 func (server *Server) listUsers(ctx *gin.Context) {
+	log := logger.GetMetadata(ctx).GetLogger()
+	log.Info("Received list users request")
+
 	users, err := server.hub.ListUsers(ctx)
 	if err != nil {
+		log.Error("Failed to list users", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -178,79 +196,73 @@ func (server *Server) listUsers(ctx *gin.Context) {
 		resp = append(resp, item)
 	}
 
+	log.Info("Users listed successfully")
 	ctx.JSON(http.StatusOK, resp)
 }
 
 // updateUser handles updating a user's basic information
 func (server *Server) updateUser(ctx *gin.Context) {
-	// Extract the user ID from the URI
+	log := logger.GetMetadata(ctx).GetLogger()
+	log.Info("Received update user request")
+
 	var idReq struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 	if err := ctx.ShouldBindUri(&idReq); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// Parse the request body
 	var req updateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// Convert the ID to pgtype.UUID
 	var id pgtype.UUID
 	err := id.Scan(idReq.ID)
 	if err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
+	currentUser, err := server.hub.GetUser(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current user", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 
-	// Fetch the current user data to retain non-nullable fields
-    currentUser, err := server.hub.GetUser(ctx, id)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-        return
-    }
+	arg := db.UpdateUserParams{
+		ID:             id,
+		Username:       currentUser.Username,
+		Fullname:       currentUser.Fullname,
+		Email:          currentUser.Email,
+		HashedPassword: currentUser.HashedPassword,
+	}
 
-    // Prepare the UpdateUserParams struct
-    arg := db.UpdateUserParams{
-        ID:       id,
-        Username: currentUser.Username, // Default to current value
-        Fullname: currentUser.Fullname, // Default to current value
-        Email:    currentUser.Email, // Default to current value
-		HashedPassword: currentUser.HashedPassword, // Default to current value
-    }
-
-    // Update Username if provided
-    if req.Username != nil && *req.Username != "" {
-        arg.Username = *req.Username
-    }
-
-	// Update Fullname if provided
+	if req.Username != nil && *req.Username != "" {
+		arg.Username = *req.Username
+	}
 	if req.Fullname != nil && *req.Fullname != "" {
 		arg.Fullname = pgtype.Text{String: *req.Fullname, Valid: true}
 	}
-
-    // Update Email if provided
-    if req.Email != nil && *req.Email != "" {
-        arg.Email = *req.Email
-    }
-
-    // Hash the password if it is provided
-    if req.Password != nil {
-        hashedPassword := hashPassword(*req.Password)
-        arg.HashedPassword = hashedPassword // Set the hashed password
-    } else {
-        // If no password is provided, pass the existing hashed password
-        arg.HashedPassword = currentUser.HashedPassword
-    }
-
+	if req.Email != nil && *req.Email != "" {
+		arg.Email = *req.Email
+	}
+	if req.Password != nil {
+		hashedPassword := hashPassword(*req.Password)
+		arg.HashedPassword = hashedPassword
+	} else {
+		arg.HashedPassword = currentUser.HashedPassword
+	}
 
 	user, err := server.hub.UpdateUser(ctx, arg)
 	if err != nil {
+		log.Error("Failed to update user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -278,21 +290,27 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		resp.OnboardingAt = user.OnboardingAt.Time.Format(time.RFC3339)
 	}
 
+	log.Info("User updated successfully")
 	ctx.JSON(http.StatusOK, resp)
 }
 
 // updateProfile handles updating a user's profile information
 func (server *Server) updateProfile(ctx *gin.Context) {
+	log := logger.GetMetadata(ctx).GetLogger()
+	log.Info("Received update profile request")
+
 	var idReq struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 	if err := ctx.ShouldBindUri(&idReq); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	var req updateProfileRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -300,6 +318,7 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 	var id pgtype.UUID
 	err := id.Scan(idReq.ID)
 	if err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -313,6 +332,7 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 
 	user, err := server.hub.UpdateProfile(ctx, arg)
 	if err != nil {
+		log.Error("Failed to update profile", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -340,15 +360,20 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 		resp.OnboardingAt = user.OnboardingAt.Time.Format(time.RFC3339)
 	}
 
+	log.Info("Profile updated successfully")
 	ctx.JSON(http.StatusOK, resp)
 }
 
 // finishOnboarding handles marking a user as having completed onboarding
 func (server *Server) finishOnboarding(ctx *gin.Context) {
+	log := logger.GetMetadata(ctx).GetLogger()
+	log.Info("Received finish onboarding request")
+
 	var idReq struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 	if err := ctx.ShouldBindUri(&idReq); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -356,25 +381,32 @@ func (server *Server) finishOnboarding(ctx *gin.Context) {
 	var id pgtype.UUID
 	err := id.Scan(idReq.ID)
 	if err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	err = server.hub.FinishOnboarding(ctx, id)
 	if err != nil {
+		log.Error("Failed to finish onboarding", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Onboarding completed successfully")
 	ctx.JSON(http.StatusOK, gin.H{"status": "onboarding completed"})
 }
 
 // deleteUser handles deleting a user
 func (server *Server) deleteUser(ctx *gin.Context) {
+	log := logger.GetMetadata(ctx).GetLogger()
+	log.Info("Received delete user request")
+
 	var idReq struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 	if err := ctx.ShouldBindUri(&idReq); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -382,16 +414,19 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 	var id pgtype.UUID
 	err := id.Scan(idReq.ID)
 	if err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	err = server.hub.DeleteUser(ctx, id)
 	if err != nil {
+		log.Error("Failed to delete user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("User deleted successfully")
 	ctx.JSON(http.StatusOK, gin.H{
 		"id":      id.String(),
 		"message": "User deleted successfully!",
