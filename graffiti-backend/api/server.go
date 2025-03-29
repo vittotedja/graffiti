@@ -1,93 +1,134 @@
 package api
 
 import (
+	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+	"github.com/vittotedja/graffiti/graffiti-backend/util"
+	"net/http"
+	"time"
 )
 
 // Server serves HTTP requests
 type Server struct {
-	hub *db.Hub
-	router *gin.Engine // helps us send each API request to the correct handler for processing
+	hub        *db.Hub
+	db         *pgxpool.Pool
+	config     util.Config
+	router     *gin.Engine
+	httpServer *http.Server
 }
 
 // NewServer creates a new HTTP server and sets up all routes
-func NewServer (hub *db.Hub) *Server {
-	server := &Server{hub: hub}
-	router := gin.Default()
-
-	// add routes to router
-	
-	// Set up routes for the user API
-	router.POST("/api/v1/users", server.createUser) // working
-	router.GET("/api/v1/users/:id", server.getUser)
-	router.GET("/api/v1/users", server.listUsers) // working
-	router.PUT("/api/v1/users/:id", server.updateUser) // working
-	router.DELETE("/api/v1/users/:id", server.deleteUser)
-	router.PUT("/api/v1/users/:id/profile", server.updateProfile)
-	router.PUT("/api/v1/users/:id/onboarding", server.finishOnboarding) // working
-
-	// Set up routes for the wall API
-	router.POST("/api/v1/walls", server.createWall)
-	router.GET("/api/v1/walls/:id", server.getWall) // working
-	router.GET("/api/v1/walls", server.listWalls) // working
-	router.GET("/api/v1/users/:id/walls", server.listWallsByUser) // working
-	router.PUT("/api/v1/walls/:id", server.updateWall) // working
-	router.PUT("/api/v1/walls/:id/publicize", server.publicizeWall) // working
-	router.PUT("/api/v1/walls/:id/privatize", server.privatizeWall) // working
-	router.PUT("/api/v1/walls/:id/archive", server.archiveWall)
-	router.PUT("/api/v1/walls/:id/unarchive", server.unarchiveWall) 
-	router.DELETE("/api/v1/walls/:id", server.deleteWall) // working
-
-	// Set up routes for the post API
-	router.POST("/api/v1/posts", server.createPost) // working
-	router.GET("/api/v1/posts/:id", server.getPost) // working
-	router.GET("/api/v1/posts", server.listPosts) // working
-	router.GET("/api/v1/walls/:id/posts", server.listPostsByWall) // working
-	router.GET("/api/v1/posts/highlighted", server.getHighlightedPosts) // working
-	router.GET("/api/v1/walls/:id/posts/highlighted", server.getHighlightedPostsByWall) // working
-	router.PUT("/api/v1/posts/:id", server.updatePost) // working
-	router.PUT("/api/v1/posts/:id/highlight", server.highlightPost) // working
-	router.PUT("/api/v1/posts/:id/unhighlight", server.unhighlightPost) // working
-	router.DELETE("/api/v1/posts/:id", server.deletePost) // working
-
-	// Updated Friendship API routes
-	// Friend Requests
-	router.POST("/api/v1/friend-requests", server.createFriendRequest) // working
-	router.PUT("/api/v1/friend-requests/accept", server.acceptFriendRequest) // working 
-	
-	// User Blocking
-	router.PUT("/api/v1/users/block", server.blockUser)
-	router.PUT("/api/v1/users/unblock", server.unblockUser)
-	
-	// Friends Retrieval
-	router.GET("/api/v1/users/:id/accepted-friends", server.getFriends) // user_id; working 
-	router.GET("/api/v1/users/:id/friend-requests/pending", server.getPendingFriendRequests) // user_id; working
-	router.GET("/api/v1/users/:id/friend-requests/sent", server.getSentFriendRequests) // user_id; working
-
-	// Existing friendship-related routes
-	router.GET("/api/v1/users/:id/friendships", server.listFriendshipsByUserId) // working
-	router.GET("/api/v1/users/:id/accepted-friends/count", server.getNumberOfFriends) // working
-	router.GET("/api/v1/users/:id/friend-requests/pending/count", server.getNumberOfPendingFriendRequests) // working
-	// router for listFriendshipByUserPairs
-	// router.GET("/api/v1/friendships", server.listFriendshipByUserPairs)
-
-	// Set up routes for the like API
-	router.POST("/api/v1/likes", server.createLike)
-	router.GET("/api/v1/likes/:id", server.getLike)
-	router.GET("/api/v1/likes", server.listLikes)
-	router.GET("/api/v1/posts/:id/likes", server.listLikesByPost)
-	router.GET("/api/v1/users/:id/likes", server.listLikesByUser)
-	router.DELETE("/api/v1/likes", server.deleteLike)
-
-	server.router = router // save the router object to the server object
-	return server
+func NewServer(config util.Config) *Server {
+	s := &Server{
+		config: config,
+		router: gin.Default(),
+	}
+	s.registerRoutes()
+	return s
 }
 
 // Start runs the HTTP server on a specific address
 // and returns an error if the server fails to start
-func (server *Server) Start(address string) error {
-	return server.router.Run(address)
+func (s *Server) Start() error {
+	// Init DB
+	ctx := context.Background()
+	connPool, err := pgxpool.New(ctx, s.config.DBSource)
+	if err != nil {
+		return fmt.Errorf("cannot connect to db: %w", err)
+	}
+	s.db = connPool
+	s.hub = db.NewHub(connPool)
+
+	// Set up HTTP server
+	s.httpServer = &http.Server{
+		Addr:    fmt.Sprintf(":%s", s.config.ServerAddress),
+		Handler: s.router,
+	}
+
+	return s.httpServer.ListenAndServe()
+}
+
+// Shutdown gracefully shuts down the server
+func (s *Server) Shutdown() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := s.httpServer.Shutdown(ctx); err != nil {
+		return fmt.Errorf("server shutdown failed: %v", err)
+	}
+
+	if s.db != nil {
+		s.db.Close()
+	}
+
+	return nil
+}
+
+func (s *Server) registerRoutes() {
+	// Set up routes for the user API
+	s.router.POST("/api/v1/users", s.createUser) // working
+	s.router.GET("/api/v1/users/:id", s.getUser)
+	s.router.GET("/api/v1/users", s.listUsers)      // working
+	s.router.PUT("/api/v1/users/:id", s.updateUser) // working
+	s.router.DELETE("/api/v1/users/:id", s.deleteUser)
+	s.router.PUT("/api/v1/users/:id/profile", s.updateProfile)
+	s.router.PUT("/api/v1/users/:id/onboarding", s.finishOnboarding) // working
+
+	// Set up routes for the wall API
+	s.router.POST("/api/v1/walls", s.createWall)
+	s.router.GET("/api/v1/walls/:id", s.getWall)                 // working
+	s.router.GET("/api/v1/walls", s.listWalls)                   // working
+	s.router.GET("/api/v1/users/:id/walls", s.listWallsByUser)   // working
+	s.router.PUT("/api/v1/walls/:id", s.updateWall)              // working
+	s.router.PUT("/api/v1/walls/:id/publicize", s.publicizeWall) // working
+	s.router.PUT("/api/v1/walls/:id/privatize", s.privatizeWall) // working
+	s.router.PUT("/api/v1/walls/:id/archive", s.archiveWall)
+	s.router.PUT("/api/v1/walls/:id/unarchive", s.unarchiveWall)
+	s.router.DELETE("/api/v1/walls/:id", s.deleteWall) // working
+
+	// Set up routes for the post API
+	s.router.POST("/api/v1/posts", s.createPost)                                     // working
+	s.router.GET("/api/v1/posts/:id", s.getPost)                                     // working
+	s.router.GET("/api/v1/posts", s.listPosts)                                       // working
+	s.router.GET("/api/v1/walls/:id/posts", s.listPostsByWall)                       // working
+	s.router.GET("/api/v1/posts/highlighted", s.getHighlightedPosts)                 // working
+	s.router.GET("/api/v1/walls/:id/posts/highlighted", s.getHighlightedPostsByWall) // working
+	s.router.PUT("/api/v1/posts/:id", s.updatePost)                                  // working
+	s.router.PUT("/api/v1/posts/:id/highlight", s.highlightPost)                     // working
+	s.router.PUT("/api/v1/posts/:id/unhighlight", s.unhighlightPost)                 // working
+	s.router.DELETE("/api/v1/posts/:id", s.deletePost)                               // working
+
+	// Updated Friendship API routes
+	// Friend Requests
+	s.router.POST("/api/v1/friend-requests", s.createFriendRequest)       // working
+	s.router.PUT("/api/v1/friend-requests/accept", s.acceptFriendRequest) // working
+
+	// User Blocking
+	s.router.PUT("/api/v1/users/block", s.blockUser)
+	s.router.PUT("/api/v1/users/unblock", s.unblockUser)
+
+	// Friends Retrieval
+	s.router.GET("/api/v1/users/:id/accepted-friends", s.getFriends)                      // user_id; working
+	s.router.GET("/api/v1/users/:id/friend-requests/pending", s.getPendingFriendRequests) // user_id; working
+	s.router.GET("/api/v1/users/:id/friend-requests/sent", s.getSentFriendRequests)       // user_id; working
+
+	// Existing friendship-related routes
+	s.router.GET("/api/v1/users/:id/friendships", s.listFriendshipsByUserId)                            // working
+	s.router.GET("/api/v1/users/:id/accepted-friends/count", s.getNumberOfFriends)                      // working
+	s.router.GET("/api/v1/users/:id/friend-requests/pending/count", s.getNumberOfPendingFriendRequests) // working
+	// router for listFriendshipByUserPairs
+	// s.router.GET("/api/v1/friendships", s.listFriendshipByUserPairs)
+
+	// Set up routes for the like API
+	s.router.POST("/api/v1/likes", s.createLike)
+	s.router.GET("/api/v1/likes/:id", s.getLike)
+	s.router.GET("/api/v1/likes", s.listLikes)
+	s.router.GET("/api/v1/posts/:id/likes", s.listLikesByPost)
+	s.router.GET("/api/v1/users/:id/likes", s.listLikesByUser)
+	s.router.DELETE("/api/v1/likes", s.deleteLike)
 }
 
 func errorResponse(err error) gin.H {
