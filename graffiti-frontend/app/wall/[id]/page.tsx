@@ -14,102 +14,70 @@ import {PostGrid} from "@/components/post-grid";
 import {EnhancedPostModal} from "@/components/enhanced-post-modal";
 import {useParams} from "next/navigation";
 import {Switch} from "@/components/ui/switch";
+import {fetchWithAuth} from "@/lib/auth";
+import {Wall} from "@/types/wall";
+import {Post} from "@/types/post";
 
 type SortOption = "latest" | "oldest" | "popular";
 type FilterOption = "all" | "photos" | "videos" | "text";
 
 export default function WallPage() {
-	const params = useParams(); // ✅ Already synchronous
+	const params = useParams();
 	const [id, setId] = useState<string | null>(null);
+	const [wallData, setWallData] = useState<Wall>();
+
+	const fetchWallData = async (id: string) => {
+		try {
+			const response = await fetchWithAuth(
+				"http://localhost:8080/api/v1/walls/" + id,
+				{
+					method: "GET",
+				}
+			);
+			if (!response.ok) {
+				throw new Error("Failed to fetch wall data");
+			}
+			const data = await response.json();
+			// console.log(data);
+			setWallData(data);
+		} catch (error) {
+			console.error("Error fetching wall data:", error);
+		}
+	};
+
+	const fetchPostData = async (id: string) => {
+		try {
+			const response = await fetchWithAuth(
+				"http://localhost:8080/api/v2/walls/" + id + "/posts",
+				{
+					method: "GET",
+				}
+			);
+			if (!response.ok) {
+				throw new Error("Failed to fetch post data");
+			}
+			const data = await response.json();
+			setPosts(data);
+		} catch (error) {
+			console.error("Error fetching wall data:", error);
+		}
+	};
 
 	useEffect(() => {
 		if (params.id) {
-			setId(params.id as string); // ✅ No async function needed
+			setId(params.id as string);
 		}
+		fetchWallData(params.id as string);
+		fetchPostData(params.id as string);
 	}, [params]);
+
 	const [createPostModalOpen, setCreatePostModalOpen] = useState(false);
-	const [isPrivate, setIsPrivate] = useState(false);
 	const [sortBy, setSortBy] = useState<SortOption>("latest");
 	const [filterBy, setFilterBy] = useState<FilterOption>("all");
-	const [posts, setPosts] = useState([
-		{
-			id: 1,
-			imageUrl: "/mockimg.jpg",
-			createdAt: new Date(2024, 2, 7),
-			likes: 24,
-			comments: 5,
-			author: {
-				name: "John Doe",
-				username: "johndoe",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-		},
-		{
-			id: 2,
-			imageUrl: "/placeholder.svg?height=400&width=400",
-			createdAt: new Date(2024, 2, 6),
-			likes: 18,
-			comments: 3,
-			author: {
-				name: "Jane Smith",
-				username: "janesmith",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-		},
-		{
-			id: 3,
-			imageUrl: "/placeholder.svg?height=400&width=400",
-			createdAt: new Date(2024, 2, 5),
-			likes: 32,
-			comments: 7,
-			author: {
-				name: "Mike Johnson",
-				username: "mikej",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-		},
-		// Add more mock posts...
-		{
-			id: 4,
-			imageUrl: "/placeholder.svg?height=400&width=400",
-			createdAt: new Date(2024, 2, 4),
-			likes: 45,
-			comments: 12,
-			author: {
-				name: "Sarah Wilson",
-				username: "sarahw",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-		},
-		{
-			id: 5,
-			imageUrl: "/placeholder.svg?height=400&width=400",
-			createdAt: new Date(2024, 2, 3),
-			likes: 29,
-			comments: 8,
-			author: {
-				name: "Alex Brown",
-				username: "alexb",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-		},
-		{
-			id: 6,
-			imageUrl: "/placeholder.svg?height=400&width=400",
-			createdAt: new Date(2024, 2, 2),
-			likes: 37,
-			comments: 15,
-			author: {
-				name: "Chris Lee",
-				username: "chrisl",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-		},
-	]);
+	const [posts, setPosts] = useState<Post[]>([]);
 
 	// Handle new post creation
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const handlePostCreated = (newPost: any) => {
+	const handlePostCreated = (newPost: Post) => {
 		setPosts([newPost, ...posts]);
 	};
 
@@ -118,14 +86,14 @@ export default function WallPage() {
 		switch (sortBy) {
 			case "oldest":
 				return (
-					new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+					new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
 				);
 			case "popular":
-				return b.likes - a.likes;
+				return b.likes_count - a.likes_count;
 			case "latest":
 			default:
 				return (
-					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+					new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 				);
 		}
 	});
@@ -134,11 +102,11 @@ export default function WallPage() {
 	const filteredPosts = sortedPosts.filter((post) => {
 		switch (filterBy) {
 			case "photos":
-				return post.imageUrl && !post.imageUrl.includes("video");
+				return post.media_url && !post.media_url.includes("video");
 			case "videos":
-				return post.imageUrl && post.imageUrl.includes("video");
+				return post.media_url && post.media_url.includes("video");
 			case "text":
-				return !post.imageUrl;
+				return !post.media_url;
 			case "all":
 			default:
 				return true;
@@ -150,8 +118,10 @@ export default function WallPage() {
 			<div className="container mx-auto px-4 py-8">
 				{/* Wall Title */}
 				<div className="mb-8">
-					<h1 className="text-5xl font-bold font-graffiti">Summer Wall 2024</h1>
-					<p className="text-muted-foreground mt-2">{posts.length} posts</p>
+					<h1 className="text-5xl font-bold font-graffiti">
+						{wallData?.title}
+					</h1>
+					<p className="text-muted-foreground mt-2">{posts.length} post(s)</p>
 				</div>
 
 				{/* Sort and Filter Options */}
@@ -201,19 +171,27 @@ export default function WallPage() {
 					</DropdownMenu>
 					<div className="flex items-center gap-2">
 						<Switch
-							checked={isPrivate}
-							onCheckedChange={() => setIsPrivate(!isPrivate)}
+							className="cursor-pointer"
+							checked={!wallData?.is_public}
+							// TODO: Fix this to toggle the wall privacy
+							onCheckedChange={() =>
+								setWallData((prev) => {
+									if (prev) {
+										return {...prev, is_public: !prev.is_public};
+									}
+									return prev;
+								})
+							}
 						/>
-						{/* {isPrivate ? "Private" : "Public"} */}
-						{isPrivate ? (
-							<div className="flex gap-2 items-center">
-								<Lock className="h-4 w-4 text-primary" />
-								Private
-							</div>
-						) : (
+						{wallData?.is_public ? (
 							<div className="flex gap-2 items-center">
 								<Globe className="h-4 w-4 text-primary" />
 								Public
+							</div>
+						) : (
+							<div className="flex gap-2 items-center">
+								<Lock className="h-4 w-4 text-primary" />
+								Private
 							</div>
 						)}
 					</div>

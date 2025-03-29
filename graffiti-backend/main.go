@@ -30,16 +30,16 @@ func main() {
 	}
 
 	// switch config.Env {
-    // case "devlocal":
-    //     dbSource = config.DBSourceLocal
-    // case "devdocker":
-    //     dbSource = config.DBSourceDocker
-    // case "production":
-    //     dbSource = "postgresql://<RDS_USER>:<RDS_PASSWORD>@<RDS_ENDPOINT>:5432/graffiti?sslmode=require"
-    // default:
-    //     fmt.Println("Unknown environment, using default database source")
-    //     dbSource = config.DBSourceLocal
-    // }
+	// case "devlocal":
+	//     dbSource = config.DBSourceLocal
+	// case "devdocker":
+	//     dbSource = config.DBSourceDocker
+	// case "production":
+	//     dbSource = "postgresql://<RDS_USER>:<RDS_PASSWORD>@<RDS_ENDPOINT>:5432/graffiti?sslmode=require"
+	// default:
+	//     fmt.Println("Unknown environment, using default database source")
+	//     dbSource = config.DBSourceLocal
+	// }
 
 	ctx := context.Background()
 

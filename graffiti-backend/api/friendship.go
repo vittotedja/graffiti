@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 
 	"github.com/gin-gonic/gin"
@@ -67,7 +68,7 @@ func (server *Server) createFriendRequest(ctx *gin.Context) {
 // ListFriendshipsByUserId retrieves all friendships for a specific user
 func (server *Server) listFriendshipsByUserId(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
-	
+
 	var userID pgtype.UUID
 	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -86,7 +87,7 @@ func (server *Server) listFriendshipsByUserId(ctx *gin.Context) {
 // GetNumberOfFriends retrieves the number of friends for a specific user
 func (server *Server) getNumberOfFriends(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
-	
+
 	var userID pgtype.UUID
 	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -187,7 +188,7 @@ func (server *Server) unblockUser(ctx *gin.Context) {
 // GetFriends retrieves all friends for a specific user
 func (server *Server) getFriends(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
-	
+
 	var userID pgtype.UUID
 	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -206,7 +207,7 @@ func (server *Server) getFriends(ctx *gin.Context) {
 // GetPendingFriendRequests retrieves pending friend requests for a user
 func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
-	
+
 	var userID pgtype.UUID
 	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -225,7 +226,7 @@ func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 // GetNumberOfPendingFriendRequests retrieves the number of pending friend requests for a user
 func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
-	
+
 	var userID pgtype.UUID
 	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -244,7 +245,7 @@ func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
 // GetSentFriendRequests retrieves friend requests sent by a user
 func (server *Server) getSentFriendRequests(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
-	
+
 	var userID pgtype.UUID
 	if err := userID.Scan(userIDStr); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))

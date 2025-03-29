@@ -1,9 +1,10 @@
 package api
 
 import (
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"net/http"
 	"time"
+
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -51,6 +52,36 @@ func newPostResponse(post db.Post) postResponse {
 	}
 }
 
+type PostResponseWithAuthor struct {
+	ID             string      `json:"id"`
+	WallID         string      `json:"wall_id"`
+	MediaURL       string      `json:"media_url"`
+	PostType       string      `json:"post_type"`
+	IsHighlighted  bool        `json:"is_highlighted"`
+	LikesCount     int32       `json:"likes_count"`
+	IsDeleted      bool        `json:"is_deleted"`
+	CreatedAt      time.Time   `json:"created_at"`
+	Username       string      `json:"username"`
+	ProfilePicture pgtype.Text `json:"profile_picture"`
+	Fullname       pgtype.Text `json:"fullname"`
+}
+
+func newPostResponseWithAuthor(post db.ListPostsByWallWithAuthorsDetailsRow) PostResponseWithAuthor {
+	return PostResponseWithAuthor{
+		ID:             post.ID.String(),
+		WallID:         post.WallID.String(),
+		MediaURL:       post.MediaUrl.String,
+		PostType:       string(post.PostType.PostType),
+		IsHighlighted:  post.IsHighlighted.Bool,
+		LikesCount:     post.LikesCount.Int32,
+		IsDeleted:      post.IsDeleted.Bool,
+		CreatedAt:      post.CreatedAt.Time,
+		Username:       post.Username,
+		ProfilePicture: post.ProfilePicture,
+		Fullname:       post.Fullname,
+	}
+}
+
 // CreatePost handler
 func (server *Server) createPost(ctx *gin.Context) {
 	var req createPostRequest
@@ -74,7 +105,7 @@ func (server *Server) createPost(ctx *gin.Context) {
 	}
 
 	postType := db.PostType(req.PostType)
-	
+
 	arg := db.CreatePostParams{
 		WallID:   wallID,
 		Author:   author,
@@ -168,6 +199,36 @@ func (server *Server) listPostsByWall(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, responses)
 }
 
+func (server *Server) listPostsByWallWithAuthorsDetails(ctx *gin.Context) {
+	var uri struct {
+		WallID string `uri:"id" binding:"required,uuid"`
+	}
+
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var wallID pgtype.UUID
+	err := wallID.Scan(uri.WallID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	posts, err := server.hub.ListPostsByWallWithAuthorsDetails(ctx, wallID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	responses := make([]PostResponseWithAuthor, 0, len(posts))
+	for _, post := range posts {
+		responses = append(responses, newPostResponseWithAuthor(post))
+	}
+	ctx.JSON(http.StatusOK, responses)
+}
+
 // GetHighlightedPosts handler
 func (server *Server) getHighlightedPosts(ctx *gin.Context) {
 	posts, err := server.hub.GetHighlightedPosts(ctx)
@@ -241,13 +302,13 @@ func (server *Server) updatePost(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	
+
 	// Fetch the current post data to retain non-nullable fields
-    currentPost, err := server.hub.GetPost(ctx, id)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-        return
-    }
+	currentPost, err := server.hub.GetPost(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 
 	// Prepare the UpdatePostParams struct
 	arg := db.UpdatePostParams{
@@ -256,15 +317,15 @@ func (server *Server) updatePost(ctx *gin.Context) {
 		PostType: currentPost.PostType,
 	}
 
-	 // Update the post if fields provided
-	 if req.MediaURL != nil {
-        arg.MediaUrl = pgtype.Text{String: *req.MediaURL, Valid: true}
-    }
-    
-    if req.PostType != nil {
-        postType := db.PostType(*req.PostType)
-        arg.PostType = db.NullPostType{PostType: postType, Valid: true}
-    }
+	// Update the post if fields provided
+	if req.MediaURL != nil {
+		arg.MediaUrl = pgtype.Text{String: *req.MediaURL, Valid: true}
+	}
+
+	if req.PostType != nil {
+		postType := db.PostType(*req.PostType)
+		arg.PostType = db.NullPostType{PostType: postType, Valid: true}
+	}
 
 	post, err := server.hub.UpdatePost(ctx, arg)
 	if err != nil {

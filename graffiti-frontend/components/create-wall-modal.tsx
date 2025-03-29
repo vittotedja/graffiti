@@ -18,28 +18,45 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {Textarea} from "@/components/ui/textarea";
+import {fetchWithAuth} from "@/lib/auth";
+import {toast} from "sonner";
 
 interface CreateWallModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onCreateWall: (wallData: any) => void;
 }
 
-export function CreateWallModal({
-	isOpen,
-	onClose,
-	onCreateWall,
-}: CreateWallModalProps) {
+export function CreateWallModal({isOpen, onClose}: CreateWallModalProps) {
 	const [wallData, setWallData] = useState({
 		title: "",
 		description: "",
-		isPrivate: false,
+		is_public: true,
 	});
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		onCreateWall(wallData);
+		console.log("Wall Data:", wallData);
+		try {
+			const response = await fetchWithAuth(
+				"http://localhost:8080/api/v2/walls",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(wallData),
+				}
+			);
+			if (!response.ok) {
+				throw new Error("Failed to create wall");
+			}
+			const newWall = await response.json();
+			console.log("Wall created successfully:", newWall);
+			toast.success("Wall created successfully!");
+		} catch (error) {
+			console.error("Error creating wall:", error);
+			toast.error("Failed to create wall. Please try again later.");
+		}
 		onClose();
 	};
 
@@ -108,9 +125,10 @@ export function CreateWallModal({
 							<Label>Privacy</Label>
 							<RadioGroup
 								defaultValue="public"
-								onValueChange={(value) =>
-									setWallData({...wallData, isPrivate: value === "private"})
-								}
+								onValueChange={(value) => {
+									console.log(value);
+									setWallData({...wallData, is_public: value === "public"});
+								}}
 								className="flex gap-4"
 							>
 								<div className="flex items-center space-x-2">
