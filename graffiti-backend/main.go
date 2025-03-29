@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,6 +17,9 @@ var (
 )
 
 func main() {
+	if err := logger.Setup(); err != nil {
+		log.Fatal("cannot setup logger:", err)
+	}
 	// r := gin.Default()
 	// r.GET("/", func(c *gin.Context) {
 	// 	c.JSON(http.StatusOK, gin.H{
@@ -30,16 +34,16 @@ func main() {
 	}
 
 	// switch config.Env {
-    // case "devlocal":
-    //     dbSource = config.DBSourceLocal
-    // case "devdocker":
-    //     dbSource = config.DBSourceDocker
-    // case "production":
-    //     dbSource = "postgresql://<RDS_USER>:<RDS_PASSWORD>@<RDS_ENDPOINT>:5432/graffiti?sslmode=require"
-    // default:
-    //     fmt.Println("Unknown environment, using default database source")
-    //     dbSource = config.DBSourceLocal
-    // }
+	// case "devlocal":
+	//     dbSource = config.DBSourceLocal
+	// case "devdocker":
+	//     dbSource = config.DBSourceDocker
+	// case "production":
+	//     dbSource = "postgresql://<RDS_USER>:<RDS_PASSWORD>@<RDS_ENDPOINT>:5432/graffiti?sslmode=require"
+	// default:
+	//     fmt.Println("Unknown environment, using default database source")
+	//     dbSource = config.DBSourceLocal
+	// }
 
 	ctx := context.Background()
 
