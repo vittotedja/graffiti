@@ -1,8 +1,7 @@
 package main
 
 import (
-	"context"
-	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
+	logutil "github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 	"log"
 	"os"
 	"os/signal"
@@ -18,9 +17,13 @@ var (
 )
 
 func main() {
-	if err := logger.Setup(); err != nil {
+	if err := logutil.Setup(); err != nil {
 		log.Fatal("cannot setup logger:", err)
 	}
+
+	logger := logutil.Global()
+	logger.Info("Logger initialized successfully")
+
 	// r := gin.Default()
 	// r.GET("/", func(c *gin.Context) {
 	// 	c.JSON(http.StatusOK, gin.H{
@@ -31,7 +34,7 @@ func main() {
 	// r.Run(":8080")
 	config, err := util.LoadConfig(".")
 	if err != nil {
-		log.Fatal("cannot load config:", err)
+		logger.Fatal("cannot load config:", err)
 	}
 
 	// switch config.Env {
@@ -49,9 +52,9 @@ func main() {
 	server := api.NewServer(config)
 
 	go func() {
-		log.Printf("Starting server on port %s...", config.ServerAddress)
+		logger.Info("Starting server in %s environment on %s", config.Env, config.ServerAddress)
 		if err := server.Start(); err != nil {
-			log.Fatalf("Server encountered an error: %v", err)
+			logger.Errorf("Server encountered an error: %v", err)
 		}
 	}()
 
@@ -61,13 +64,13 @@ func main() {
 
 	// Wait for termination signal
 	<-stop
-	log.Println("Received shutdown signal, shutting down gracefully...")
+	logger.Info("Received shutdown signal, shutting down gracefully...")
 
 	// Gracefully shut down the server
 	if err := server.Shutdown(); err != nil {
-		log.Fatalf("Graceful shutdown failed: %v", err)
+		logger.Fatal("Graceful shutdown failed: %v", err)
 	}
 
-	log.Println("Server shut down successfully")
+	logger.Info("Server shut down successfully")
 
 }
