@@ -57,7 +57,7 @@ func (server *Server) createFriendRequest(ctx *gin.Context) {
 
 	// Prevent self-friending
 	if fromUserID == toUserID {
-		log.Errorf("Attempt to send friend request to self")
+		log.Errorf("Attempt to send friend request to self for user %s", fromUserID)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Cannot send friend request to yourself"})
 		return
 	}
