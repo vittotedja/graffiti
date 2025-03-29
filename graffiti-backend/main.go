@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 	"log"
 	"os"
 	"os/signal"
@@ -16,6 +18,9 @@ var (
 )
 
 func main() {
+	if err := logger.Setup(); err != nil {
+		log.Fatal("cannot setup logger:", err)
+	}
 	// r := gin.Default()
 	// r.GET("/", func(c *gin.Context) {
 	// 	c.JSON(http.StatusOK, gin.H{

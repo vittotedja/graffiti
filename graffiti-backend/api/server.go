@@ -9,6 +9,7 @@ import (
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 	"net/http"
 	"time"
+	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 )
 
 // Server serves HTTP requests
