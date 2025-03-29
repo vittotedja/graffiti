@@ -7,9 +7,9 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
+	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 	"net/http"
 	"time"
-	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 )
 
 // Server serves HTTP requests
@@ -36,8 +36,10 @@ func NewServer(config util.Config) *Server {
 func (s *Server) Start() error {
 	// Init DB
 	ctx := context.Background()
+
 	connPool, err := pgxpool.New(ctx, s.config.DBSource)
 	if err != nil {
+		logger.Global().Error("Cannot connect to DB", err)
 		return fmt.Errorf("cannot connect to db: %w", err)
 	}
 	s.db = connPool
@@ -49,6 +51,7 @@ func (s *Server) Start() error {
 		Handler: s.router,
 	}
 
+	logger.Global().Info("Server listening on %s", s.config.ServerAddress)
 	return s.httpServer.ListenAndServe()
 }
 
@@ -57,14 +60,19 @@ func (s *Server) Shutdown() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	logger.Global().Info("Attempting graceful shutdown...")
+
 	if err := s.httpServer.Shutdown(ctx); err != nil {
+		logger.Global().Error("HTTP server shutdown error", err)
 		return fmt.Errorf("server shutdown failed: %v", err)
 	}
 
 	if s.db != nil {
 		s.db.Close()
+		logger.Global().Info("Database connection closed.")
 	}
 
+	logger.Global().Info("Server shut down successfully.")
 	return nil
 }
 
