@@ -34,7 +34,7 @@ func main() {
 	// r.Run(":8080")
 	config, err := util.LoadConfig(".")
 	if err != nil {
-		logger.Fatal("cannot load config:", err)
+		logger.Fatal("cannot load config: %v", err)
 	}
 
 	// switch config.Env {
