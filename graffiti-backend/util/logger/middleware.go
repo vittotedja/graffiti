@@ -16,6 +16,7 @@ func Middleware() gin.HandlerFunc {
 
 		meta := &Meta{
 			RequestID: reqID,
+			Route:     c.FullPath(),
 		}
 
 		ctx := context.WithValue(c.Request.Context(), metadataKey, meta)

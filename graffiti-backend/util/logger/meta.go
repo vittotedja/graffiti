@@ -11,6 +11,7 @@ const metadataKey ctxKey = "log_meta"
 
 type Meta struct {
 	RequestID string
+	Route     string
 }
 
 type Logger struct {
@@ -40,6 +41,7 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 func (m *Meta) GetLogger() *Logger {
 	entry := logrus.WithFields(logrus.Fields{
 		"request_id": m.RequestID,
+		"route":      m.Route,
 	})
 	return &Logger{entry: entry}
 }
