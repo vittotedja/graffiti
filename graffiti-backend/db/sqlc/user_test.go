@@ -119,6 +119,27 @@ func TestUpdateUserPartialFields(t *testing.T) {
 			},
 			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
 				require.NotEqual(t, oldUser.Fullname.String, updatedUser.Fullname.String)
+				require.Equal(t, oldUser.Username, updatedUser.Username)
+				require.Equal(t, oldUser.Email, updatedUser.Email)
+				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
+			},
+		},
+		{
+			name:        "Update Username",
+			updateField: "username",
+			updateFunction: func(oldUser User) UpdateUserParams {
+				return UpdateUserParams{
+					ID: oldUser.ID,
+					Username: util.RandomUsername(),
+					Fullname: oldUser.Fullname,
+					Email: oldUser.Email,
+					HashedPassword: oldUser.HashedPassword,
+
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.NotEqual(t, oldUser.Username, updatedUser.Username)
+				require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
 				require.Equal(t, oldUser.Email, updatedUser.Email)
 				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
 			},
@@ -136,6 +157,7 @@ func TestUpdateUserPartialFields(t *testing.T) {
 				}
 			},
 			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.Equal(t, oldUser.Username, updatedUser.Username)
 				require.NotEqual(t, oldUser.Email, updatedUser.Email)
 				require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
 				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
@@ -157,6 +179,7 @@ func TestUpdateUserPartialFields(t *testing.T) {
 				}
 			},
 			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.Equal(t, oldUser.Username, updatedUser.Username)
 				require.NotEqual(t, oldUser.HashedPassword, updatedUser.HashedPassword)
 				require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
 				require.Equal(t, oldUser.Email, updatedUser.Email)
