@@ -16,7 +16,8 @@ type createLikeRequest struct {
 }
 
 func (server *Server) createLike(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received create like request")
 
 	var req createLikeRequest
@@ -59,7 +60,8 @@ type getLikeRequest struct {
 }
 
 func (server *Server) getLike(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get like request")
 
 	var req getLikeRequest
@@ -93,7 +95,8 @@ type deleteLikeRequest struct {
 }
 
 func (server *Server) deleteLike(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received delete like request")
 
 	var req deleteLikeRequest
@@ -131,7 +134,8 @@ func (server *Server) deleteLike(ctx *gin.Context) {
 }
 
 func (server *Server) listLikes(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list likes request")
 
 	likes, err := server.hub.ListLikes(ctx)
@@ -150,7 +154,8 @@ type listLikesByPostRequest struct {
 }
 
 func (server *Server) listLikesByPost(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list likes by post request")
 
 	var req listLikesByPostRequest
@@ -183,7 +188,8 @@ type listLikesByUserRequest struct {
 }
 
 func (server *Server) listLikesByUser(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list likes by user request")
 
 	var req listLikesByUserRequest

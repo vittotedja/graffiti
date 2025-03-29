@@ -53,7 +53,8 @@ func newWallResponse(wall db.Wall) wallResponse {
 
 // CreateWall handler
 func (server *Server) createWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received create wall request")
 
 	var req createWallRequest
@@ -89,7 +90,8 @@ func (server *Server) createWall(ctx *gin.Context) {
 
 // GetWall handler
 func (server *Server) getWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get wall request")
 
 	var uri struct {
@@ -122,7 +124,8 @@ func (server *Server) getWall(ctx *gin.Context) {
 
 // ListWalls handler
 func (server *Server) listWalls(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list walls request")
 
 	walls, err := server.hub.ListWalls(ctx)
@@ -143,7 +146,8 @@ func (server *Server) listWalls(ctx *gin.Context) {
 
 // ListWallsByUser handler
 func (server *Server) listWallsByUser(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list walls by user request")
 
 	var uri struct {
@@ -181,7 +185,8 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 
 // UpdateWall handler
 func (server *Server) updateWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received update wall request")
 
 	var uri struct {
@@ -220,7 +225,7 @@ func (server *Server) updateWall(ctx *gin.Context) {
 		BackgroundImage: currentWall.BackgroundImage,
 	}
 
-	if req.Description != nil {
+	if req.Description != nil && *req.Description != "" {
 		arg.Description = pgtype.Text{String: *req.Description, Valid: true}
 	}
 	if req.BackgroundImage != nil {
@@ -240,7 +245,8 @@ func (server *Server) updateWall(ctx *gin.Context) {
 
 // PublicizeWall handler
 func (server *Server) publicizeWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received publicize wall request")
 
 	var uri struct {
@@ -273,7 +279,8 @@ func (server *Server) publicizeWall(ctx *gin.Context) {
 
 // PrivatizeWall handler
 func (server *Server) privatizeWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received privatize wall request")
 
 	var uri struct {
@@ -306,7 +313,8 @@ func (server *Server) privatizeWall(ctx *gin.Context) {
 
 // ArchiveWall handler
 func (server *Server) archiveWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received archive wall request")
 
 	var uri struct {
@@ -339,7 +347,8 @@ func (server *Server) archiveWall(ctx *gin.Context) {
 
 // UnarchiveWall handler
 func (server *Server) unarchiveWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received unarchive wall request")
 
 	var uri struct {
@@ -372,7 +381,8 @@ func (server *Server) unarchiveWall(ctx *gin.Context) {
 
 // DeleteWall handler
 func (server *Server) deleteWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received delete wall request")
 
 	var uri struct {

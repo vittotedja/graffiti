@@ -46,7 +46,8 @@ type updateProfileRequest struct {
 
 // createUser handles the creation of a new user
 func (server *Server) createUser(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received create user request")
 
 	var req createUserRequest
@@ -102,7 +103,8 @@ func (server *Server) createUser(ctx *gin.Context) {
 
 // getUser handles retrieving a user by ID
 func (server *Server) getUser(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get user request")
 
 	var idReq struct {
@@ -158,7 +160,8 @@ func (server *Server) getUser(ctx *gin.Context) {
 
 // listUsers handles retrieving a list of users
 func (server *Server) listUsers(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list users request")
 
 	users, err := server.hub.ListUsers(ctx)
@@ -202,9 +205,11 @@ func (server *Server) listUsers(ctx *gin.Context) {
 
 // updateUser handles updating a user's basic information
 func (server *Server) updateUser(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received update user request")
 
+	// Extract the user ID from the URI
 	var idReq struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -214,6 +219,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
+	// Parse the request body
 	var req updateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
@@ -221,6 +227,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
+	// Convert the ID to pgtype.UUID
 	var id pgtype.UUID
 	err := id.Scan(idReq.ID)
 	if err != nil {
@@ -229,6 +236,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
+	// Fetch the current user data to retain non-nullable fields
 	currentUser, err := server.hub.GetUser(ctx, id)
 	if err != nil {
 		log.Error("Failed to get current user", err)
@@ -236,27 +244,36 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
+	// Prepare the UpdateUserParams struct
 	arg := db.UpdateUserParams{
 		ID:             id,
-		Username:       currentUser.Username,
-		Fullname:       currentUser.Fullname,
-		Email:          currentUser.Email,
-		HashedPassword: currentUser.HashedPassword,
+		Username:       currentUser.Username,       // Default to current value
+		Fullname:       currentUser.Fullname,       // Default to current value
+		Email:          currentUser.Email,          // Default to current value
+		HashedPassword: currentUser.HashedPassword, // Default to current value
 	}
 
+	// Update Username if provided
 	if req.Username != nil && *req.Username != "" {
 		arg.Username = *req.Username
 	}
+
+	// Update Fullname if provided
 	if req.Fullname != nil && *req.Fullname != "" {
 		arg.Fullname = pgtype.Text{String: *req.Fullname, Valid: true}
 	}
+
+	// Update Email if provided
 	if req.Email != nil && *req.Email != "" {
 		arg.Email = *req.Email
 	}
+
+	// Hash the password if it is provided
 	if req.Password != nil {
 		hashedPassword := hashPassword(*req.Password)
 		arg.HashedPassword = hashedPassword
 	} else {
+		// If no password is provided, pass the existing hashed password
 		arg.HashedPassword = currentUser.HashedPassword
 	}
 
@@ -296,7 +313,8 @@ func (server *Server) updateUser(ctx *gin.Context) {
 
 // updateProfile handles updating a user's profile information
 func (server *Server) updateProfile(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received update profile request")
 
 	var idReq struct {
@@ -366,7 +384,8 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 
 // finishOnboarding handles marking a user as having completed onboarding
 func (server *Server) finishOnboarding(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received finish onboarding request")
 
 	var idReq struct {
@@ -399,7 +418,8 @@ func (server *Server) finishOnboarding(ctx *gin.Context) {
 
 // deleteUser handles deleting a user
 func (server *Server) deleteUser(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received delete user request")
 
 	var idReq struct {

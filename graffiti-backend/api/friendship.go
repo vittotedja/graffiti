@@ -31,7 +31,8 @@ type unblockUserRequest struct {
 
 // CreateFriendRequest handles creating a new friend request
 func (server *Server) createFriendRequest(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received create friend request")
 
 	var req createFriendRequestRequest
@@ -75,7 +76,8 @@ func (server *Server) createFriendRequest(ctx *gin.Context) {
 
 // ListFriendshipsByUserId retrieves all friendships for a specific user
 func (server *Server) listFriendshipsByUserId(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list friendships by user ID request")
 
 	userIDStr := ctx.Param("id")
@@ -99,7 +101,8 @@ func (server *Server) listFriendshipsByUserId(ctx *gin.Context) {
 
 // GetNumberOfFriends retrieves the number of friends for a specific user
 func (server *Server) getNumberOfFriends(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get number of friends request")
 
 	userIDStr := ctx.Param("id")
@@ -123,7 +126,8 @@ func (server *Server) getNumberOfFriends(ctx *gin.Context) {
 
 // AcceptFriendRequest handles accepting a pending friend request
 func (server *Server) acceptFriendRequest(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received accept friend request")
 
 	var req acceptFriendRequestRequest
@@ -152,7 +156,8 @@ func (server *Server) acceptFriendRequest(ctx *gin.Context) {
 
 // BlockUser handles blocking a user
 func (server *Server) blockUser(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received block user request")
 
 	var req blockUserRequest
@@ -194,7 +199,8 @@ func (server *Server) blockUser(ctx *gin.Context) {
 
 // UnblockUser handles unblocking a previously blocked user
 func (server *Server) unblockUser(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received unblock user request")
 
 	var req unblockUserRequest
@@ -229,7 +235,8 @@ func (server *Server) unblockUser(ctx *gin.Context) {
 
 // GetFriends retrieves all friends for a specific user
 func (server *Server) getFriends(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get friends request")
 
 	userIDStr := ctx.Param("id")
@@ -253,7 +260,8 @@ func (server *Server) getFriends(ctx *gin.Context) {
 
 // GetPendingFriendRequests retrieves pending friend requests for a user
 func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get pending friend requests request")
 
 	userIDStr := ctx.Param("id")
@@ -277,7 +285,8 @@ func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 
 // GetNumberOfPendingFriendRequests retrieves the number of pending friend requests for a user
 func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get number of pending friend requests request")
 
 	userIDStr := ctx.Param("id")
@@ -301,7 +310,8 @@ func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
 
 // GetSentFriendRequests retrieves friend requests sent by a user
 func (server *Server) getSentFriendRequests(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get sent friend requests request")
 
 	userIDStr := ctx.Param("id")
@@ -325,7 +335,8 @@ func (server *Server) getSentFriendRequests(ctx *gin.Context) {
 
 // ListFriendshipByUserPairs retrieves a friendship by user pairs
 func (server *Server) listFriendshipByUserPairs(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list friendship by user pairs request")
 
 	var req createFriendRequestRequest

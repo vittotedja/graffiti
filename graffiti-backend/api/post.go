@@ -52,7 +52,8 @@ func newPostResponse(post db.Post) postResponse {
 
 // CreatePost handler
 func (server *Server) createPost(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received create post request")
 
 	var req createPostRequest
@@ -96,7 +97,8 @@ func (server *Server) createPost(ctx *gin.Context) {
 
 // GetPost handler
 func (server *Server) getPost(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get post request")
 
 	var uri struct {
@@ -130,7 +132,8 @@ func (server *Server) getPost(ctx *gin.Context) {
 
 // ListPosts handler
 func (server *Server) listPosts(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list posts request")
 
 	posts, err := server.hub.ListPosts(ctx)
@@ -151,7 +154,8 @@ func (server *Server) listPosts(ctx *gin.Context) {
 
 // ListPostsByWall handler
 func (server *Server) listPostsByWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received list posts by wall request")
 
 	var uri struct {
@@ -189,7 +193,8 @@ func (server *Server) listPostsByWall(ctx *gin.Context) {
 
 // GetHighlightedPosts handler
 func (server *Server) getHighlightedPosts(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get highlighted posts request")
 
 	posts, err := server.hub.GetHighlightedPosts(ctx)
@@ -210,7 +215,8 @@ func (server *Server) getHighlightedPosts(ctx *gin.Context) {
 
 // GetHighlightedPostsByWall handler
 func (server *Server) getHighlightedPostsByWall(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received get highlighted posts by wall request")
 
 	var uri struct {
@@ -248,7 +254,8 @@ func (server *Server) getHighlightedPostsByWall(ctx *gin.Context) {
 
 // UpdatePost handler
 func (server *Server) updatePost(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received update post request")
 
 	var uri struct {
@@ -309,7 +316,8 @@ func (server *Server) updatePost(ctx *gin.Context) {
 
 // HighlightPost handler
 func (server *Server) highlightPost(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received highlight post request")
 
 	var uri struct {
@@ -343,7 +351,8 @@ func (server *Server) highlightPost(ctx *gin.Context) {
 
 // UnhighlightPost handler
 func (server *Server) unhighlightPost(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received unhighlight post request")
 
 	var uri struct {
@@ -377,7 +386,8 @@ func (server *Server) unhighlightPost(ctx *gin.Context) {
 
 // DeletePost handler
 func (server *Server) deletePost(ctx *gin.Context) {
-	log := logger.GetMetadata(ctx).GetLogger()
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
 	log.Info("Received delete post request")
 
 	var uri struct {
