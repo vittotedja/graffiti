@@ -98,8 +98,8 @@ func (ns NullStatus) Value() (driver.Value, error) {
 
 type Friendship struct {
 	ID        pgtype.UUID
-	UserID    pgtype.UUID
-	FriendID  pgtype.UUID
+	FromUser  pgtype.UUID
+	ToUser    pgtype.UUID
 	Status    NullStatus
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp

@@ -31,7 +31,9 @@ type postResponse struct {
 
 type updatePostRequest struct {
 	MediaURL *string `json:"media_url"`
-	PostType *string `json:"post_type" binding:"oneof=media embed_link"`
+	PostType *string `json:"post_type" binding:"omitempty,oneof=media embed_link"`
+	// By adding omitempty, before the oneof validation,
+	// you're telling the validator to only apply the oneof check if the field is actually present in the request.
 }
 
 // Convert DB post to API response
@@ -137,7 +139,7 @@ func (server *Server) listPosts(ctx *gin.Context) {
 // ListPostsByWall handler
 func (server *Server) listPostsByWall(ctx *gin.Context) {
 	var uri struct {
-		WallID string `uri:"wall_id" binding:"required,uuid"`
+		WallID string `uri:"id" binding:"required,uuid"`
 	}
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
@@ -169,6 +171,38 @@ func (server *Server) listPostsByWall(ctx *gin.Context) {
 // GetHighlightedPosts handler
 func (server *Server) getHighlightedPosts(ctx *gin.Context) {
 	posts, err := server.hub.GetHighlightedPosts(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	responses := make([]postResponse, 0, len(posts))
+	for _, post := range posts {
+		responses = append(responses, newPostResponse(post))
+	}
+
+	ctx.JSON(http.StatusOK, responses)
+}
+
+// GetHighlightedPostsByWall handler
+func (server *Server) getHighlightedPostsByWall(ctx *gin.Context) {
+	var uri struct {
+		WallID string `uri:"id" binding:"required,uuid"`
+	}
+
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var wallID pgtype.UUID
+	err := wallID.Scan(uri.WallID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	posts, err := server.hub.GetHighlightedPostsByWall(ctx, wallID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -261,6 +295,34 @@ func (server *Server) highlightPost(ctx *gin.Context) {
 	}
 
 	post, err := server.hub.HighlightPost(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	response := newPostResponse(post)
+	ctx.JSON(http.StatusOK, response)
+}
+
+// UnhighlightPost handler
+func (server *Server) unhighlightPost(ctx *gin.Context) {
+	var uri struct {
+		ID string `uri:"id" binding:"required,uuid"`
+	}
+
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var id pgtype.UUID
+	err := id.Scan(uri.ID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	post, err := server.hub.UnhighlightPost(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

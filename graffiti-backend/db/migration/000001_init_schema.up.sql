@@ -7,7 +7,7 @@ CREATE TABLE
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "username" varchar UNIQUE NOT NULL,
     "fullname" varchar,
-    "email" varchar NOT NULL,
+    "email" varchar UNIQUE NOT NULL,
     "hashed_password" varchar NOT NULL,
     "profile_picture" varchar,
     "bio" varchar,
@@ -61,13 +61,14 @@ CREATE TABLE
 CREATE TABLE
   "friendships" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "user_id" uuid NOT NULL,
-    "friend_id" uuid NOT NULL,
+    "from_user" uuid NOT NULL,
+    "to_user" uuid NOT NULL,
     "status" status,
     "created_at" timestamp DEFAULT now (),
     "updated_at" timestamp DEFAULT now (),
-    CONSTRAINT "friendships_user_fk" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE,
-    CONSTRAINT "friendships_friend_fk" FOREIGN KEY ("friend_id") REFERENCES "users" ("id") ON DELETE CASCADE
+    CONSTRAINT "friendships_from_user_fk" FOREIGN KEY ("from_user") REFERENCES "users" ("id") ON DELETE CASCADE,
+    CONSTRAINT "friendships_to_user_fk" FOREIGN KEY ("to_user") REFERENCES "users" ("id") ON DELETE CASCADE,
+    CONSTRAINT "unique_friendship" UNIQUE ("from_user", "to_user")
   );
 
 -- ✅ INDEXES
@@ -81,8 +82,8 @@ CREATE INDEX ON "likes" ("user_id");
 
 CREATE INDEX ON "likes" ("post_id", "user_id");
 
-CREATE INDEX ON "friendships" ("user_id");
+CREATE INDEX ON "friendships" ("from_user");
 
-CREATE INDEX ON "friendships" ("friend_id");
+CREATE INDEX ON "friendships" ("to_user");
 
-CREATE INDEX ON "friendships" ("user_id", "friend_id");
+CREATE INDEX ON "friendships" ("from_user", "to_user");
