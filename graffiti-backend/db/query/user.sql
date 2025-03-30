@@ -47,7 +47,7 @@ WHERE id = $1;
 DELETE FROM users
 WHERE id = $1;
 
--- name: SearchUsersByNameOrUsername :many
+-- name: SearchUsersTrigram :many
 SELECT
     id,
     username,
@@ -55,15 +55,25 @@ SELECT
     profile_picture
 FROM users
 WHERE
-    (username % sqlc.arg(search_term) AND similarity(username, sqlc.arg(search_term)) > 0)
+    username % sqlc.arg(search_term)
     OR
-    (fullname % sqlc.arg(search_term) AND similarity(fullname, sqlc.arg(search_term)) > 0)
+    fullname % sqlc.arg(search_term)
 ORDER BY GREATEST(
-     similarity(username, sqlc.arg(search_term)),
-     similarity(fullname, sqlc.arg(search_term))
+    similarity(username, sqlc.arg(search_term)),
+    similarity(fullname, sqlc.arg(search_term))
 ) DESC
 LIMIT 10;
 
+
+-- name: SearchUsersILike :many
+SELECT id, username, fullname, profile_picture
+FROM users
+WHERE
+    username ILIKE CONCAT('%', sqlc.arg(search_term), '%')
+    OR
+    fullname ILIKE CONCAT('%', sqlc.arg(search_term), '%')
+ORDER BY username
+LIMIT 10;
 
 
 
