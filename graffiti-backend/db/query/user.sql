@@ -46,3 +46,13 @@ WHERE id = $1;
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1;
+
+-- name: SearchUsersByNameOrUsername :many
+SELECT id, username, fullname, profile_picture,
+       similarity(username, $1) AS username_score,
+       similarity(fullname, $1) AS fullname_score
+FROM users
+WHERE username % $1 OR fullname % $1
+ORDER BY GREATEST(similarity(username, $1), similarity(fullname, $1)) DESC
+    LIMIT 10;
+
