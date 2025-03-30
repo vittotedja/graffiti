@@ -140,6 +140,52 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+const searchUsersByNameOrUsername = `-- name: SearchUsersByNameOrUsername :many
+SELECT id, username, fullname, profile_picture,
+       similarity(username, $1) AS username_score,
+       similarity(fullname, $1) AS fullname_score
+FROM users
+WHERE username % $1 OR fullname % $1
+ORDER BY GREATEST(similarity(username, $1), similarity(fullname, $1)) DESC
+    LIMIT 10
+`
+
+type SearchUsersByNameOrUsernameRow struct {
+	ID             pgtype.UUID
+	Username       string
+	Fullname       pgtype.Text
+	ProfilePicture pgtype.Text
+	UsernameScore  float32
+	FullnameScore  float32
+}
+
+func (q *Queries) SearchUsersByNameOrUsername(ctx context.Context, similarity string) ([]SearchUsersByNameOrUsernameRow, error) {
+	rows, err := q.db.Query(ctx, searchUsersByNameOrUsername, similarity)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchUsersByNameOrUsernameRow
+	for rows.Next() {
+		var i SearchUsersByNameOrUsernameRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.Fullname,
+			&i.ProfilePicture,
+			&i.UsernameScore,
+			&i.FullnameScore,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateProfile = `-- name: UpdateProfile :one
 UPDATE users
 SET 
