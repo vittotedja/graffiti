@@ -96,5 +96,5 @@ func main() {
 	}
 
 	wg.Wait()
-	log.Printf("🎉 Done seeding %d users in %v", totalUsers, time.Since(start))
+	log.Printf("Done seeding %d users in %v", totalUsers, time.Since(start))
 }
