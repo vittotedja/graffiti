@@ -204,6 +204,45 @@ func (server *Server) getFriends(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, friends)
 }
 
+func (server *Server) getFriendsByStatus(ctx *gin.Context) {
+	token, err := ctx.Cookie("token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unathorized"})
+		return
+	}
+
+	user, err := server.hub.GetUserByUsername(ctx, payload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+		return
+	}
+
+	queryType := ctx.Query("type")
+
+	arg := db.ListFriendsDetailsByStatusParams{
+		FromUser: user.ID,
+		Column2:  queryType,
+	}
+
+	switch queryType {
+	case "friends", "sent", "requested":
+		friends, err := server.hub.ListFriendsDetailsByStatus(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+		ctx.JSON(http.StatusOK, friends)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid type"})
+	}
+}
+
 // GetPendingFriendRequests retrieves pending friend requests for a user
 func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
@@ -215,6 +254,24 @@ func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 	}
 
 	pendingRequests, err := server.hub.GetPendingFriendRequestsTx(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, pendingRequests)
+}
+
+func (server *Server) getReceivedPendingFriendRequests(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
+
+	var userID pgtype.UUID
+	if err := userID.Scan(userIDStr); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	pendingRequests, err := server.hub.ListReceivedPendingFriendRequests(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -259,6 +316,24 @@ func (server *Server) getSentFriendRequests(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, sentRequests)
+}
+
+func (server *Server) getSentPendingFriendRequests(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
+
+	var userID pgtype.UUID
+	if err := userID.Scan(userIDStr); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	pendingRequests, err := server.hub.ListSentPendingFriendRequests(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, pendingRequests)
 }
 
 // ListFriendshipByUserPairs retrieves a friendship by user pairs

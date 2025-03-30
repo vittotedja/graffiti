@@ -3,7 +3,6 @@ package api
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -115,7 +114,6 @@ func (server *Server) Login(ctx *gin.Context) {
 func (server *Server) Me(ctx *gin.Context) {
 	token, err := ctx.Cookie("token")
 	if err != nil {
-		log.Println(err)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}

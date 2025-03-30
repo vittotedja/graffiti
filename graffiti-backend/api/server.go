@@ -86,10 +86,14 @@ func NewServer(hub *db.Hub) *Server {
 	router.PUT("/api/v1/users/block", server.blockUser)
 	router.PUT("/api/v1/users/unblock", server.unblockUser)
 
+	router.GET("/api/v1/friends", server.getFriendsByStatus) //status = friends, requested, sent
+
 	// Friends Retrieval
-	router.GET("/api/v1/users/:id/accepted-friends", server.getFriends)                      // user_id; working
-	router.GET("/api/v1/users/:id/friend-requests/pending", server.getPendingFriendRequests) // user_id; working
-	router.GET("/api/v1/users/:id/friend-requests/sent", server.getSentFriendRequests)       // user_id; working
+	router.GET("/api/v1/users/:id/accepted-friends", server.getFriends)                              // user_id; working
+	router.GET("/api/v1/users/:id/friend-requests/pending", server.getPendingFriendRequests)         // user_id; working
+	router.GET("/api/v2/users/:id/friend-requests/pending", server.getReceivedPendingFriendRequests) // user_id; working
+	router.GET("/api/v1/users/:id/friend-requests/sent", server.getSentFriendRequests)               // user_id; working
+	router.GET("/api/v2/users/:id/friend-requests/sent", server.getSentPendingFriendRequests)        // user_id; working
 
 	// Existing friendship-related routes
 	router.GET("/api/v1/users/:id/friendships", server.listFriendshipsByUserId)                            // working

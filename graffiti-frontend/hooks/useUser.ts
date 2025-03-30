@@ -16,7 +16,6 @@ export function useUser() {
 				return res.json();
 			})
 			.then((data) => {
-				console.log(data.user);
 				setUser(data.user);
 			})
 			.catch(() => {
