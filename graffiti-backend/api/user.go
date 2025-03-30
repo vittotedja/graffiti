@@ -476,23 +476,44 @@ func (server *Server) searchUsers(ctx *gin.Context) {
 		return
 	}
 
-	users, err := server.hub.SearchUsersByNameOrUsername(ctx, req.SearchTerm)
+	var (
+		rawUsers any
+		err      error
+	)
+
+	// Use different search methods based on the length of the search term as trigram search is more efficient for longer terms (>= 3 characters)
+	if len(req.SearchTerm) < 3 {
+		rawUsers, err = server.hub.SearchUsersILike(ctx, req.SearchTerm)
+	} else {
+		rawUsers, err = server.hub.SearchUsersTrigram(ctx, req.SearchTerm)
+	}
 	if err != nil {
 		log.Error("Search query failed", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	respList := make([]UserSearchResponse, 0, len(users))
-	for _, user := range users {
-		userResp := UserSearchResponse{
-			ID:       user.ID.String(),
-			Username: user.Username,
-			FullName: user.Fullname.String,
+
+	var respList []UserSearchResponse
+
+	switch v := rawUsers.(type) {
+	case []db.SearchUsersTrigramRow:
+		for _, u := range v {
+			respList = append(respList, UserSearchResponse{
+				ID:             u.ID.String(),
+				Username:       u.Username,
+				FullName:       u.Fullname.String,
+				ProfilePicture: u.ProfilePicture.String,
+			})
 		}
-		if user.ProfilePicture.Valid {
-			userResp.ProfilePicture = user.ProfilePicture.String
+	case []db.SearchUsersILikeRow:
+		for _, u := range v {
+			respList = append(respList, UserSearchResponse{
+				ID:             u.ID.String(),
+				Username:       u.Username,
+				FullName:       u.Fullname.String,
+				ProfilePicture: u.ProfilePicture.String,
+			})
 		}
-		respList = append(respList, userResp)
 	}
 
 	log.Info("User search returned results successfully")
