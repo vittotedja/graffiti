@@ -66,14 +66,19 @@ LIMIT 10;
 
 
 -- name: SearchUsersILike :many
-SELECT id, username, fullname, profile_picture
+SELECT
+    id,
+    username,
+    fullname,
+    profile_picture
 FROM users
 WHERE
-    username ILIKE CONCAT('%', sqlc.arg(search_term), '%')
+    username ILIKE '%' || sqlc.arg(search_term) || '%'
     OR
-    fullname ILIKE CONCAT('%', sqlc.arg(search_term), '%')
-ORDER BY username
+    fullname ILIKE '%' || sqlc.arg(search_term) || '%'
+ORDER BY username ASC
 LIMIT 10;
+
 
 
 

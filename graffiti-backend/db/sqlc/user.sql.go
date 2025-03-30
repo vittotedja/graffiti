@@ -141,13 +141,17 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 }
 
 const searchUsersILike = `-- name: SearchUsersILike :many
-SELECT id, username, fullname, profile_picture
+SELECT
+    id,
+    username,
+    fullname,
+    profile_picture
 FROM users
 WHERE
-    username ILIKE CONCAT('%', $1, '%')
+    username ILIKE '%' || $1 || '%'
     OR
-    fullname ILIKE CONCAT('%', $1, '%')
-ORDER BY username
+    fullname ILIKE '%' || $1 || '%'
+ORDER BY username ASC
 LIMIT 10
 `
 
@@ -158,7 +162,7 @@ type SearchUsersILikeRow struct {
 	ProfilePicture pgtype.Text
 }
 
-func (q *Queries) SearchUsersILike(ctx context.Context, searchTerm interface{}) ([]SearchUsersILikeRow, error) {
+func (q *Queries) SearchUsersILike(ctx context.Context, searchTerm pgtype.Text) ([]SearchUsersILikeRow, error) {
 	rows, err := q.db.Query(ctx, searchUsersILike, searchTerm)
 	if err != nil {
 		return nil, err
