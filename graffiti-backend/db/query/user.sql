@@ -48,11 +48,20 @@ DELETE FROM users
 WHERE id = $1;
 
 -- name: SearchUsersByNameOrUsername :many
-SELECT id, username, fullname, profile_picture,
-       similarity(username, $1) AS username_score,
-       similarity(fullname, $1) AS fullname_score
+SELECT
+    id,
+    username,
+    fullname,
+    profile_picture
 FROM users
-WHERE username % $1 OR fullname % $1
-ORDER BY GREATEST(similarity(username, $1), similarity(fullname, $1)) DESC
-    LIMIT 10;
+WHERE
+    similarity(username, sqlc.arg(search_term)) > 0 OR
+    similarity(fullname, sqlc.arg(search_term)) > 0
+ORDER BY GREATEST(
+    similarity(username, sqlc.arg(search_term)),
+    similarity(fullname, sqlc.arg(search_term))
+) DESC
+LIMIT 10;
+
+
 
