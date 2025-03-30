@@ -55,13 +55,15 @@ SELECT
     profile_picture
 FROM users
 WHERE
-    similarity(username, sqlc.arg(search_term)) > 0 OR
-    similarity(fullname, sqlc.arg(search_term)) > 0
+    (username % sqlc.arg(search_term) AND similarity(username, sqlc.arg(search_term)) > 0)
+    OR
+    (fullname % sqlc.arg(search_term) AND similarity(fullname, sqlc.arg(search_term)) > 0)
 ORDER BY GREATEST(
-    similarity(username, sqlc.arg(search_term)),
-    similarity(fullname, sqlc.arg(search_term))
+     similarity(username, sqlc.arg(search_term)),
+     similarity(fullname, sqlc.arg(search_term))
 ) DESC
 LIMIT 10;
+
 
 
 
