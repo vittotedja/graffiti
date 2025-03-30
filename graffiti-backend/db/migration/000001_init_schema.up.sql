@@ -94,3 +94,4 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE INDEX idx_users_username_trgm ON users USING gin (username gin_trgm_ops);
 CREATE INDEX idx_users_fullname_trgm ON users USING gin (fullname gin_trgm_ops);
 
+ALTER DATABASE graffiti SET pg_trgm.similarity_threshold = 0;
