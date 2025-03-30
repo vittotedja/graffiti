@@ -19,7 +19,7 @@ import {Wall} from "@/types/wall";
 import {Post} from "@/types/post";
 
 type SortOption = "latest" | "oldest" | "popular";
-type FilterOption = "all" | "photos" | "videos" | "text";
+type FilterOption = "all" | "photos" | "embed";
 
 export default function WallPage() {
 	const params = useParams();
@@ -103,10 +103,6 @@ export default function WallPage() {
 		switch (filterBy) {
 			case "photos":
 				return post.media_url && !post.media_url.includes("video");
-			case "videos":
-				return post.media_url && post.media_url.includes("video");
-			case "text":
-				return !post.media_url;
 			case "all":
 			default:
 				return true;
@@ -161,11 +157,8 @@ export default function WallPage() {
 							<DropdownMenuItem onClick={() => setFilterBy("photos")}>
 								Photos Only
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setFilterBy("videos")}>
-								Videos Only
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setFilterBy("text")}>
-								Text Only
+							<DropdownMenuItem onClick={() => setFilterBy("embed")}>
+								Embed Link Only
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>

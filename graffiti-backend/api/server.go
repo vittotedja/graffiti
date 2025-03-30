@@ -44,7 +44,7 @@ func NewServer(hub *db.Hub) *Server {
 
 	// Set up routes for the user API
 	router.POST("/api/v1/users", server.createUser) // working
-	router.GET("api/v1/users/:id", server.getUser)  // working
+	router.GET("/api/v1/users/:id", server.getUser) // working
 	router.GET("/api/v1/users", server.listUsers)   // working
 	router.PUT("/api/v1/users/:id", server.updateUser)
 	router.DELETE("/api/v1/users/:id", server.deleteUser)         // working, but maybe need to add id of the deleted item in the response
@@ -73,36 +73,9 @@ func NewServer(hub *db.Hub) *Server {
 	router.PUT("/api/v1/posts/:id", server.updatePost)
 	router.PUT("/api/v1/posts/:id/highlight", server.highlightPost)
 	router.DELETE("/api/v1/posts/:id", server.deletePost)
-	router.GET("/api/v1/users/:id", server.getUser)
-	router.GET("/api/v1/users", server.listUsers)      // working
-	router.PUT("/api/v1/users/:id", server.updateUser) // working
-	router.DELETE("/api/v1/users/:id", server.deleteUser)
-	router.PUT("/api/v1/users/:id/profile", server.updateProfile)
-	router.PUT("/api/v1/users/:id/onboarding", server.finishOnboarding) // working
-
-	// Set up routes for the wall API
-	router.POST("/api/v1/walls", server.createWall)
-	router.GET("/api/v1/walls/:id", server.getWall)                 // working
-	router.GET("/api/v1/walls", server.listWalls)                   // working
-	router.GET("/api/v1/users/:id/walls", server.listWallsByUser)   // working
-	router.PUT("/api/v1/walls/:id", server.updateWall)              // working
-	router.PUT("/api/v1/walls/:id/publicize", server.publicizeWall) // working
-	router.PUT("/api/v1/walls/:id/privatize", server.privatizeWall) // working
-	router.PUT("/api/v1/walls/:id/archive", server.archiveWall)
-	router.PUT("/api/v1/walls/:id/unarchive", server.unarchiveWall)
-	router.DELETE("/api/v1/walls/:id", server.deleteWall) // working
-
-	// Set up routes for the post API
-	router.POST("/api/v1/posts", server.createPost)                                     // working
-	router.GET("/api/v1/posts/:id", server.getPost)                                     // working
-	router.GET("/api/v1/posts", server.listPosts)                                       // working
-	router.GET("/api/v1/walls/:id/posts", server.listPostsByWall)                       // working
 	router.GET("/api/v1/posts/highlighted", server.getHighlightedPosts)                 // working
 	router.GET("/api/v1/walls/:id/posts/highlighted", server.getHighlightedPostsByWall) // working
-	router.PUT("/api/v1/posts/:id", server.updatePost)                                  // working
-	router.PUT("/api/v1/posts/:id/highlight", server.highlightPost)                     // working
 	router.PUT("/api/v1/posts/:id/unhighlight", server.unhighlightPost)                 // working
-	router.DELETE("/api/v1/posts/:id", server.deletePost)                               // working
 
 	// Updated Friendship API routes
 	// Friend Requests
