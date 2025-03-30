@@ -141,13 +141,20 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 }
 
 const searchUsersByNameOrUsername = `-- name: SearchUsersByNameOrUsername :many
-SELECT id, username, fullname, profile_picture,
-       similarity(username, $1) AS username_score,
-       similarity(fullname, $1) AS fullname_score
+SELECT
+    id,
+    username,
+    fullname,
+    profile_picture
 FROM users
-WHERE username % $1 OR fullname % $1
-ORDER BY GREATEST(similarity(username, $1), similarity(fullname, $1)) DESC
-    LIMIT 10
+WHERE
+    similarity(username, $1) > 0 OR
+    similarity(fullname, $1) > 0
+ORDER BY GREATEST(
+    similarity(username, $1),
+    similarity(fullname, $1)
+) DESC
+LIMIT 10
 `
 
 type SearchUsersByNameOrUsernameRow struct {
@@ -155,12 +162,10 @@ type SearchUsersByNameOrUsernameRow struct {
 	Username       string
 	Fullname       pgtype.Text
 	ProfilePicture pgtype.Text
-	UsernameScore  float32
-	FullnameScore  float32
 }
 
-func (q *Queries) SearchUsersByNameOrUsername(ctx context.Context, similarity string) ([]SearchUsersByNameOrUsernameRow, error) {
-	rows, err := q.db.Query(ctx, searchUsersByNameOrUsername, similarity)
+func (q *Queries) SearchUsersByNameOrUsername(ctx context.Context, searchTerm string) ([]SearchUsersByNameOrUsernameRow, error) {
+	rows, err := q.db.Query(ctx, searchUsersByNameOrUsername, searchTerm)
 	if err != nil {
 		return nil, err
 	}
@@ -173,8 +178,6 @@ func (q *Queries) SearchUsersByNameOrUsername(ctx context.Context, similarity st
 			&i.Username,
 			&i.Fullname,
 			&i.ProfilePicture,
-			&i.UsernameScore,
-			&i.FullnameScore,
 		); err != nil {
 			return nil, err
 		}
