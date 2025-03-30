@@ -148,11 +148,12 @@ SELECT
     profile_picture
 FROM users
 WHERE
-    similarity(username, $1) > 0 OR
-    similarity(fullname, $1) > 0
+    (username % $1 AND similarity(username, $1) > 0)
+    OR
+    (fullname % $1 AND similarity(fullname, $1) > 0)
 ORDER BY GREATEST(
-    similarity(username, $1),
-    similarity(fullname, $1)
+     similarity(username, $1),
+     similarity(fullname, $1)
 ) DESC
 LIMIT 10
 `
