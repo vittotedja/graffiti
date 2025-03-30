@@ -27,6 +27,7 @@ func NewServer(config util.Config) *Server {
 		config: config,
 		router: gin.Default(),
 	}
+	s.router.Use(logger.Middleware())
 	s.registerRoutes()
 	return s
 }
@@ -85,6 +86,7 @@ func (s *Server) registerRoutes() {
 	s.router.DELETE("/api/v1/users/:id", s.deleteUser)
 	s.router.PUT("/api/v1/users/:id/profile", s.updateProfile)
 	s.router.PUT("/api/v1/users/:id/onboarding", s.finishOnboarding) // working
+	s.router.POST("/api/v1/users/search", s.searchUsers)
 
 	// Set up routes for the wall API
 	s.router.POST("/api/v1/walls", s.createWall)
