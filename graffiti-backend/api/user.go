@@ -477,13 +477,17 @@ func (server *Server) searchUsers(ctx *gin.Context) {
 	}
 
 	var (
-		rawUsers any
-		err      error
+		rawUsers   any
+		err        error
+		searchTerm pgtype.Text
 	)
+
+	searchTerm.Valid = true
+	searchTerm.String = req.SearchTerm
 
 	// Use different search methods based on the length of the search term as trigram search is more efficient for longer terms (>= 3 characters)
 	if len(req.SearchTerm) < 3 {
-		rawUsers, err = server.hub.SearchUsersILike(ctx, req.SearchTerm)
+		rawUsers, err = server.hub.SearchUsersILike(ctx, searchTerm)
 	} else {
 		rawUsers, err = server.hub.SearchUsersTrigram(ctx, req.SearchTerm)
 	}
