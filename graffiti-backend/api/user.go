@@ -44,6 +44,17 @@ type updateProfileRequest struct {
 	BackgroundImage string `json:"background_image"`
 }
 
+type UserSearchRequest struct {
+	SearchTerm string `json:"search_term" binding:"required"`
+}
+
+type UserSearchResponse struct {
+	ID             string `json:"id"`
+	Username       string `json:"username"`
+	FullName       string `json:"fullname"`
+	ProfilePicture string `json:"profile_picture"`
+}
+
 // createUser handles the creation of a new user
 func (server *Server) createUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
@@ -451,6 +462,41 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 		"id":      id.String(),
 		"message": "User deleted successfully!",
 	})
+}
+
+func (server *Server) searchUsers(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received search users request")
+
+	var req UserSearchRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON body", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "search_term is required"})
+		return
+	}
+
+	users, err := server.hub.SearchUsersByNameOrUsername(ctx, req.SearchTerm)
+	if err != nil {
+		log.Error("Search query failed", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	respList := make([]UserSearchResponse, 0, len(users))
+	for _, user := range users {
+		userResp := UserSearchResponse{
+			ID:       user.ID.String(),
+			Username: user.Username,
+			FullName: user.Fullname.String,
+		}
+		if user.ProfilePicture.Valid {
+			userResp.ProfilePicture = user.ProfilePicture.String
+		}
+		respList = append(respList, userResp)
+	}
+
+	log.Info("User search returned results successfully")
+	ctx.JSON(http.StatusOK, respList)
 }
 
 // Helper function to hash passwords (you should implement a proper password hashing algorithm)
