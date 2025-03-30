@@ -33,7 +33,7 @@ func main() {
 	semaphore := make(chan struct{}, maxConcurrency)
 	var wg sync.WaitGroup
 
-	rand.Seed(time.Now().UnixNano())
+	rand.NewSource(time.Now().UnixNano())
 
 	for i := 0; i < totalUsers; i++ {
 		wg.Add(1)
