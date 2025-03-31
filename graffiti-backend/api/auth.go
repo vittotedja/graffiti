@@ -24,14 +24,14 @@ type loginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-func (server *Server) Register(ctx *gin.Context) {
+func (s *Server) Register(ctx *gin.Context) {
 	var req registerRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, errorResponse(err))
 		return
 	}
 	//check if user exists
-	user, _ := server.hub.GetUserByEmail(ctx, req.Email)
+	user, _ := s.hub.GetUserByEmail(ctx, req.Email)
 	if user.Email == req.Email {
 		ctx.JSON(400, errors.New("user already exists"))
 		return
@@ -52,7 +52,7 @@ func (server *Server) Register(ctx *gin.Context) {
 		HashedPassword: hashedPassword,
 	}
 
-	newUser, err := server.hub.CreateUser(ctx, arg)
+	newUser, err := s.hub.CreateUser(ctx, arg)
 
 	if err != nil {
 		ctx.JSON(500, errorResponse(err))
@@ -72,14 +72,14 @@ func (server *Server) Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-func (server *Server) Login(ctx *gin.Context) {
+func (s *Server) Login(ctx *gin.Context) {
 	var req loginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	user, err := server.hub.GetUserByEmail(ctx, req.Email)
+	user, err := s.hub.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
@@ -90,7 +90,7 @@ func (server *Server) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, _, err := server.tokenMaker.CreateToken(user.Username, time.Hour)
+	token, _, err := s.tokenMaker.CreateToken(user.Username, time.Hour)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -104,20 +104,20 @@ func (server *Server) Login(ctx *gin.Context) {
 	})
 }
 
-func (server *Server) Me(ctx *gin.Context) {
+func (s *Server) Me(ctx *gin.Context) {
 	token, err := ctx.Cookie("token")
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
-	payload, err := server.tokenMaker.VerifyToken(token)
+	payload, err := s.tokenMaker.VerifyToken(token)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
-	user, err := server.hub.GetUserByUsername(ctx, payload.Username)
+	user, err := s.hub.GetUserByUsername(ctx, payload.Username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
 		return

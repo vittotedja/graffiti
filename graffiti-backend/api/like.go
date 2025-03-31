@@ -15,7 +15,7 @@ type createLikeRequest struct {
 	UserID string `json:"user_id" binding:"required"`
 }
 
-func (server *Server) createLike(ctx *gin.Context) {
+func (s *Server) createLike(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received create like request")
@@ -44,7 +44,7 @@ func (server *Server) createLike(ctx *gin.Context) {
 		UserID: userID,
 	}
 
-	like, err := server.hub.CreateLike(ctx, arg)
+	like, err := s.hub.CreateLike(ctx, arg)
 	if err != nil {
 		log.Error("Failed to create like", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -59,7 +59,7 @@ type getLikeRequest struct {
 	ID string `uri:"id" binding:"required"`
 }
 
-func (server *Server) getLike(ctx *gin.Context) {
+func (s *Server) getLike(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get like request")
@@ -78,7 +78,7 @@ func (server *Server) getLike(ctx *gin.Context) {
 		return
 	}
 
-	like, err := server.hub.GetLike(ctx, id)
+	like, err := s.hub.GetLike(ctx, id)
 	if err != nil {
 		log.Error("Failed to get like", err)
 		ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -94,7 +94,7 @@ type deleteLikeRequest struct {
 	UserID string `uri:"user_id" binding:"required"`
 }
 
-func (server *Server) deleteLike(ctx *gin.Context) {
+func (s *Server) deleteLike(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received delete like request")
@@ -123,7 +123,7 @@ func (server *Server) deleteLike(ctx *gin.Context) {
 		UserID: userID,
 	}
 
-	if err := server.hub.DeleteLike(ctx, arg); err != nil {
+	if err := s.hub.DeleteLike(ctx, arg); err != nil {
 		log.Error("Failed to delete like", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -133,12 +133,12 @@ func (server *Server) deleteLike(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Like deleted successfully"})
 }
 
-func (server *Server) listLikes(ctx *gin.Context) {
+func (s *Server) listLikes(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list likes request")
 
-	likes, err := server.hub.ListLikes(ctx)
+	likes, err := s.hub.ListLikes(ctx)
 	if err != nil {
 		log.Error("Failed to list likes", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -153,7 +153,7 @@ type listLikesByPostRequest struct {
 	PostID string `uri:"post_id" binding:"required"`
 }
 
-func (server *Server) listLikesByPost(ctx *gin.Context) {
+func (s *Server) listLikesByPost(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list likes by post request")
@@ -172,7 +172,7 @@ func (server *Server) listLikesByPost(ctx *gin.Context) {
 		return
 	}
 
-	likes, err := server.hub.ListLikesByPost(ctx, postID)
+	likes, err := s.hub.ListLikesByPost(ctx, postID)
 	if err != nil {
 		log.Error("Failed to list likes by post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -187,7 +187,7 @@ type listLikesByUserRequest struct {
 	UserID string `uri:"user_id" binding:"required"`
 }
 
-func (server *Server) listLikesByUser(ctx *gin.Context) {
+func (s *Server) listLikesByUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list likes by user request")
@@ -206,7 +206,7 @@ func (server *Server) listLikesByUser(ctx *gin.Context) {
 		return
 	}
 
-	likes, err := server.hub.ListLikesByUser(ctx, userID)
+	likes, err := s.hub.ListLikesByUser(ctx, userID)
 	if err != nil {
 		log.Error("Failed to list likes by user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))

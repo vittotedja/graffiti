@@ -56,7 +56,7 @@ type UserSearchResponse struct {
 }
 
 // createUser handles the creation of a new user
-func (server *Server) createUser(ctx *gin.Context) {
+func (s *Server) createUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received create user request")
@@ -78,7 +78,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		HashedPassword: hashedPassword,
 	}
 
-	user, err := server.hub.CreateUser(ctx, arg)
+	user, err := s.hub.CreateUser(ctx, arg)
 	if err != nil {
 		log.Error("Failed to create user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -113,7 +113,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 }
 
 // getUser handles retrieving a user by ID
-func (server *Server) getUser(ctx *gin.Context) {
+func (s *Server) getUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get user request")
@@ -135,7 +135,7 @@ func (server *Server) getUser(ctx *gin.Context) {
 		return
 	}
 
-	user, err := server.hub.GetUser(ctx, id)
+	user, err := s.hub.GetUser(ctx, id)
 	if err != nil {
 		log.Error("Failed to get user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -170,12 +170,12 @@ func (server *Server) getUser(ctx *gin.Context) {
 }
 
 // listUsers handles retrieving a list of users
-func (server *Server) listUsers(ctx *gin.Context) {
+func (s *Server) listUsers(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list users request")
 
-	users, err := server.hub.ListUsers(ctx)
+	users, err := s.hub.ListUsers(ctx)
 	if err != nil {
 		log.Error("Failed to list users", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -215,7 +215,7 @@ func (server *Server) listUsers(ctx *gin.Context) {
 }
 
 // updateUser handles updating a user's basic information
-func (server *Server) updateUser(ctx *gin.Context) {
+func (s *Server) updateUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received update user request")
@@ -248,7 +248,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 	}
 
 	// Fetch the current user data to retain non-nullable fields
-	currentUser, err := server.hub.GetUser(ctx, id)
+	currentUser, err := s.hub.GetUser(ctx, id)
 	if err != nil {
 		log.Error("Failed to get current user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -288,7 +288,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		arg.HashedPassword = currentUser.HashedPassword
 	}
 
-	user, err := server.hub.UpdateUser(ctx, arg)
+	user, err := s.hub.UpdateUser(ctx, arg)
 	if err != nil {
 		log.Error("Failed to update user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -323,7 +323,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 }
 
 // updateProfile handles updating a user's profile information
-func (server *Server) updateProfile(ctx *gin.Context) {
+func (s *Server) updateProfile(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received update profile request")
@@ -359,7 +359,7 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 		BackgroundImage: pgtype.Text{String: req.BackgroundImage, Valid: req.BackgroundImage != ""},
 	}
 
-	user, err := server.hub.UpdateProfile(ctx, arg)
+	user, err := s.hub.UpdateProfile(ctx, arg)
 	if err != nil {
 		log.Error("Failed to update profile", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -394,7 +394,7 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 }
 
 // finishOnboarding handles marking a user as having completed onboarding
-func (server *Server) finishOnboarding(ctx *gin.Context) {
+func (s *Server) finishOnboarding(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received finish onboarding request")
@@ -416,7 +416,7 @@ func (server *Server) finishOnboarding(ctx *gin.Context) {
 		return
 	}
 
-	err = server.hub.FinishOnboarding(ctx, id)
+	err = s.hub.FinishOnboarding(ctx, id)
 	if err != nil {
 		log.Error("Failed to finish onboarding", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -428,7 +428,7 @@ func (server *Server) finishOnboarding(ctx *gin.Context) {
 }
 
 // deleteUser handles deleting a user
-func (server *Server) deleteUser(ctx *gin.Context) {
+func (s *Server) deleteUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received delete user request")
@@ -450,7 +450,7 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 		return
 	}
 
-	err = server.hub.DeleteUser(ctx, id)
+	err = s.hub.DeleteUser(ctx, id)
 	if err != nil {
 		log.Error("Failed to delete user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -464,7 +464,7 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 	})
 }
 
-func (server *Server) searchUsers(ctx *gin.Context) {
+func (s *Server) searchUsers(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received search users request")
@@ -487,9 +487,9 @@ func (server *Server) searchUsers(ctx *gin.Context) {
 
 	// Use different search methods based on the length of the search term as trigram search is more efficient for longer terms (>= 3 characters)
 	if len(req.SearchTerm) < 3 {
-		rawUsers, err = server.hub.SearchUsersILike(ctx, searchTerm)
+		rawUsers, err = s.hub.SearchUsersILike(ctx, searchTerm)
 	} else {
-		rawUsers, err = server.hub.SearchUsersTrigram(ctx, req.SearchTerm)
+		rawUsers, err = s.hub.SearchUsersTrigram(ctx, req.SearchTerm)
 	}
 	if err != nil {
 		log.Error("Search query failed", err)

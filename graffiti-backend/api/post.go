@@ -82,7 +82,7 @@ func newPostResponseWithAuthor(post db.ListPostsByWallWithAuthorsDetailsRow) Pos
 }
 
 // CreatePost handler
-func (server *Server) createPost(ctx *gin.Context) {
+func (s *Server) createPost(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received create post request")
@@ -114,7 +114,7 @@ func (server *Server) createPost(ctx *gin.Context) {
 		PostType: db.NullPostType{PostType: postType, Valid: true},
 	}
 
-	post, err := server.hub.CreatePost(ctx, arg)
+	post, err := s.hub.CreatePost(ctx, arg)
 	if err != nil {
 		log.Error("Failed to create post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -127,7 +127,7 @@ func (server *Server) createPost(ctx *gin.Context) {
 }
 
 // GetPost handler
-func (server *Server) getPost(ctx *gin.Context) {
+func (s *Server) getPost(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get post request")
@@ -149,7 +149,7 @@ func (server *Server) getPost(ctx *gin.Context) {
 		return
 	}
 
-	post, err := server.hub.GetPost(ctx, id)
+	post, err := s.hub.GetPost(ctx, id)
 	if err != nil {
 		log.Error("Failed to get post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -162,12 +162,12 @@ func (server *Server) getPost(ctx *gin.Context) {
 }
 
 // ListPosts handler
-func (server *Server) listPosts(ctx *gin.Context) {
+func (s *Server) listPosts(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list posts request")
 
-	posts, err := server.hub.ListPosts(ctx)
+	posts, err := s.hub.ListPosts(ctx)
 	if err != nil {
 		log.Error("Failed to list posts", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -184,7 +184,7 @@ func (server *Server) listPosts(ctx *gin.Context) {
 }
 
 // ListPostsByWall handler
-func (server *Server) listPostsByWall(ctx *gin.Context) {
+func (s *Server) listPostsByWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list posts by wall request")
@@ -206,7 +206,7 @@ func (server *Server) listPostsByWall(ctx *gin.Context) {
 		return
 	}
 
-	posts, err := server.hub.ListPostsByWall(ctx, wallID)
+	posts, err := s.hub.ListPostsByWall(ctx, wallID)
 	if err != nil {
 		log.Error("Failed to list posts by wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -222,7 +222,7 @@ func (server *Server) listPostsByWall(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, responses)
 }
 
-func (server *Server) listPostsByWallWithAuthorsDetails(ctx *gin.Context) {
+func (s *Server) listPostsByWallWithAuthorsDetails(ctx *gin.Context) {
 	var uri struct {
 		WallID string `uri:"id" binding:"required,uuid"`
 	}
@@ -239,7 +239,7 @@ func (server *Server) listPostsByWallWithAuthorsDetails(ctx *gin.Context) {
 		return
 	}
 
-	posts, err := server.hub.ListPostsByWallWithAuthorsDetails(ctx, wallID)
+	posts, err := s.hub.ListPostsByWallWithAuthorsDetails(ctx, wallID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -253,12 +253,12 @@ func (server *Server) listPostsByWallWithAuthorsDetails(ctx *gin.Context) {
 }
 
 // GetHighlightedPosts handler
-func (server *Server) getHighlightedPosts(ctx *gin.Context) {
+func (s *Server) getHighlightedPosts(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get highlighted posts request")
 
-	posts, err := server.hub.GetHighlightedPosts(ctx)
+	posts, err := s.hub.GetHighlightedPosts(ctx)
 	if err != nil {
 		log.Error("Failed to get highlighted posts", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -275,7 +275,7 @@ func (server *Server) getHighlightedPosts(ctx *gin.Context) {
 }
 
 // GetHighlightedPostsByWall handler
-func (server *Server) getHighlightedPostsByWall(ctx *gin.Context) {
+func (s *Server) getHighlightedPostsByWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get highlighted posts by wall request")
@@ -297,7 +297,7 @@ func (server *Server) getHighlightedPostsByWall(ctx *gin.Context) {
 		return
 	}
 
-	posts, err := server.hub.GetHighlightedPostsByWall(ctx, wallID)
+	posts, err := s.hub.GetHighlightedPostsByWall(ctx, wallID)
 	if err != nil {
 		log.Error("Failed to get highlighted posts by wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -314,7 +314,7 @@ func (server *Server) getHighlightedPostsByWall(ctx *gin.Context) {
 }
 
 // UpdatePost handler
-func (server *Server) updatePost(ctx *gin.Context) {
+func (s *Server) updatePost(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received update post request")
@@ -342,7 +342,7 @@ func (server *Server) updatePost(ctx *gin.Context) {
 		return
 	}
 
-	currentPost, err := server.hub.GetPost(ctx, id)
+	currentPost, err := s.hub.GetPost(ctx, id)
 	if err != nil {
 		log.Error("Failed to get current post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -363,7 +363,7 @@ func (server *Server) updatePost(ctx *gin.Context) {
 		arg.PostType = db.NullPostType{PostType: postType, Valid: true}
 	}
 
-	post, err := server.hub.UpdatePost(ctx, arg)
+	post, err := s.hub.UpdatePost(ctx, arg)
 	if err != nil {
 		log.Error("Failed to update post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -376,7 +376,7 @@ func (server *Server) updatePost(ctx *gin.Context) {
 }
 
 // HighlightPost handler
-func (server *Server) highlightPost(ctx *gin.Context) {
+func (s *Server) highlightPost(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received highlight post request")
@@ -398,7 +398,7 @@ func (server *Server) highlightPost(ctx *gin.Context) {
 		return
 	}
 
-	post, err := server.hub.HighlightPost(ctx, id)
+	post, err := s.hub.HighlightPost(ctx, id)
 	if err != nil {
 		log.Error("Failed to highlight post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -411,7 +411,7 @@ func (server *Server) highlightPost(ctx *gin.Context) {
 }
 
 // UnhighlightPost handler
-func (server *Server) unhighlightPost(ctx *gin.Context) {
+func (s *Server) unhighlightPost(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received unhighlight post request")
@@ -433,7 +433,7 @@ func (server *Server) unhighlightPost(ctx *gin.Context) {
 		return
 	}
 
-	post, err := server.hub.UnhighlightPost(ctx, id)
+	post, err := s.hub.UnhighlightPost(ctx, id)
 	if err != nil {
 		log.Error("Failed to unhighlight post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -446,7 +446,7 @@ func (server *Server) unhighlightPost(ctx *gin.Context) {
 }
 
 // DeletePost handler
-func (server *Server) deletePost(ctx *gin.Context) {
+func (s *Server) deletePost(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received delete post request")
@@ -468,7 +468,7 @@ func (server *Server) deletePost(ctx *gin.Context) {
 		return
 	}
 
-	if err := server.hub.DeletePost(ctx, id); err != nil {
+	if err := s.hub.DeletePost(ctx, id); err != nil {
 		log.Error("Failed to delete post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
