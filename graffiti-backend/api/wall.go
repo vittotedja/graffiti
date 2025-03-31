@@ -248,7 +248,7 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 		ToUser:   userID,
 	}
 
-	_, err = server.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	friendship, err := server.hub.Queries.ListFriendshipByUserPairs(ctx, params)
 
 	isFriend := true
 	if err != nil {
@@ -259,6 +259,8 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
+	} else if friendship.Status.Status != "friends" {
+		isFriend = false
 	}
 
 	var filteredWalls []wallResponse

@@ -97,6 +97,7 @@ func (s *Server) registerRoutes() {
 
 	s.router.POST("/api/v1/auth/register", s.Register)
 	s.router.POST("/api/v1/auth/login", s.Login)
+	// s.router.POST("/api/v1/auth/logout", s.Logout)
 
 	protected := s.router.Group("/api")
 	protected.Use(s.AuthMiddleware())
@@ -106,12 +107,12 @@ func (s *Server) registerRoutes() {
 		// Protected Walls Endpoint
 		protected.GET("/v2/walls", s.getOwnWall)
 		protected.GET("/v1/users/:id/walls", s.listWallsByUser)
-		protected.POST("/v2/walls", s.createNewWall) //no test yet
+		protected.POST("/v2/walls", s.createNewWall)       //no test yet
+		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
 	}
 
 	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
 
-	s.router.GET("/api/v1/friends", s.getFriendsByStatus)                                         //status = friends, requested, sent
 	s.router.GET("/api/v2/users/:id/friend-requests/pending", s.getReceivedPendingFriendRequests) // user_id; working
 	s.router.GET("/api/v2/users/:id/friend-requests/sent", s.getSentPendingFriendRequests)        // user_id; working
 

@@ -24,12 +24,12 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {useUser} from "@/hooks/useUser";
 import {formatFullName} from "@/lib/formatter";
+import {useUser} from "@/hooks/useUser";
 
 export function Navbar() {
 	const pathname = usePathname();
-	const {user, loading} = useUser();
+	const {user, loading} = useUser(true);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [hasNotifications, setHasNotifications] = useState(true);
 	const [isScrolled, setIsScrolled] = useState(false);
@@ -51,10 +51,8 @@ export function Navbar() {
 	}, []);
 
 	if (pathname.includes("/login")) return null;
-
-	if (loading) return <p>Loading...</p>;
-	if (!user) return;
-
+	if (loading) return null;
+	if (!user) return null;
 	return (
 		<header
 			className={`sticky top-0 z-50 w-full transition-all duration-200 ${
@@ -221,6 +219,7 @@ export function Navbar() {
 										/>
 										<AvatarFallback>
 											{formatFullName(user.fullname)}
+											{/* VT */}
 										</AvatarFallback>
 									</Avatar>
 								</Button>
