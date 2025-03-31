@@ -42,7 +42,7 @@ func RandomEmail() string {
 	return fmt.Sprintf("%s@email.com", RandomString(6))
 }
 
-// Random Fullname generates a random full name
+// RandomFullname generates a random full name
 func RandomFullname() string {
 	return fmt.Sprintf("%s %s", RandomString(6), RandomString(6))
 }
