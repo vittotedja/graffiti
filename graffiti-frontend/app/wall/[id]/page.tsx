@@ -77,8 +77,8 @@ export default function WallPage() {
 	const [posts, setPosts] = useState<Post[]>([]);
 
 	// Handle new post creation
-	const handlePostCreated = (newPost: Post) => {
-		setPosts([newPost, ...posts]);
+	const handlePostCreated = () => {
+		if (id) fetchPostData(id);
 	};
 
 	// Sort posts based on selected option

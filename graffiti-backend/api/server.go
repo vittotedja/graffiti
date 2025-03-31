@@ -35,12 +35,20 @@ func NewServer(hub *db.Hub) *Server {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// add routes to router
-
 	//Set up routes for Auth
 	router.POST("/api/v1/auth/register", server.Register)
 	router.POST("/api/v1/auth/login", server.Login)
-	router.POST("/api/v1/auth/me", server.Me)
+
+	protected := router.Group("/api")
+	protected.Use(server.AuthMiddleware())
+	{
+		protected.POST("/v1/auth/me", server.Me)
+
+		// Protected Walls Endpoint
+		protected.GET("/v2/walls", server.getOwnWall)
+		protected.GET("/v1/users/:id/walls", server.listWallsByUser)
+		protected.POST("/v2/walls", server.createNewWall) //no test yet
+	}
 
 	// Set up routes for the user API
 	router.POST("/api/v1/users", server.createUser) // working
@@ -53,10 +61,8 @@ func NewServer(hub *db.Hub) *Server {
 
 	// Set up routes for the wall API
 	router.POST("/api/v1/walls", server.createWall)
-	router.POST("/api/v2/walls", server.createNewWall)              // no test yet
 	router.GET("/api/v1/walls/:id", server.getWall)                 // working
 	router.GET("/api/v1/walls", server.listWalls)                   // working
-	router.GET("/api/v1/users/:id/walls", server.listWallsByUser)   // working
 	router.PUT("/api/v1/walls/:id", server.updateWall)              // working
 	router.PUT("/api/v1/walls/:id/publicize", server.publicizeWall) // working
 	router.PUT("/api/v1/walls/:id/privatize", server.privatizeWall) // working

@@ -13,6 +13,7 @@ import {formatFullName} from "@/lib/formatter";
 import {Friendship} from "@/types/friends";
 import {MoreVertical} from "lucide-react";
 import {useEffect, useState} from "react";
+import Link from "next/link";
 
 export default function FriendsList() {
 	const [pendingFriends, setPendingFriends] = useState<Friendship[]>([]);
@@ -49,7 +50,10 @@ export default function FriendsList() {
 						key={friend.UserID}
 						className="flex items-center justify-between p-4 hover:bg-accent/50"
 					>
-						<div className="flex items-center gap-3">
+						<Link
+							href={`/profile/${friend.UserID}`}
+							className="flex items-center gap-3 hover:underline cursor-pointer"
+						>
 							<Avatar>
 								<AvatarImage
 									src={friend.ProfilePicture}
@@ -65,7 +69,7 @@ export default function FriendsList() {
 									@{friend.Username}
 								</div>
 							</div>
-						</div>
+						</Link>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button variant="ghost" size="icon" className="h-8 w-8">
@@ -73,7 +77,9 @@ export default function FriendsList() {
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end">
-								<DropdownMenuItem>View Profile</DropdownMenuItem>
+								<DropdownMenuItem>
+									<Link href={`/profile/${friend.UserID}`}>View Profile</Link>
+								</DropdownMenuItem>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem>Block</DropdownMenuItem>
 								<DropdownMenuItem className="text-destructive">

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -99,25 +98,7 @@ func (server *Server) createNewWall(ctx *gin.Context) {
 		return
 	}
 
-	token, err := ctx.Cookie("token")
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	payload, err := server.tokenMaker.VerifyToken(token)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unathorized"})
-		return
-	}
-
-	user, err := server.hub.GetUserByUsername(ctx, payload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
-		return
-	}
-
-	log.Println(req)
+	user := ctx.MustGet("currentUser").(db.User)
 
 	arg := db.CreateTestWallParams{
 		UserID:      user.ID,
@@ -162,6 +143,25 @@ func (server *Server) getWall(ctx *gin.Context) {
 
 	response := newWallResponse(wall)
 	ctx.JSON(http.StatusOK, response)
+}
+
+func (server *Server) getOwnWall(ctx *gin.Context) {
+	user := ctx.MustGet("currentUser").(db.User)
+
+	walls, err := server.hub.ListWallsByUser(ctx, user.ID)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	responses := make([]wallResponse, 0, len(walls))
+	for _, wall := range walls {
+		responses = append(responses, newWallResponse(wall))
+	}
+
+	ctx.JSON(http.StatusOK, responses)
+
 }
 
 // ListWalls handler

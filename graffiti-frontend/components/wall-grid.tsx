@@ -19,28 +19,48 @@ import {fetchWithAuth} from "@/lib/auth";
 import {formatDate} from "@/lib/date-utils";
 import {Wall} from "@/types/wall";
 
-export function WallGrid() {
+type WallGridProps = {
+	userId?: string;
+};
+
+export function WallGrid({userId}: WallGridProps) {
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
 	const [walls, setWalls] = useState<Wall[]>([]);
 
-	const fetchWallData = async () => {
-		try {
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v1/walls"
-			);
-			if (!response) return; // already redirected if 401
-
-			const data = await response.json();
-			console.log("Fetched wall data:", data);
-			setWalls(data);
-		} catch (err) {
-			console.error("Failed to fetch wall data:", err);
-		}
-	};
-
 	useEffect(() => {
-		fetchWallData();
-	}, []);
+		const fetchFriendWallData = async () => {
+			try {
+				const response = await fetchWithAuth(
+					`http://localhost:8080/api/v1/users/${userId}/walls`
+				);
+				if (!response) return;
+
+				const data = await response.json();
+				console.log("Fetched wall data:", data);
+				setWalls(data);
+			} catch (err) {
+				console.error("Failed to fetch wall data:", err);
+			}
+		};
+
+		const fetchWallData = async () => {
+			try {
+				const response = await fetchWithAuth(
+					"http://localhost:8080/api/v2/walls"
+				);
+				if (!response) return; // already redirected if 401
+
+				const data = await response.json();
+				console.log("Fetched wall data:", data);
+				setWalls(data);
+			} catch (err) {
+				console.error("Failed to fetch wall data:", err);
+			}
+		};
+
+		if (userId) fetchFriendWallData();
+		else fetchWallData();
+	}, [userId]);
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -67,31 +87,36 @@ export function WallGrid() {
 									height={200}
 									className="w-full h-[220px] object-cover"
 								/>
-								<div className="absolute top-2 right-2">
-									<DropdownMenu>
-										<DropdownMenuTrigger asChild>
-											<Button
-												variant="ghost"
-												size="icon"
-												className="h-8 w-8 bg-black/30 text-white hover:bg-black/50 rounded-full cursor-pointer"
-											>
-												<MoreVertical className="h-4 w-4" />
-											</Button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end">
-											<DropdownMenuItem className="cursor-pointer">
-												Edit Wall
-											</DropdownMenuItem>
-											<DropdownMenuItem className="cursor-pointer">
-												Change Privacy
-											</DropdownMenuItem>
-											<DropdownMenuSeparator />
-											<DropdownMenuItem className="text-destructive cursor-pointer">
-												Delete Wall
-											</DropdownMenuItem>
-										</DropdownMenuContent>
-									</DropdownMenu>
-								</div>
+								{!userId && (
+									<div className="absolute top-2 right-2">
+										<DropdownMenu>
+											<DropdownMenuTrigger asChild>
+												<Button
+													variant="ghost"
+													size="icon"
+													className="h-8 w-8 bg-black/30 text-white hover:bg-black/50 rounded-full cursor-pointer"
+												>
+													<MoreVertical className="h-4 w-4" />
+												</Button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end">
+												<DropdownMenuItem className="cursor-pointer">
+													Edit Wall
+												</DropdownMenuItem>
+												<DropdownMenuItem className="cursor-pointer">
+													Change Privacy
+												</DropdownMenuItem>
+												<DropdownMenuItem className="cursor-pointer">
+													Pin Wall
+												</DropdownMenuItem>
+												<DropdownMenuSeparator />
+												<DropdownMenuItem className="text-destructive cursor-pointer">
+													Delete Wall
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</div>
+								)}
 								<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
 									<h3 className="font-bold text-xl text-white font-graffiti">
 										{wall.title}
@@ -116,26 +141,31 @@ export function WallGrid() {
 			))}
 
 			{/* Add New Wall Card */}
-			<Card
-				className="overflow-hidden border-2 border-dashed border-primary/40 bg-background/80 backdrop-blur-sm hover:bg-accent/10 transition-all h-[220px] flex items-center justify-center cursor-pointer"
-				onClick={() => setCreateWallModalOpen(true)}
-			>
-				<CardContent className="flex flex-col items-center justify-center p-6 text-center">
-					<div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-						<Plus className="h-6 w-6 text-primary" />
-					</div>
-					<h3 className="font-bold text-xl font-graffiti">Create New Wall</h3>
-					<p className="text-muted-foreground text-sm mt-1">
-						Add a new space for your memories
-					</p>
-				</CardContent>
-			</Card>
+			{!userId && (
+				<>
+					<Card
+						className="overflow-hidden border-2 border-dashed border-primary/40 bg-background/80 backdrop-blur-sm hover:bg-accent/10 transition-all h-[220px] flex items-center justify-center cursor-pointer"
+						onClick={() => setCreateWallModalOpen(true)}
+					>
+						<CardContent className="flex flex-col items-center justify-center p-6 text-center">
+							<div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+								<Plus className="h-6 w-6 text-primary" />
+							</div>
+							<h3 className="font-bold text-xl font-graffiti">
+								Create New Wall
+							</h3>
+							<p className="text-muted-foreground text-sm mt-1">
+								Add a new space for your memories
+							</p>
+						</CardContent>
+					</Card>
 
-			{/* Create Wall Modal */}
-			<CreateWallModal
-				isOpen={createWallModalOpen}
-				onClose={() => setCreateWallModalOpen(false)}
-			/>
+					<CreateWallModal
+						isOpen={createWallModalOpen}
+						onClose={() => setCreateWallModalOpen(false)}
+					/>
+				</>
+			)}
 		</div>
 	);
 }
