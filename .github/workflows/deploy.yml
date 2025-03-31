@@ -5,6 +5,10 @@ on:
   push:
     branches: [ "master" ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
 
   build:
@@ -34,5 +38,6 @@ jobs:
         REPOSITORY: graffiti
         IMAGE_TAG: ${{ github.sha }}
       run: |
+        cd graffiti-backend
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG

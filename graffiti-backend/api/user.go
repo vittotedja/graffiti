@@ -1,9 +1,10 @@
 package api
 
 import (
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"net/http"
 	"time"
+
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -16,7 +17,6 @@ type createUserRequest struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
-
 type getUserResponse struct {
 	ID              string `json:"id"`
 	Username        string `json:"username"`
@@ -282,7 +282,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 	// Hash the password if it is provided
 	if req.Password != nil {
 		hashedPassword := hashPassword(*req.Password)
-		arg.HashedPassword = hashedPassword
+		arg.HashedPassword = hashedPassword // Set the hashed password
 	} else {
 		// If no password is provided, pass the existing hashed password
 		arg.HashedPassword = currentUser.HashedPassword

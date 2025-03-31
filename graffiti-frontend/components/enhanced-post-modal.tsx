@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import {useState, useRef, useEffect} from "react";
 import {
 	Upload,
@@ -15,7 +14,6 @@ import {
 	X,
 	ChevronLeft,
 } from "lucide-react";
-
 import {Button} from "@/components/ui/button";
 import {
 	Dialog,
@@ -30,13 +28,14 @@ import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea";
 import {Input} from "./ui/input";
 import {toast} from "sonner";
+import {RequestPost} from "@/types/post";
+import {fetchWithAuth} from "@/lib/auth";
 
 interface EnhancedPostModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	wallId: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onPostCreated: (post: any) => void;
+	onPostCreated: () => void;
 }
 
 type Platform = "youtube" | "tiktok" | "spotify" | "others";
@@ -44,7 +43,7 @@ type Platform = "youtube" | "tiktok" | "spotify" | "others";
 export function EnhancedPostModal({
 	isOpen,
 	onClose,
-	// wallId,
+	wallId,
 	onPostCreated,
 }: EnhancedPostModalProps) {
 	const [activeTab, setActiveTab] = useState("upload");
@@ -63,8 +62,7 @@ export function EnhancedPostModal({
 	const [mediaUrl, setMediaUrl] = useState<string>("");
 	const [tiktokHtml, setTiktokHtml] = useState<string | null>(null);
 
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-
+	// All Refs for processing picture and also doodles
 	const bgCanvasRef = useRef<HTMLCanvasElement>(null);
 	const drawCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -88,14 +86,7 @@ export function EnhancedPostModal({
 			const bgContext = bgCanvas.getContext("2d");
 			const drawContext = drawCanvas.getContext("2d");
 
-			if (!bgContext) {
-				// Handle the error or return early
-				return;
-			}
-
-			if (!drawContext) {
-				return;
-			}
+			if (!bgContext || !drawContext) return;
 
 			// Define maximum canvas dimensions
 			const MAX_WIDTH = 480;
@@ -160,7 +151,7 @@ export function EnhancedPostModal({
 				img.src = selectedImage;
 			}
 		}
-	}, [selectedImage, activeTab]);
+	}, [selectedImage]);
 
 	// Handle file upload
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,46 +261,6 @@ export function EnhancedPostModal({
 				context.putImageData(drawingHistory[newIndex], 0, 0);
 			}
 		}
-	};
-	// Handle post submission
-	const handleSubmit = () => {
-		if (!selectedImage) return;
-
-		setIsSubmitting(true);
-
-		// Get the final image from canvas
-		let finalImage = selectedImage;
-		if (canvasRef.current) {
-			finalImage = canvasRef.current.toDataURL("image/png");
-		}
-
-		// Create a new post object
-		const newPost = {
-			id: Math.floor(Math.random() * 10000),
-			content: caption,
-			imageUrl: finalImage,
-			createdAt: new Date(),
-			likes: 0,
-			comments: 0,
-			author: {
-				name: "Current User",
-				username: "currentuser",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-		};
-
-		// Simulate API call delay
-		setTimeout(() => {
-			// Add the post to the wall
-			onPostCreated(newPost);
-
-			// Reset form and close modal
-			setSelectedImage(null);
-			setCaption("");
-			setActiveTab("upload");
-			setIsSubmitting(false);
-			onClose();
-		}, 1000);
 	};
 
 	// Reset state when modal closes
@@ -452,7 +403,6 @@ export function EnhancedPostModal({
 						src={embedUrl}
 						width="100%"
 						height="352"
-						frameBorder="0"
 						allowFullScreen
 						allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
 						loading="lazy"
@@ -475,6 +425,71 @@ export function EnhancedPostModal({
 						</p>
 					</div>
 				);
+		}
+	};
+
+	const uploadPosts = async (postType: "media" | "embed") => {
+		setIsSubmitting(true);
+
+		let newPost: RequestPost;
+		if (postType === "media") {
+			const finalImage = compositeDataUrl || selectedImage;
+			//TODO: process finalImage
+			newPost = {
+				post_type: "media",
+				media_url: finalImage,
+				wall_id: wallId,
+				// caption: caption,
+			};
+		} else if (postType === "embed") {
+			const {embedUrl} = getEmbedUrl(mediaUrl);
+			newPost = {
+				post_type: "embed_link",
+				media_url: embedUrl,
+				wall_id: wallId,
+			};
+
+			try {
+				const response = await fetchWithAuth(
+					"http://localhost:8080/api/v1/posts",
+					{
+						method: "POST",
+						body: JSON.stringify({
+							...newPost,
+							author: "a09a0895-2edd-40ee-8f9d-da18ac9fbc40",
+						}),
+					}
+				);
+				if (!response.ok) throw new Error("Something went wrong");
+				toast.success("successful");
+			} catch (error) {
+				console.log(error);
+
+				toast.error("something went wrong");
+			}
+		}
+
+		// Simulate API delay
+		setTimeout(() => {
+			onPostCreated();
+			// Reset state after posting
+			setSelectedImage(null);
+			setCaption("");
+			setActiveTab("upload");
+			setMediaUrl("");
+			setIsPreviewLoaded(false);
+			setCompositeDataUrl(null);
+			setIsSubmitting(false);
+			onClose();
+		}, 1000);
+	};
+
+	// Handle post submission
+	const handleSubmit = () => {
+		if (mediaUrl && isPreviewLoaded) {
+			uploadPosts("embed");
+		} else if (selectedImage) {
+			uploadPosts("media");
 		}
 	};
 
@@ -530,7 +545,10 @@ export function EnhancedPostModal({
 							<Button
 								variant="ghost"
 								size="sm"
-								onClick={() => setActiveTab("details")}
+								onClick={() => {
+									setActiveTab("details");
+									handleNext();
+								}}
 							>
 								Next
 							</Button>
@@ -622,19 +640,33 @@ export function EnhancedPostModal({
 											<div className="rounded-md overflow-hidden border bg-muted">
 												{renderIframe()}
 											</div>
-										</div>
-									)}
-
-									{isPreviewLoaded && (
-										<div className="space-y-2 mt-4">
-											<Label htmlFor="caption">Caption</Label>
-											<Textarea
-												id="caption"
-												placeholder="Add a caption to your media..."
-												value={caption}
-												onChange={(e) => setCaption(e.target.value)}
-												rows={3}
-											/>
+											<div className="space-y-2 mt-4">
+												<Label htmlFor="caption">Caption</Label>
+												<Textarea
+													id="caption"
+													placeholder="Add a caption to your media..."
+													value={caption}
+													onChange={(e) => setCaption(e.target.value)}
+													rows={3}
+												/>
+											</div>
+											<Button
+												className="mt-4"
+												onClick={handleSubmit}
+												disabled={isSubmitting}
+											>
+												{isSubmitting ? (
+													<div className="flex items-center gap-2">
+														<div className="h-4 w-4 rounded-full border-2 border-t-transparent border-white animate-spin"></div>
+														Posting...
+													</div>
+												) : (
+													<>
+														<Save className="h-4 w-4 mr-2" />
+														Post to Wall
+													</>
+												)}
+											</Button>
 										</div>
 									)}
 								</div>
