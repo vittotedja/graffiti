@@ -7,6 +7,16 @@ INSERT INTO walls(
     $1, $2, $3
 ) RETURNING *;
 
+-- name: CreateTestWall :one
+INSERT INTO walls(
+    user_id,
+    title,
+    description,
+    is_public
+) VALUES (
+    $1, $2, $3, $4
+) RETURNING *;
+
 -- name: GetWall :one
 SELECT * FROM walls
 WHERE id = $1 LIMIT 1;

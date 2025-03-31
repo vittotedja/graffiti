@@ -1,13 +1,18 @@
 package api
 
 import (
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+	"database/sql"
+	"errors"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/pingcap/log"
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
+	"go.uber.org/zap"
+
+	"github.com/gin-gonic/gin"
 )
 
 // Wall request/response types
@@ -17,9 +22,16 @@ type createWallRequest struct {
 	BackgroundImage string `json:"background_image"`
 }
 
+type createTestWallRequest struct {
+	Title           string `json:"title"`
+	Description     string `json:"description"`
+	BackgroundImage string `json:"background_image"`
+	IsPublic        bool   `json:"is_public"`
+}
 type wallResponse struct {
 	ID              string    `json:"id"`
 	UserID          string    `json:"user_id"`
+	Title           string    `json:"title"`
 	Description     string    `json:"description,omitempty"`
 	BackgroundImage string    `json:"background_image,omitempty"`
 	IsPublic        bool      `json:"is_public"`
@@ -40,6 +52,7 @@ func newWallResponse(wall db.Wall) wallResponse {
 	return wallResponse{
 		ID:              wall.ID.String(),
 		UserID:          wall.UserID.String(),
+		Title:           wall.Title,
 		Description:     wall.Description.String,
 		BackgroundImage: wall.BackgroundImage.String,
 		IsPublic:        wall.IsPublic.Bool,
@@ -88,6 +101,34 @@ func (server *Server) createWall(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, newWallResponse(wall))
 }
 
+// CreateNewWall handler
+func (server *Server) createNewWall(ctx *gin.Context) {
+	var req createTestWallRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	user := ctx.MustGet("currentUser").(db.User)
+
+	arg := db.CreateTestWallParams{
+		UserID:      user.ID,
+		Description: pgtype.Text{String: req.Description, Valid: req.Description != ""},
+		Title:       req.Title,
+		IsPublic:    pgtype.Bool{Bool: req.IsPublic, Valid: true},
+	}
+
+	wall, err := server.hub.CreateTestWall(ctx, arg)
+	if err != nil {
+		log.Error("Failed to create wall", zap.Error(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Wall created successfully")
+	ctx.JSON(http.StatusCreated, newWallResponse(wall))
+}
+
 // GetWall handler
 func (server *Server) getWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
@@ -122,12 +163,36 @@ func (server *Server) getWall(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, newWallResponse(wall))
 }
 
+func (server *Server) getOwnWall(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received get own wall request")
+
+	user := ctx.MustGet("currentUser").(db.User)
+
+	walls, err := server.hub.ListWallsByUser(ctx, user.ID)
+
+	if err != nil {
+		log.Error("Failed to list own walls", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Walls listed successfully")
+	responses := make([]wallResponse, 0, len(walls))
+	for _, wall := range walls {
+		responses = append(responses, newWallResponse(wall))
+	}
+
+	ctx.JSON(http.StatusOK, responses)
+
+}
+
 // ListWalls handler
 func (server *Server) listWalls(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list walls request")
-
 	walls, err := server.hub.ListWalls(ctx)
 	if err != nil {
 		log.Error("Failed to list walls", err)
@@ -149,6 +214,8 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list walls by user request")
+
+	me := ctx.MustGet("currentUser").(db.User)
 
 	var uri struct {
 		UserID string `uri:"id" binding:"required,uuid"`
@@ -175,12 +242,43 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 	}
 
 	log.Info("Walls by user listed successfully")
-	responses := make([]wallResponse, 0, len(walls))
-	for _, wall := range walls {
-		responses = append(responses, newWallResponse(wall))
+
+	params := db.ListFriendshipByUserPairsParams{
+		FromUser: me.ID,
+		ToUser:   userID,
 	}
 
-	ctx.JSON(http.StatusOK, responses)
+	friendship, err := server.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+
+	isFriend := true
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			isFriend = false
+		} else {
+			log.Error("Failed to list friendship by user pairs", err)
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+	} else if friendship.Status.Status != "friends" {
+		isFriend = false
+	}
+
+	var filteredWalls []wallResponse
+	if isFriend {
+		// If friends, show both public and private walls
+		for _, wall := range walls {
+			filteredWalls = append(filteredWalls, newWallResponse(wall))
+		}
+	} else {
+		// If not friends, only show public walls
+		for _, wall := range walls {
+			if wall.IsPublic.Bool {
+				filteredWalls = append(filteredWalls, newWallResponse(wall))
+			}
+		}
+	}
+
+	ctx.JSON(http.StatusOK, filteredWalls)
 }
 
 // UpdateWall handler

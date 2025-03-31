@@ -1,15 +1,20 @@
 package api
 
 import (
+	"log"
+	"time"
+
 	"context"
 	"fmt"
+	"net/http"
+
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+	"github.com/vittotedja/graffiti/graffiti-backend/token"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
-	"net/http"
-	"time"
 )
 
 // Server serves HTTP requests
@@ -17,18 +22,21 @@ type Server struct {
 	hub        *db.Hub
 	db         *pgxpool.Pool
 	config     util.Config
-	router     *gin.Engine
+	router     *gin.Engine // helps us send each API request to the correct handler for processing
+	tokenMaker token.Maker
 	httpServer *http.Server
 }
 
 // NewServer creates a new HTTP server and sets up all routes
 func NewServer(config util.Config) *Server {
-	s := &Server{
-		config: config,
-		router: gin.Default(),
+	tokenMaker, err := token.NewJWTMaker("veryverysecretkey")
+	if err != nil {
+		log.Fatal("cannot create token maker", err)
 	}
-	s.registerRoutes()
-	return s
+	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
+	server.registerRoutes()
+
+	return server
 }
 
 // Start runs the HTTP server on a specific address
@@ -77,6 +85,37 @@ func (s *Server) Shutdown() error {
 }
 
 func (s *Server) registerRoutes() {
+
+	// Apply CORS middleware
+	s.router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // frontend URL
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	s.router.POST("/api/v1/auth/register", s.Register)
+	s.router.POST("/api/v1/auth/login", s.Login)
+	// s.router.POST("/api/v1/auth/logout", s.Logout)
+
+	protected := s.router.Group("/api")
+	protected.Use(s.AuthMiddleware())
+	{
+		protected.POST("/v1/auth/me", s.Me)
+
+		// Protected Walls Endpoint
+		protected.GET("/v2/walls", s.getOwnWall)
+		protected.GET("/v1/users/:id/walls", s.listWallsByUser)
+		protected.POST("/v2/walls", s.createNewWall)       //no test yet
+		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
+	}
+
+	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
+
+	s.router.GET("/api/v2/users/:id/friend-requests/pending", s.getReceivedPendingFriendRequests) // user_id; working
+	s.router.GET("/api/v2/users/:id/friend-requests/sent", s.getSentPendingFriendRequests)        // user_id; working
+
 	// Set up routes for the user API
 	s.router.POST("/api/v1/users", s.createUser) // working
 	s.router.GET("/api/v1/users/:id", s.getUser)
@@ -90,7 +129,6 @@ func (s *Server) registerRoutes() {
 	s.router.POST("/api/v1/walls", s.createWall)
 	s.router.GET("/api/v1/walls/:id", s.getWall)                 // working
 	s.router.GET("/api/v1/walls", s.listWalls)                   // working
-	s.router.GET("/api/v1/users/:id/walls", s.listWallsByUser)   // working
 	s.router.PUT("/api/v1/walls/:id", s.updateWall)              // working
 	s.router.PUT("/api/v1/walls/:id/publicize", s.publicizeWall) // working
 	s.router.PUT("/api/v1/walls/:id/privatize", s.privatizeWall) // working

@@ -136,6 +136,66 @@ func (q *Queries) GetNumberOfPendingFriendRequests(ctx context.Context, toUser p
 	return count, err
 }
 
+const listFriendsDetailsByStatus = `-- name: ListFriendsDetailsByStatus :many
+SELECT u.id as user_id, u.fullname, u.username, u.profile_picture, f.status, f.id
+FROM friendships f
+JOIN users u ON u.id = 
+  CASE 
+    WHEN f.from_user = $1 AND $2 = 'friends' THEN f.to_user
+    WHEN f.from_user = $1 AND $2 = 'sent' THEN f.to_user
+    WHEN f.to_user = $1 AND $2 = 'requested' THEN f.from_user
+    WHEN f.to_user = $1 AND $2 = 'friends' THEN f.from_user
+    ELSE NULL
+  END
+WHERE 
+  (
+    ($2 = 'friends' AND f.status = 'friends' AND (f.from_user = $1)) OR
+    ($2 = 'sent' AND f.status = 'pending' AND f.from_user = $1) OR
+    ($2 = 'requested' AND f.status = 'pending' AND f.to_user = $1)
+  )
+`
+
+type ListFriendsDetailsByStatusParams struct {
+	FromUser pgtype.UUID
+	Column2  interface{}
+}
+
+type ListFriendsDetailsByStatusRow struct {
+	UserID         pgtype.UUID
+	Fullname       pgtype.Text
+	Username       string
+	ProfilePicture pgtype.Text
+	Status         NullStatus
+	ID             pgtype.UUID
+}
+
+func (q *Queries) ListFriendsDetailsByStatus(ctx context.Context, arg ListFriendsDetailsByStatusParams) ([]ListFriendsDetailsByStatusRow, error) {
+	rows, err := q.db.Query(ctx, listFriendsDetailsByStatus, arg.FromUser, arg.Column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFriendsDetailsByStatusRow
+	for rows.Next() {
+		var i ListFriendsDetailsByStatusRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.Fullname,
+			&i.Username,
+			&i.ProfilePicture,
+			&i.Status,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listFriendshipByUserPairs = `-- name: ListFriendshipByUserPairs :one
 SELECT id, from_user, to_user, status, created_at, updated_at FROM friendships
 WHERE (from_user = $1 AND to_user = $2) OR (from_user = $2 AND to_user = $1)
@@ -252,6 +312,102 @@ func (q *Queries) ListFriendshipsByUserIdAndStatus(ctx context.Context, arg List
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listReceivedPendingFriendRequests = `-- name: ListReceivedPendingFriendRequests :many
+SELECT f.id, f.from_user, f.to_user, f.status, f.created_at, f.updated_at, users.fullname, users.username, users.profile_picture FROM friendships f
+left join users on users.id = f.from_user
+WHERE to_user = $1 AND status = 'pending'
+`
+
+type ListReceivedPendingFriendRequestsRow struct {
+	ID             pgtype.UUID
+	FromUser       pgtype.UUID
+	ToUser         pgtype.UUID
+	Status         NullStatus
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
+	Fullname       pgtype.Text
+	Username       pgtype.Text
+	ProfilePicture pgtype.Text
+}
+
+func (q *Queries) ListReceivedPendingFriendRequests(ctx context.Context, toUser pgtype.UUID) ([]ListReceivedPendingFriendRequestsRow, error) {
+	rows, err := q.db.Query(ctx, listReceivedPendingFriendRequests, toUser)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListReceivedPendingFriendRequestsRow
+	for rows.Next() {
+		var i ListReceivedPendingFriendRequestsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FromUser,
+			&i.ToUser,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Fullname,
+			&i.Username,
+			&i.ProfilePicture,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSentPendingFriendRequests = `-- name: ListSentPendingFriendRequests :many
+SELECT f.id, f.from_user, f.to_user, f.status, f.created_at, f.updated_at, users.fullname, users.username, users.profile_picture FROM friendships f
+left join users on users.id = f.to_user
+WHERE from_user = $1 AND status = 'pending'
+`
+
+type ListSentPendingFriendRequestsRow struct {
+	ID             pgtype.UUID
+	FromUser       pgtype.UUID
+	ToUser         pgtype.UUID
+	Status         NullStatus
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
+	Fullname       pgtype.Text
+	Username       pgtype.Text
+	ProfilePicture pgtype.Text
+}
+
+func (q *Queries) ListSentPendingFriendRequests(ctx context.Context, fromUser pgtype.UUID) ([]ListSentPendingFriendRequestsRow, error) {
+	rows, err := q.db.Query(ctx, listSentPendingFriendRequests, fromUser)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListSentPendingFriendRequestsRow
+	for rows.Next() {
+		var i ListSentPendingFriendRequestsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FromUser,
+			&i.ToUser,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Fullname,
+			&i.Username,
+			&i.ProfilePicture,
 		); err != nil {
 			return nil, err
 		}

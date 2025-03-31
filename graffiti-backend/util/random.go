@@ -2,7 +2,7 @@ package util
 
 import (
 	"fmt"
-    "math/rand"
+	"math/rand"
 	"strings"
 	"time"
 )
