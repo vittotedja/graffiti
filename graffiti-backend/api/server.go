@@ -15,8 +15,6 @@ import (
 	"github.com/vittotedja/graffiti/graffiti-backend/token"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
-	"net/http"
-	"time"
 )
 
 // Server serves HTTP requests
@@ -96,6 +94,7 @@ func (s *Server) registerRoutes() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+	s.router.Use(logger.Middleware())
 
 	s.router.POST("/api/v1/auth/register", s.Register)
 	s.router.POST("/api/v1/auth/login", s.Login)
