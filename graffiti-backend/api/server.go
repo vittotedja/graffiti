@@ -34,6 +34,7 @@ func NewServer(config util.Config) *Server {
 		log.Fatal("cannot create token maker", err)
 	}
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
+  	server.router.Use(logger.Middleware())
 	server.registerRoutes()
 
 	return server
@@ -94,7 +95,6 @@ func (s *Server) registerRoutes() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-	s.router.Use(logger.Middleware())
 
 	s.router.POST("/api/v1/auth/register", s.Register)
 	s.router.POST("/api/v1/auth/login", s.Login)
@@ -125,7 +125,6 @@ func (s *Server) registerRoutes() {
 	s.router.DELETE("/api/v1/users/:id", s.deleteUser)
 	s.router.PUT("/api/v1/users/:id/profile", s.updateProfile)
 	s.router.PUT("/api/v1/users/:id/onboarding", s.finishOnboarding) // working
-	s.router.POST("/api/v1/users/search", s.searchUsers)
 
 	// Set up routes for the wall API
 	s.router.POST("/api/v1/walls", s.createWall)

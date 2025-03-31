@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+
 	"strings"
 	"time"
 )
@@ -42,7 +43,7 @@ func RandomEmail() string {
 	return fmt.Sprintf("%s@email.com", RandomString(6))
 }
 
-// RandomFullname generates a random full name
+// Random Fullname generates a random full name
 func RandomFullname() string {
 	return fmt.Sprintf("%s %s", RandomString(6), RandomString(6))
 }
