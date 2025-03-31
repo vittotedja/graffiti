@@ -1,11 +1,12 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
-	"net/http"
 )
 
 // Friendship Request Structs
@@ -258,6 +259,29 @@ func (server *Server) getFriends(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, friends)
 }
 
+func (server *Server) getFriendsByStatus(ctx *gin.Context) {
+	user := ctx.MustGet("currentUser").(db.User)
+
+	queryType := ctx.Query("type")
+
+	arg := db.ListFriendsDetailsByStatusParams{
+		FromUser: user.ID,
+		Column2:  queryType,
+	}
+
+	switch queryType {
+	case "friends", "sent", "requested":
+		friends, err := server.hub.ListFriendsDetailsByStatus(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+		ctx.JSON(http.StatusOK, friends)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid type"})
+	}
+}
+
 // GetPendingFriendRequests retrieves pending friend requests for a user
 func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
@@ -280,6 +304,24 @@ func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 	}
 
 	log.Info("Retrieved pending friend requests successfully")
+	ctx.JSON(http.StatusOK, pendingRequests)
+}
+
+func (server *Server) getReceivedPendingFriendRequests(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
+
+	var userID pgtype.UUID
+	if err := userID.Scan(userIDStr); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	pendingRequests, err := server.hub.ListReceivedPendingFriendRequests(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	ctx.JSON(http.StatusOK, pendingRequests)
 }
 
@@ -331,6 +373,24 @@ func (server *Server) getSentFriendRequests(ctx *gin.Context) {
 
 	log.Info("Retrieved sent friend requests successfully")
 	ctx.JSON(http.StatusOK, sentRequests)
+}
+
+func (server *Server) getSentPendingFriendRequests(ctx *gin.Context) {
+	userIDStr := ctx.Param("id")
+
+	var userID pgtype.UUID
+	if err := userID.Scan(userIDStr); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	pendingRequests, err := server.hub.ListSentPendingFriendRequests(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, pendingRequests)
 }
 
 // ListFriendshipByUserPairs retrieves a friendship by user pairs

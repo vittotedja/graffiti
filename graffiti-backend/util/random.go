@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+
 	"strings"
 	"time"
 )
@@ -61,3 +62,4 @@ func RandomBio() string {
 func RandomProfilePictureURL() string {
 	return "https://i.pravatar.cc/150?img=" + strconv.Itoa(rand.Intn(70)+1)
 }
+
