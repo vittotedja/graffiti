@@ -200,13 +200,15 @@ func TestListUsers(t *testing.T) {
 	require.NoError(t, err, "Should list users successfully")
 	require.GreaterOrEqual(t, len(allUsers), 5, "Should have at least the created users")
 }
+func TestSearchUsersILike(t *testing.T) {
+	ctx := context.Background()
 
-func TestSearchUsersByNameOrUsername(t *testing.T) {
-	// Arrange - create some users
+	// Arrange - create a user that should match with ILIKE
 	targetUser := createRandomUser(t)
-	targetUser.Username = "vittotedja"
-	targetUser.Fullname = pgtype.Text{String: "Vitto Tedja", Valid: true}
-	_, err := testHub.UpdateUser(context.Background(), UpdateUserParams{
+	targetUser.Username = "vid"
+	targetUser.Fullname = pgtype.Text{String: "Vid Tonic", Valid: true}
+
+	_, err := testHub.UpdateUser(ctx, UpdateUserParams{
 		ID:             targetUser.ID,
 		Username:       targetUser.Username,
 		Fullname:       targetUser.Fullname,
@@ -215,31 +217,80 @@ func TestSearchUsersByNameOrUsername(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// Create a distractor user that should not match
-	distractorUser := createRandomUser(t)
-	distractorUser.Username = "notmatch"
-	distractorUser.Fullname = pgtype.Text{String: "Random Guy", Valid: true}
-	_, err = testHub.UpdateUser(context.Background(), UpdateUserParams{
-		ID:             distractorUser.ID,
-		Username:       distractorUser.Username,
-		Fullname:       distractorUser.Fullname,
-		Email:          distractorUser.Email,
-		HashedPassword: distractorUser.HashedPassword,
+	// Create a distractor user
+	distractor := createRandomUser(t)
+	distractor.Username = "random"
+	distractor.Fullname = pgtype.Text{String: "No Match", Valid: true}
+
+	_, err = testHub.UpdateUser(ctx, UpdateUserParams{
+		ID:             distractor.ID,
+		Username:       distractor.Username,
+		Fullname:       distractor.Fullname,
+		Email:          distractor.Email,
+		HashedPassword: distractor.HashedPassword,
 	})
 	require.NoError(t, err)
 
-	// Act - search using partial name
-	results, err := testHub.SearchUsersByNameOrUsername(context.Background(), "vit")
+	// Act - ILIKE match (short term, <3)
+	searchTerm := pgtype.Text{String: "Vid Tonic", Valid: true}
+	results, err := testHub.SearchUsersILike(ctx, searchTerm)
 	require.NoError(t, err)
-	require.NotEmpty(t, results)
+	require.NotEmpty(t, results, "Expected matches with ILIKE search")
 
-	// Assert - make sure correct user is in results
-	found := false
-	for _, r := range results {
-		if r.Username == "vittotedja" || (r.Fullname.Valid && r.Fullname.String == "Vitto Tedja") {
+	// Assert
+	var found bool
+	for _, u := range results {
+		if u.Username == targetUser.Username || (u.Fullname.Valid && u.Fullname.String == targetUser.Fullname.String) {
 			found = true
 			break
 		}
 	}
-	require.True(t, found, "Expected user not found in search results")
+	require.True(t, found, "Target user not found in ILIKE search")
+}
+
+func TestSearchUsersTrigram(t *testing.T) {
+	ctx := context.Background()
+
+	// Arrange - create a user that should match trigram search
+	targetUser := createRandomUser(t)
+	targetUser.Username = "vittotedja"
+	targetUser.Fullname = pgtype.Text{String: "Vitto Tedja", Valid: true}
+
+	_, err := testHub.UpdateUser(ctx, UpdateUserParams{
+		ID:             targetUser.ID,
+		Username:       targetUser.Username,
+		Fullname:       targetUser.Fullname,
+		Email:          targetUser.Email,
+		HashedPassword: targetUser.HashedPassword,
+	})
+	require.NoError(t, err)
+
+	// Create a distractor user
+	distractor := createRandomUser(t)
+	distractor.Username = "irrelevant"
+	distractor.Fullname = pgtype.Text{String: "Totally Off", Valid: true}
+
+	_, err = testHub.UpdateUser(ctx, UpdateUserParams{
+		ID:             distractor.ID,
+		Username:       distractor.Username,
+		Fullname:       distractor.Fullname,
+		Email:          distractor.Email,
+		HashedPassword: distractor.HashedPassword,
+	})
+	require.NoError(t, err)
+
+	// Act - trigram search
+	results, err := testHub.SearchUsersTrigram(ctx, "vit")
+	require.NoError(t, err)
+	require.NotEmpty(t, results, "Expected results from trigram search")
+
+	// Assert
+	var found bool
+	for _, u := range results {
+		if u.Username == targetUser.Username || (u.Fullname.Valid && u.Fullname.String == targetUser.Fullname.String) {
+			found = true
+			break
+		}
+	}
+	require.True(t, found, "Target user not found in trigram search results")
 }
