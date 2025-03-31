@@ -12,10 +12,6 @@ import (
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 )
 
-var (
-	dbSource string
-)
-
 func main() {
 	if err := logutil.Setup(); err != nil {
 		log.Fatal("cannot setup logger:", err)
