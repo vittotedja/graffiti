@@ -24,9 +24,12 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {useUser} from "@/hooks/useUser";
+import {formatFullName} from "@/lib/formatter";
 
 export function Navbar() {
 	const pathname = usePathname();
+	const {user, loading} = useUser();
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [hasNotifications, setHasNotifications] = useState(true);
 	const [isScrolled, setIsScrolled] = useState(false);
@@ -48,6 +51,9 @@ export function Navbar() {
 	}, []);
 
 	if (pathname.includes("/login")) return null;
+
+	if (loading) return <p>Loading...</p>;
+	if (!user) return;
 
 	return (
 		<header
@@ -213,7 +219,9 @@ export function Navbar() {
 											src="/placeholder.svg?height=32&width=32"
 											alt="User"
 										/>
-										<AvatarFallback>U</AvatarFallback>
+										<AvatarFallback>
+											{formatFullName(user.fullname)}
+										</AvatarFallback>
 									</Avatar>
 								</Button>
 							</DropdownMenuTrigger>

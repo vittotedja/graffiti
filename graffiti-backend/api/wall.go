@@ -1,6 +1,8 @@
 package api
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"time"
 
@@ -162,12 +164,16 @@ func (server *Server) getWall(ctx *gin.Context) {
 }
 
 func (server *Server) getOwnWall(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received get own wall request")
+
 	user := ctx.MustGet("currentUser").(db.User)
 
 	walls, err := server.hub.ListWallsByUser(ctx, user.ID)
 
 	if err != nil {
-		log.Error("Failed to list walls", zap.Error(err))
+		log.Error("Failed to list own walls", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -209,6 +215,8 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received list walls by user request")
 
+	me := ctx.MustGet("currentUser").(db.User)
+
 	var uri struct {
 		UserID string `uri:"id" binding:"required,uuid"`
 	}
@@ -234,12 +242,41 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 	}
 
 	log.Info("Walls by user listed successfully")
-	responses := make([]wallResponse, 0, len(walls))
-	for _, wall := range walls {
-		responses = append(responses, newWallResponse(wall))
+
+	params := db.ListFriendshipByUserPairsParams{
+		FromUser: me.ID,
+		ToUser:   userID,
 	}
 
-	ctx.JSON(http.StatusOK, responses)
+	_, err = server.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+
+	isFriend := true
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			isFriend = false
+		} else {
+			log.Error("Failed to list friendship by user pairs", err)
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+	}
+
+	var filteredWalls []wallResponse
+	if isFriend {
+		// If friends, show both public and private walls
+		for _, wall := range walls {
+			filteredWalls = append(filteredWalls, newWallResponse(wall))
+		}
+	} else {
+		// If not friends, only show public walls
+		for _, wall := range walls {
+			if wall.IsPublic.Bool {
+				filteredWalls = append(filteredWalls, newWallResponse(wall))
+			}
+		}
+	}
+
+	ctx.JSON(http.StatusOK, filteredWalls)
 }
 
 // UpdateWall handler

@@ -260,23 +260,7 @@ func (server *Server) getFriends(ctx *gin.Context) {
 }
 
 func (server *Server) getFriendsByStatus(ctx *gin.Context) {
-	token, err := ctx.Cookie("token")
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	payload, err := server.tokenMaker.VerifyToken(token)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unathorized"})
-		return
-	}
-
-	user, err := server.hub.GetUserByUsername(ctx, payload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
-		return
-	}
+	user := ctx.MustGet("currentUser").(db.User)
 
 	queryType := ctx.Query("type")
 

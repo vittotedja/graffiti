@@ -35,18 +35,9 @@ func NewServer(config util.Config) *Server {
 	}
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
 	server.registerRoutes()
-	server.router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // frontend URL
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
 
 	return server
 }
-
-// Apply CORS middleware
 
 // Start runs the HTTP server on a specific address
 // and returns an error if the server fails to start
@@ -94,6 +85,15 @@ func (s *Server) Shutdown() error {
 }
 
 func (s *Server) registerRoutes() {
+
+	// Apply CORS middleware
+	s.router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // frontend URL
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	s.router.POST("/api/v1/auth/register", s.Register)
 	s.router.POST("/api/v1/auth/login", s.Login)

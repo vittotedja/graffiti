@@ -31,17 +31,10 @@ func (server *Server) Register(ctx *gin.Context) {
 		return
 	}
 	//check if user exists
-	users, err := server.hub.ListUsers(ctx)
-	if err != nil {
-		ctx.JSON(500, errorResponse(err))
+	user, _ := server.hub.GetUserByEmail(ctx, req.Email)
+	if user.Email == req.Email {
+		ctx.JSON(400, errors.New("user already exists"))
 		return
-	}
-
-	for _, user := range users {
-		if user.Email == req.Email {
-			ctx.JSON(400, errors.New("user already exists"))
-			return
-		}
 	}
 
 	//create user
@@ -59,7 +52,7 @@ func (server *Server) Register(ctx *gin.Context) {
 		HashedPassword: hashedPassword,
 	}
 
-	user, err := server.hub.CreateUser(ctx, arg)
+	newUser, err := server.hub.CreateUser(ctx, arg)
 
 	if err != nil {
 		ctx.JSON(500, errorResponse(err))
@@ -67,13 +60,13 @@ func (server *Server) Register(ctx *gin.Context) {
 	}
 
 	resp := getUserResponse{
-		ID:           user.ID.String(),
-		Username:     user.Username,
-		Fullname:     user.Fullname.String,
-		Email:        user.Email,
-		HasOnboarded: user.HasOnboarded.Bool,
-		CreatedAt:    user.CreatedAt.Time.Format(time.RFC3339),
-		UpdatedAt:    user.UpdatedAt.Time.Format(time.RFC3339),
+		ID:           newUser.ID.String(),
+		Username:     newUser.Username,
+		Fullname:     newUser.Fullname.String,
+		Email:        newUser.Email,
+		HasOnboarded: newUser.HasOnboarded.Bool,
+		CreatedAt:    newUser.CreatedAt.Time.Format(time.RFC3339),
+		UpdatedAt:    newUser.UpdatedAt.Time.Format(time.RFC3339),
 	}
 
 	ctx.JSON(http.StatusOK, resp)
@@ -120,7 +113,7 @@ func (server *Server) Me(ctx *gin.Context) {
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unathorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
