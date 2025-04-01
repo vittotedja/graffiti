@@ -55,7 +55,7 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: graffiti-backend/task-definition.json
+        task-definition: graffiti-backend/ecs-task-definition.json
         container-name: graffiti-container
         image: ${{ steps.build-image.outputs.image }}
 
