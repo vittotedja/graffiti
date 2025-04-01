@@ -65,7 +65,7 @@ func newWallResponse(wall db.Wall) wallResponse {
 }
 
 // CreateWall handler
-func (server *Server) createWall(ctx *gin.Context) {
+func (s *Server) createWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received create wall request")
@@ -90,7 +90,7 @@ func (server *Server) createWall(ctx *gin.Context) {
 		BackgroundImage: pgtype.Text{String: req.BackgroundImage, Valid: req.BackgroundImage != ""},
 	}
 
-	wall, err := server.hub.CreateWall(ctx, arg)
+	wall, err := s.hub.CreateWall(ctx, arg)
 	if err != nil {
 		log.Error("Failed to create wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -102,7 +102,7 @@ func (server *Server) createWall(ctx *gin.Context) {
 }
 
 // CreateNewWall handler
-func (server *Server) createNewWall(ctx *gin.Context) {
+func (s *Server) createNewWall(ctx *gin.Context) {
 	var req createTestWallRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -118,7 +118,7 @@ func (server *Server) createNewWall(ctx *gin.Context) {
 		IsPublic:    pgtype.Bool{Bool: req.IsPublic, Valid: true},
 	}
 
-	wall, err := server.hub.CreateTestWall(ctx, arg)
+	wall, err := s.hub.CreateTestWall(ctx, arg)
 	if err != nil {
 		log.Error("Failed to create wall", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -130,7 +130,7 @@ func (server *Server) createNewWall(ctx *gin.Context) {
 }
 
 // GetWall handler
-func (server *Server) getWall(ctx *gin.Context) {
+func (s *Server) getWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get wall request")
@@ -152,7 +152,7 @@ func (server *Server) getWall(ctx *gin.Context) {
 		return
 	}
 
-	wall, err := server.hub.GetWall(ctx, id)
+	wall, err := s.hub.GetWall(ctx, id)
 	if err != nil {
 		log.Error("Failed to get wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -163,14 +163,14 @@ func (server *Server) getWall(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, newWallResponse(wall))
 }
 
-func (server *Server) getOwnWall(ctx *gin.Context) {
+func (s *Server) getOwnWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get own wall request")
 
 	user := ctx.MustGet("currentUser").(db.User)
 
-	walls, err := server.hub.ListWallsByUser(ctx, user.ID)
+	walls, err := s.hub.ListWallsByUser(ctx, user.ID)
 
 	if err != nil {
 		log.Error("Failed to list own walls", err)
@@ -189,11 +189,11 @@ func (server *Server) getOwnWall(ctx *gin.Context) {
 }
 
 // ListWalls handler
-func (server *Server) listWalls(ctx *gin.Context) {
+func (s *Server) listWalls(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list walls request")
-	walls, err := server.hub.ListWalls(ctx)
+	walls, err := s.hub.ListWalls(ctx)
 	if err != nil {
 		log.Error("Failed to list walls", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -210,7 +210,7 @@ func (server *Server) listWalls(ctx *gin.Context) {
 }
 
 // ListWallsByUser handler
-func (server *Server) listWallsByUser(ctx *gin.Context) {
+func (s *Server) listWallsByUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list walls by user request")
@@ -234,7 +234,7 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 		return
 	}
 
-	walls, err := server.hub.ListWallsByUser(ctx, userID)
+	walls, err := s.hub.ListWallsByUser(ctx, userID)
 	if err != nil {
 		log.Error("Failed to list walls by user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -248,7 +248,7 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 		ToUser:   userID,
 	}
 
-	friendship, err := server.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
 
 	isFriend := true
 	if err != nil {
@@ -282,7 +282,7 @@ func (server *Server) listWallsByUser(ctx *gin.Context) {
 }
 
 // UpdateWall handler
-func (server *Server) updateWall(ctx *gin.Context) {
+func (s *Server) updateWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received update wall request")
@@ -310,7 +310,7 @@ func (server *Server) updateWall(ctx *gin.Context) {
 		return
 	}
 
-	currentWall, err := server.hub.GetWall(ctx, id)
+	currentWall, err := s.hub.GetWall(ctx, id)
 	if err != nil {
 		log.Error("Failed to get current wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -330,7 +330,7 @@ func (server *Server) updateWall(ctx *gin.Context) {
 		arg.BackgroundImage = pgtype.Text{String: *req.BackgroundImage, Valid: true}
 	}
 
-	wall, err := server.hub.UpdateWall(ctx, arg)
+	wall, err := s.hub.UpdateWall(ctx, arg)
 	if err != nil {
 		log.Error("Failed to update wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -342,7 +342,7 @@ func (server *Server) updateWall(ctx *gin.Context) {
 }
 
 // PublicizeWall handler
-func (server *Server) publicizeWall(ctx *gin.Context) {
+func (s *Server) publicizeWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received publicize wall request")
@@ -364,7 +364,7 @@ func (server *Server) publicizeWall(ctx *gin.Context) {
 		return
 	}
 
-	wall, err := server.hub.PublicizeWall(ctx, id)
+	wall, err := s.hub.PublicizeWall(ctx, id)
 	if err != nil {
 		log.Error("Failed to publicize wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -376,7 +376,7 @@ func (server *Server) publicizeWall(ctx *gin.Context) {
 }
 
 // PrivatizeWall handler
-func (server *Server) privatizeWall(ctx *gin.Context) {
+func (s *Server) privatizeWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received privatize wall request")
@@ -398,7 +398,7 @@ func (server *Server) privatizeWall(ctx *gin.Context) {
 		return
 	}
 
-	wall, err := server.hub.PrivatizeWall(ctx, id)
+	wall, err := s.hub.PrivatizeWall(ctx, id)
 	if err != nil {
 		log.Error("Failed to privatize wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -410,7 +410,7 @@ func (server *Server) privatizeWall(ctx *gin.Context) {
 }
 
 // ArchiveWall handler
-func (server *Server) archiveWall(ctx *gin.Context) {
+func (s *Server) archiveWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received archive wall request")
@@ -432,7 +432,7 @@ func (server *Server) archiveWall(ctx *gin.Context) {
 		return
 	}
 
-	err := server.hub.ArchiveWall(ctx, id)
+	err := s.hub.ArchiveWall(ctx, id)
 	if err != nil {
 		log.Error("Failed to archive wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -444,7 +444,7 @@ func (server *Server) archiveWall(ctx *gin.Context) {
 }
 
 // UnarchiveWall handler
-func (server *Server) unarchiveWall(ctx *gin.Context) {
+func (s *Server) unarchiveWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received unarchive wall request")
@@ -466,7 +466,7 @@ func (server *Server) unarchiveWall(ctx *gin.Context) {
 		return
 	}
 
-	err := server.hub.UnarchiveWall(ctx, id)
+	err := s.hub.UnarchiveWall(ctx, id)
 	if err != nil {
 		log.Error("Failed to unarchive wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -478,7 +478,7 @@ func (server *Server) unarchiveWall(ctx *gin.Context) {
 }
 
 // DeleteWall handler
-func (server *Server) deleteWall(ctx *gin.Context) {
+func (s *Server) deleteWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received delete wall request")
@@ -500,7 +500,7 @@ func (server *Server) deleteWall(ctx *gin.Context) {
 		return
 	}
 
-	if err := server.hub.DeleteWall(ctx, id); err != nil {
+	if err := s.hub.DeleteWall(ctx, id); err != nil {
 		log.Error("Failed to delete wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

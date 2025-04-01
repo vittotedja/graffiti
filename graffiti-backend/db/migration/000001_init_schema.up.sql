@@ -82,3 +82,11 @@ CREATE INDEX ON "friendships" ("from_user");
 CREATE INDEX ON "friendships" ("to_user");
 
 CREATE INDEX ON "friendships" ("from_user", "to_user");
+
+-- Use trigrams for fuzzy search
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+CREATE INDEX idx_users_username_trgm ON users USING gin (username gin_trgm_ops);
+CREATE INDEX idx_users_fullname_trgm ON users USING gin (fullname gin_trgm_ops);
+
+ALTER DATABASE graffiti SET pg_trgm.similarity_threshold = 0;

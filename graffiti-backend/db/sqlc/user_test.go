@@ -106,15 +106,14 @@ func TestUpdateUserPartialFields(t *testing.T) {
 			updateField: "fullname",
 			updateFunction: func(oldUser User) UpdateUserParams {
 				return UpdateUserParams{
-					ID: oldUser.ID,
+					ID:       oldUser.ID,
 					Username: oldUser.Username,
 					Fullname: pgtype.Text{
 						String: util.RandomFullname(),
 						Valid:  true,
 					},
-					Email: oldUser.Email,
+					Email:          oldUser.Email,
 					HashedPassword: oldUser.HashedPassword,
-
 				}
 			},
 			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
@@ -128,10 +127,10 @@ func TestUpdateUserPartialFields(t *testing.T) {
 			updateField: "email",
 			updateFunction: func(oldUser User) UpdateUserParams {
 				return UpdateUserParams{
-					ID:    oldUser.ID,
-					Username: oldUser.Username,
-					Fullname: oldUser.Fullname,
-					Email: util.RandomEmail(),
+					ID:             oldUser.ID,
+					Username:       oldUser.Username,
+					Fullname:       oldUser.Fullname,
+					Email:          util.RandomEmail(),
 					HashedPassword: oldUser.HashedPassword,
 				}
 			},
@@ -150,8 +149,8 @@ func TestUpdateUserPartialFields(t *testing.T) {
 				require.NoError(t, err)
 				return UpdateUserParams{
 					ID:             oldUser.ID,
-					Username: oldUser.Username,
-					Fullname: oldUser.Fullname,
+					Username:       oldUser.Username,
+					Fullname:       oldUser.Fullname,
 					Email:          oldUser.Email,
 					HashedPassword: hashedPassword,
 				}
@@ -167,10 +166,10 @@ func TestUpdateUserPartialFields(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			oldUser := createRandomUser(t)
-			
+
 			updateParams := tc.updateFunction(oldUser)
 			updatedUser, err := testHub.UpdateUser(context.Background(), updateParams)
-			
+
 			require.NoError(t, err, "Should update %s successfully", tc.updateField)
 			tc.verifyUpdate(t, oldUser, updatedUser)
 		})
@@ -200,4 +199,98 @@ func TestListUsers(t *testing.T) {
 	allUsers, err := testHub.ListUsers(context.Background())
 	require.NoError(t, err, "Should list users successfully")
 	require.GreaterOrEqual(t, len(allUsers), 5, "Should have at least the created users")
+}
+func TestSearchUsersILike(t *testing.T) {
+	ctx := context.Background()
+
+	// Arrange - create a user that should match with ILIKE
+	targetUser := createRandomUser(t)
+	targetUser.Username = "vid"
+	targetUser.Fullname = pgtype.Text{String: "Vid Tonic", Valid: true}
+
+	_, err := testHub.UpdateUser(ctx, UpdateUserParams{
+		ID:             targetUser.ID,
+		Username:       targetUser.Username,
+		Fullname:       targetUser.Fullname,
+		Email:          targetUser.Email,
+		HashedPassword: targetUser.HashedPassword,
+	})
+	require.NoError(t, err)
+
+	// Create a distractor user
+	distractor := createRandomUser(t)
+	distractor.Username = "random"
+	distractor.Fullname = pgtype.Text{String: "No Match", Valid: true}
+
+	_, err = testHub.UpdateUser(ctx, UpdateUserParams{
+		ID:             distractor.ID,
+		Username:       distractor.Username,
+		Fullname:       distractor.Fullname,
+		Email:          distractor.Email,
+		HashedPassword: distractor.HashedPassword,
+	})
+	require.NoError(t, err)
+
+	// Act - ILIKE match (short term, <3)
+	searchTerm := pgtype.Text{String: "Vid Tonic", Valid: true}
+	results, err := testHub.SearchUsersILike(ctx, searchTerm)
+	require.NoError(t, err)
+	require.NotEmpty(t, results, "Expected matches with ILIKE search")
+
+	// Assert
+	var found bool
+	for _, u := range results {
+		if u.Username == targetUser.Username || (u.Fullname.Valid && u.Fullname.String == targetUser.Fullname.String) {
+			found = true
+			break
+		}
+	}
+	require.True(t, found, "Target user not found in ILIKE search")
+}
+
+func TestSearchUsersTrigram(t *testing.T) {
+	ctx := context.Background()
+
+	// Arrange - create a user that should match trigram search
+	targetUser := createRandomUser(t)
+	targetUser.Username = "vittotedja"
+	targetUser.Fullname = pgtype.Text{String: "Vitto Tedja", Valid: true}
+
+	_, err := testHub.UpdateUser(ctx, UpdateUserParams{
+		ID:             targetUser.ID,
+		Username:       targetUser.Username,
+		Fullname:       targetUser.Fullname,
+		Email:          targetUser.Email,
+		HashedPassword: targetUser.HashedPassword,
+	})
+	require.NoError(t, err)
+
+	// Create a distractor user
+	distractor := createRandomUser(t)
+	distractor.Username = "irrelevant"
+	distractor.Fullname = pgtype.Text{String: "Totally Off", Valid: true}
+
+	_, err = testHub.UpdateUser(ctx, UpdateUserParams{
+		ID:             distractor.ID,
+		Username:       distractor.Username,
+		Fullname:       distractor.Fullname,
+		Email:          distractor.Email,
+		HashedPassword: distractor.HashedPassword,
+	})
+	require.NoError(t, err)
+
+	// Act - trigram search
+	results, err := testHub.SearchUsersTrigram(ctx, "vit")
+	require.NoError(t, err)
+	require.NotEmpty(t, results, "Expected results from trigram search")
+
+	// Assert
+	var found bool
+	for _, u := range results {
+		if u.Username == targetUser.Username || (u.Fullname.Valid && u.Fullname.String == targetUser.Fullname.String) {
+			found = true
+			break
+		}
+	}
+	require.True(t, found, "Target user not found in trigram search results")
 }

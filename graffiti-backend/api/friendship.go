@@ -31,7 +31,7 @@ type unblockUserRequest struct {
 }
 
 // CreateFriendRequest handles creating a new friend request
-func (server *Server) createFriendRequest(ctx *gin.Context) {
+func (s *Server) createFriendRequest(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received create friend request")
@@ -64,7 +64,7 @@ func (server *Server) createFriendRequest(ctx *gin.Context) {
 	}
 
 	// Use transaction method from hub
-	friendship, err := server.hub.CreateFriendRequestTx(ctx, fromUserID, toUserID)
+	friendship, err := s.hub.CreateFriendRequestTx(ctx, fromUserID, toUserID)
 	if err != nil {
 		log.Error("Failed to create friend request", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -76,7 +76,7 @@ func (server *Server) createFriendRequest(ctx *gin.Context) {
 }
 
 // ListFriendshipsByUserId retrieves all friendships for a specific user
-func (server *Server) listFriendshipsByUserId(ctx *gin.Context) {
+func (s *Server) listFriendshipsByUserId(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list friendships by user ID request")
@@ -89,7 +89,7 @@ func (server *Server) listFriendshipsByUserId(ctx *gin.Context) {
 		return
 	}
 
-	friendships, err := server.hub.ListFriendshipsByUserId(ctx, userID)
+	friendships, err := s.hub.ListFriendshipsByUserId(ctx, userID)
 	if err != nil {
 		log.Error("Failed to list friendships", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -101,7 +101,7 @@ func (server *Server) listFriendshipsByUserId(ctx *gin.Context) {
 }
 
 // GetNumberOfFriends retrieves the number of friends for a specific user
-func (server *Server) getNumberOfFriends(ctx *gin.Context) {
+func (s *Server) getNumberOfFriends(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get number of friends request")
@@ -114,7 +114,7 @@ func (server *Server) getNumberOfFriends(ctx *gin.Context) {
 		return
 	}
 
-	count, err := server.hub.GetNumberOfFriends(ctx, userID)
+	count, err := s.hub.GetNumberOfFriends(ctx, userID)
 	if err != nil {
 		log.Error("Failed to get number of friends", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -126,7 +126,7 @@ func (server *Server) getNumberOfFriends(ctx *gin.Context) {
 }
 
 // AcceptFriendRequest handles accepting a pending friend request
-func (server *Server) acceptFriendRequest(ctx *gin.Context) {
+func (s *Server) acceptFriendRequest(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received accept friend request")
@@ -145,7 +145,7 @@ func (server *Server) acceptFriendRequest(ctx *gin.Context) {
 		return
 	}
 
-	if err := server.hub.AcceptFriendRequestTx(ctx, friendshipID); err != nil {
+	if err := s.hub.AcceptFriendRequestTx(ctx, friendshipID); err != nil {
 		log.Error("Failed to accept friend request", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -156,7 +156,7 @@ func (server *Server) acceptFriendRequest(ctx *gin.Context) {
 }
 
 // BlockUser handles blocking a user
-func (server *Server) blockUser(ctx *gin.Context) {
+func (s *Server) blockUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received block user request")
@@ -188,7 +188,7 @@ func (server *Server) blockUser(ctx *gin.Context) {
 		return
 	}
 
-	if err := server.hub.BlockUserTx(ctx, fromUserID, toUserID); err != nil {
+	if err := s.hub.BlockUserTx(ctx, fromUserID, toUserID); err != nil {
 		log.Error("Failed to block user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -199,7 +199,7 @@ func (server *Server) blockUser(ctx *gin.Context) {
 }
 
 // UnblockUser handles unblocking a previously blocked user
-func (server *Server) unblockUser(ctx *gin.Context) {
+func (s *Server) unblockUser(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received unblock user request")
@@ -224,7 +224,7 @@ func (server *Server) unblockUser(ctx *gin.Context) {
 		return
 	}
 
-	if err := server.hub.UnblockUserTx(ctx, fromUserID, toUserID); err != nil {
+	if err := s.hub.UnblockUserTx(ctx, fromUserID, toUserID); err != nil {
 		log.Error("Failed to unblock user", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -235,7 +235,7 @@ func (server *Server) unblockUser(ctx *gin.Context) {
 }
 
 // GetFriends retrieves all friends for a specific user
-func (server *Server) getFriends(ctx *gin.Context) {
+func (s *Server) getFriends(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get friends request")
@@ -248,7 +248,7 @@ func (server *Server) getFriends(ctx *gin.Context) {
 		return
 	}
 
-	friends, err := server.hub.GetFriendsTx(ctx, userID)
+	friends, err := s.hub.GetFriendsTx(ctx, userID)
 	if err != nil {
 		log.Error("Failed to get friends", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -259,7 +259,7 @@ func (server *Server) getFriends(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, friends)
 }
 
-func (server *Server) getFriendsByStatus(ctx *gin.Context) {
+func (s *Server) getFriendsByStatus(ctx *gin.Context) {
 	user := ctx.MustGet("currentUser").(db.User)
 
 	queryType := ctx.Query("type")
@@ -271,7 +271,7 @@ func (server *Server) getFriendsByStatus(ctx *gin.Context) {
 
 	switch queryType {
 	case "friends", "sent", "requested":
-		friends, err := server.hub.ListFriendsDetailsByStatus(ctx, arg)
+		friends, err := s.hub.ListFriendsDetailsByStatus(ctx, arg)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
@@ -283,7 +283,7 @@ func (server *Server) getFriendsByStatus(ctx *gin.Context) {
 }
 
 // GetPendingFriendRequests retrieves pending friend requests for a user
-func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
+func (s *Server) getPendingFriendRequests(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get pending friend requests request")
@@ -296,7 +296,7 @@ func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 		return
 	}
 
-	pendingRequests, err := server.hub.GetPendingFriendRequestsTx(ctx, userID)
+	pendingRequests, err := s.hub.GetPendingFriendRequestsTx(ctx, userID)
 	if err != nil {
 		log.Error("Failed to get pending friend requests", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -307,7 +307,7 @@ func (server *Server) getPendingFriendRequests(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, pendingRequests)
 }
 
-func (server *Server) getReceivedPendingFriendRequests(ctx *gin.Context) {
+func (s *Server) getReceivedPendingFriendRequests(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
 
 	var userID pgtype.UUID
@@ -316,7 +316,7 @@ func (server *Server) getReceivedPendingFriendRequests(ctx *gin.Context) {
 		return
 	}
 
-	pendingRequests, err := server.hub.ListReceivedPendingFriendRequests(ctx, userID)
+	pendingRequests, err := s.hub.ListReceivedPendingFriendRequests(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -326,7 +326,7 @@ func (server *Server) getReceivedPendingFriendRequests(ctx *gin.Context) {
 }
 
 // GetNumberOfPendingFriendRequests retrieves the number of pending friend requests for a user
-func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
+func (s *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get number of pending friend requests request")
@@ -339,7 +339,7 @@ func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
 		return
 	}
 
-	count, err := server.hub.GetNumberOfPendingFriendRequests(ctx, userID)
+	count, err := s.hub.GetNumberOfPendingFriendRequests(ctx, userID)
 	if err != nil {
 		log.Error("Failed to get number of pending friend requests", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -351,7 +351,7 @@ func (server *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
 }
 
 // GetSentFriendRequests retrieves friend requests sent by a user
-func (server *Server) getSentFriendRequests(ctx *gin.Context) {
+func (s *Server) getSentFriendRequests(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get sent friend requests request")
@@ -364,7 +364,7 @@ func (server *Server) getSentFriendRequests(ctx *gin.Context) {
 		return
 	}
 
-	sentRequests, err := server.hub.GetSentFriendRequestsTx(ctx, userID)
+	sentRequests, err := s.hub.GetSentFriendRequestsTx(ctx, userID)
 	if err != nil {
 		log.Error("Failed to get sent friend requests", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -375,7 +375,7 @@ func (server *Server) getSentFriendRequests(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sentRequests)
 }
 
-func (server *Server) getSentPendingFriendRequests(ctx *gin.Context) {
+func (s *Server) getSentPendingFriendRequests(ctx *gin.Context) {
 	userIDStr := ctx.Param("id")
 
 	var userID pgtype.UUID
@@ -384,7 +384,7 @@ func (server *Server) getSentPendingFriendRequests(ctx *gin.Context) {
 		return
 	}
 
-	pendingRequests, err := server.hub.ListSentPendingFriendRequests(ctx, userID)
+	pendingRequests, err := s.hub.ListSentPendingFriendRequests(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -394,7 +394,7 @@ func (server *Server) getSentPendingFriendRequests(ctx *gin.Context) {
 }
 
 // ListFriendshipByUserPairs retrieves a friendship by user pairs
-func (server *Server) listFriendshipByUserPairs(ctx *gin.Context) {
+func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received list friendship by user pairs request")
@@ -424,7 +424,7 @@ func (server *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 		ToUser:   toUserID,
 	}
 
-	friendship, err := server.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
 	if err != nil {
 		log.Error("Failed to list friendship by user pairs", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))

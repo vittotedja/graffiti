@@ -3,6 +3,8 @@ package util
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
+
 	"strings"
 	"time"
 )
@@ -44,4 +46,19 @@ func RandomEmail() string {
 // Random Fullname generates a random full name
 func RandomFullname() string {
 	return fmt.Sprintf("%s %s", RandomString(6), RandomString(6))
+}
+
+func RandomBio() string {
+	bios := []string{
+		"Adventurer & coffee lover.",
+		"Tech nerd. Music junkie.",
+		"Exploring the world one byte at a time.",
+		"Dream big, hustle harder.",
+		"Just here for the memes.",
+	}
+	return bios[rand.Intn(len(bios))]
+}
+
+func RandomProfilePictureURL() string {
+	return "https://i.pravatar.cc/150?img=" + strconv.Itoa(rand.Intn(70)+1)
 }

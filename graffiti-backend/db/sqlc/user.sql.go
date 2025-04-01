@@ -190,6 +190,103 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+const searchUsersILike = `-- name: SearchUsersILike :many
+SELECT
+    id,
+    username,
+    fullname,
+    profile_picture
+FROM users
+WHERE
+    username ILIKE '%' || $1 || '%'
+    OR
+    fullname ILIKE '%' || $1 || '%'
+ORDER BY username ASC
+LIMIT 10
+`
+
+type SearchUsersILikeRow struct {
+	ID             pgtype.UUID
+	Username       string
+	Fullname       pgtype.Text
+	ProfilePicture pgtype.Text
+}
+
+func (q *Queries) SearchUsersILike(ctx context.Context, searchTerm pgtype.Text) ([]SearchUsersILikeRow, error) {
+	rows, err := q.db.Query(ctx, searchUsersILike, searchTerm)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchUsersILikeRow
+	for rows.Next() {
+		var i SearchUsersILikeRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.Fullname,
+			&i.ProfilePicture,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchUsersTrigram = `-- name: SearchUsersTrigram :many
+SELECT
+    id,
+    username,
+    fullname,
+    profile_picture
+FROM users
+WHERE
+    username % $1
+    OR
+    fullname % $1
+ORDER BY GREATEST(
+    similarity(username, $1),
+    similarity(fullname, $1)
+) DESC
+LIMIT 10
+`
+
+type SearchUsersTrigramRow struct {
+	ID             pgtype.UUID
+	Username       string
+	Fullname       pgtype.Text
+	ProfilePicture pgtype.Text
+}
+
+func (q *Queries) SearchUsersTrigram(ctx context.Context, searchTerm string) ([]SearchUsersTrigramRow, error) {
+	rows, err := q.db.Query(ctx, searchUsersTrigram, searchTerm)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchUsersTrigramRow
+	for rows.Next() {
+		var i SearchUsersTrigramRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.Fullname,
+			&i.ProfilePicture,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateProfile = `-- name: UpdateProfile :one
 UPDATE users
 SET 

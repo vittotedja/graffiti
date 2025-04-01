@@ -27,37 +27,37 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 		return nil, err
 	}
 
-	payload := &Payload{ID: tokenID, Username: username, IssuedAt: time.Now(), ExpiredAt: time.Now().Add(duration)}
-	return payload, nil
+	p := &Payload{ID: tokenID, Username: username, IssuedAt: time.Now(), ExpiredAt: time.Now().Add(duration)}
+	return p, nil
 }
 
-func (payload *Payload) GetAudience() (jwt.ClaimStrings, error) {
+func (p *Payload) GetAudience() (jwt.ClaimStrings, error) {
 	return jwt.ClaimStrings{}, nil
 }
 
-func (payload *Payload) GetExpirationTime() (*jwt.NumericDate, error) {
+func (p *Payload) GetExpirationTime() (*jwt.NumericDate, error) {
 	return &jwt.NumericDate{
-		Time: payload.ExpiredAt,
+		Time: p.ExpiredAt,
 	}, nil
 }
 
-func (payload *Payload) GetIssuedAt() (*jwt.NumericDate, error) {
+func (p *Payload) GetIssuedAt() (*jwt.NumericDate, error) {
 	return &jwt.NumericDate{
-		Time: payload.IssuedAt,
+		Time: p.IssuedAt,
 	}, nil
 }
 
-func (payload *Payload) GetIssuer() (string, error) {
+func (p *Payload) GetIssuer() (string, error) {
 	return "", nil
 }
 
-func (payload *Payload) GetNotBefore() (*jwt.NumericDate, error) {
+func (p *Payload) GetNotBefore() (*jwt.NumericDate, error) {
 	return &jwt.NumericDate{
-		Time: payload.IssuedAt,
+		Time: p.IssuedAt,
 	}, nil
 }
 
-func (payload *Payload) GetSubject() (string, error) {
+func (p *Payload) GetSubject() (string, error) {
 	return "", nil
 }
 

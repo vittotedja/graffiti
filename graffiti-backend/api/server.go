@@ -34,6 +34,7 @@ func NewServer(config util.Config) *Server {
 		log.Fatal("cannot create token maker", err)
 	}
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
+  	server.router.Use(logger.Middleware())
 	server.registerRoutes()
 
 	return server
