@@ -4,6 +4,8 @@ name: Deploy to production
 on:
   push:
     branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 permissions:
   id-token: write
@@ -32,7 +34,13 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
+    - name: Load secrets and save to app.env
+      run: |
+        cd graffiti-backend
+        aws secretsmanager get-secret-value --secret-id graffiti_secrets --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
+
     - name: Build, tag, and push docker image to Amazon ECR
+      id: build-image
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: graffiti
@@ -41,3 +49,20 @@ jobs:
         cd graffiti-backend
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Render Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: graffiti-backend/task-definition.json
+        container-name: graffiti-container
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy to Amazon ECS service
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: graffiti-ecs-service
+        cluster: graffiti-ecs-cluster
+        wait-for-service-stability: true
