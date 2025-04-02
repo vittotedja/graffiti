@@ -1,0 +1,31 @@
+{
+    "family": "graffiti-fargate",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "name": "graffiti-container",
+            "image": "311286597151.dkr.ecr.ap-southeast-1.amazonaws.com/graffiti:latest",
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/graffiti-fargate",
+                    "awslogs-region": "ap-southeast-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256", 
+    "memory": "512"
+}
