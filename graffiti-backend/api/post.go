@@ -1,12 +1,14 @@
 package api
 
 import (
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"net/http"
 	"time"
 
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 )
 
 // Post request/response types
@@ -32,8 +34,6 @@ type postResponse struct {
 type updatePostRequest struct {
 	MediaURL *string `json:"media_url"`
 	PostType *string `json:"post_type" binding:"omitempty,oneof=media embed_link"`
-	// By adding omitempty, before the oneof validation,
-	// you're telling the validator to only apply the oneof check if the field is actually present in the request.
 }
 
 // Convert DB post to API response
@@ -51,30 +51,62 @@ func newPostResponse(post db.Post) postResponse {
 	}
 }
 
+type PostResponseWithAuthor struct {
+	ID             string      `json:"id"`
+	WallID         string      `json:"wall_id"`
+	MediaURL       string      `json:"media_url"`
+	PostType       string      `json:"post_type"`
+	IsHighlighted  bool        `json:"is_highlighted"`
+	LikesCount     int32       `json:"likes_count"`
+	IsDeleted      bool        `json:"is_deleted"`
+	CreatedAt      time.Time   `json:"created_at"`
+	Username       string      `json:"username"`
+	ProfilePicture pgtype.Text `json:"profile_picture"`
+	Fullname       pgtype.Text `json:"fullname"`
+}
+
+func newPostResponseWithAuthor(post db.ListPostsByWallWithAuthorsDetailsRow) PostResponseWithAuthor {
+	return PostResponseWithAuthor{
+		ID:             post.ID.String(),
+		WallID:         post.WallID.String(),
+		MediaURL:       post.MediaUrl.String,
+		PostType:       string(post.PostType.PostType),
+		IsHighlighted:  post.IsHighlighted.Bool,
+		LikesCount:     post.LikesCount.Int32,
+		IsDeleted:      post.IsDeleted.Bool,
+		CreatedAt:      post.CreatedAt.Time,
+		Username:       post.Username,
+		ProfilePicture: post.ProfilePicture,
+		Fullname:       post.Fullname,
+	}
+}
+
 // CreatePost handler
-func (server *Server) createPost(ctx *gin.Context) {
+func (s *Server) createPost(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received create post request")
+
 	var req createPostRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	var wallID pgtype.UUID
-	err := wallID.Scan(req.WallID)
-	if err != nil {
+	var wallID, author pgtype.UUID
+	if err := wallID.Scan(req.WallID); err != nil {
+		log.Error("Invalid wall_id", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-
-	var author pgtype.UUID
-	err = author.Scan(req.Author)
-	if err != nil {
+	if err := author.Scan(req.Author); err != nil {
+		log.Error("Invalid author", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	postType := db.PostType(req.PostType)
-	
 	arg := db.CreatePostParams{
 		WallID:   wallID,
 		Author:   author,
@@ -82,52 +114,67 @@ func (server *Server) createPost(ctx *gin.Context) {
 		PostType: db.NullPostType{PostType: postType, Valid: true},
 	}
 
-	post, err := server.hub.CreatePost(ctx, arg)
+	post, err := s.hub.CreatePost(ctx, arg)
 	if err != nil {
+		log.Error("Failed to create post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Post created successfully")
 	response := newPostResponse(post)
 	ctx.JSON(http.StatusCreated, response)
 }
 
 // GetPost handler
-func (server *Server) getPost(ctx *gin.Context) {
+func (s *Server) getPost(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received get post request")
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	var id pgtype.UUID
-	err := id.Scan(uri.ID)
-	if err != nil {
+	if err := id.Scan(uri.ID); err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	post, err := server.hub.GetPost(ctx, id)
+	post, err := s.hub.GetPost(ctx, id)
 	if err != nil {
+		log.Error("Failed to get post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Post retrieved successfully")
 	response := newPostResponse(post)
 	ctx.JSON(http.StatusOK, response)
 }
 
 // ListPosts handler
-func (server *Server) listPosts(ctx *gin.Context) {
-	posts, err := server.hub.ListPosts(ctx)
+func (s *Server) listPosts(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received list posts request")
+
+	posts, err := s.hub.ListPosts(ctx)
 	if err != nil {
+		log.Error("Failed to list posts", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Posts listed successfully")
 	responses := make([]postResponse, 0, len(posts))
 	for _, post := range posts {
 		responses = append(responses, newPostResponse(post))
@@ -137,7 +184,45 @@ func (server *Server) listPosts(ctx *gin.Context) {
 }
 
 // ListPostsByWall handler
-func (server *Server) listPostsByWall(ctx *gin.Context) {
+func (s *Server) listPostsByWall(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received list posts by wall request")
+
+	var uri struct {
+		WallID string `uri:"id" binding:"required,uuid"`
+	}
+
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var wallID pgtype.UUID
+	if err := wallID.Scan(uri.WallID); err != nil {
+		log.Error("Invalid wall_id", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	posts, err := s.hub.ListPostsByWall(ctx, wallID)
+	if err != nil {
+		log.Error("Failed to list posts by wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Posts by wall listed successfully")
+	responses := make([]postResponse, 0, len(posts))
+	for _, post := range posts {
+		responses = append(responses, newPostResponse(post))
+	}
+
+	ctx.JSON(http.StatusOK, responses)
+}
+
+func (s *Server) listPostsByWallWithAuthorsDetails(ctx *gin.Context) {
 	var uri struct {
 		WallID string `uri:"id" binding:"required,uuid"`
 	}
@@ -154,28 +239,33 @@ func (server *Server) listPostsByWall(ctx *gin.Context) {
 		return
 	}
 
-	posts, err := server.hub.ListPostsByWall(ctx, wallID)
+	posts, err := s.hub.ListPostsByWallWithAuthorsDetails(ctx, wallID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	responses := make([]postResponse, 0, len(posts))
+	responses := make([]PostResponseWithAuthor, 0, len(posts))
 	for _, post := range posts {
-		responses = append(responses, newPostResponse(post))
+		responses = append(responses, newPostResponseWithAuthor(post))
 	}
-
 	ctx.JSON(http.StatusOK, responses)
 }
 
 // GetHighlightedPosts handler
-func (server *Server) getHighlightedPosts(ctx *gin.Context) {
-	posts, err := server.hub.GetHighlightedPosts(ctx)
+func (s *Server) getHighlightedPosts(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received get highlighted posts request")
+
+	posts, err := s.hub.GetHighlightedPosts(ctx)
 	if err != nil {
+		log.Error("Failed to get highlighted posts", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Highlighted posts retrieved successfully")
 	responses := make([]postResponse, 0, len(posts))
 	for _, post := range posts {
 		responses = append(responses, newPostResponse(post))
@@ -185,29 +275,36 @@ func (server *Server) getHighlightedPosts(ctx *gin.Context) {
 }
 
 // GetHighlightedPostsByWall handler
-func (server *Server) getHighlightedPostsByWall(ctx *gin.Context) {
+func (s *Server) getHighlightedPostsByWall(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received get highlighted posts by wall request")
+
 	var uri struct {
 		WallID string `uri:"id" binding:"required,uuid"`
 	}
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	var wallID pgtype.UUID
-	err := wallID.Scan(uri.WallID)
-	if err != nil {
+	if err := wallID.Scan(uri.WallID); err != nil {
+		log.Error("Invalid wall_id", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	posts, err := server.hub.GetHighlightedPostsByWall(ctx, wallID)
+	posts, err := s.hub.GetHighlightedPostsByWall(ctx, wallID)
 	if err != nil {
+		log.Error("Failed to get highlighted posts by wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Highlighted posts by wall retrieved successfully")
 	responses := make([]postResponse, 0, len(posts))
 	for _, post := range posts {
 		responses = append(responses, newPostResponse(post))
@@ -217,144 +314,166 @@ func (server *Server) getHighlightedPostsByWall(ctx *gin.Context) {
 }
 
 // UpdatePost handler
-func (server *Server) updatePost(ctx *gin.Context) {
-	// Extract the user ID from the URI
+func (s *Server) updatePost(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received update post request")
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// Parse the request body
 	var req updatePostRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// Convert the ID to pgtype.UUID
 	var id pgtype.UUID
-	err := id.Scan(uri.ID)
-	if err != nil {
+	if err := id.Scan(uri.ID); err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	
-	// Fetch the current post data to retain non-nullable fields
-    currentPost, err := server.hub.GetPost(ctx, id)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-        return
-    }
 
-	// Prepare the UpdatePostParams struct
+	currentPost, err := s.hub.GetPost(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current post", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	arg := db.UpdatePostParams{
 		ID:       id,
 		MediaUrl: currentPost.MediaUrl,
 		PostType: currentPost.PostType,
 	}
 
-	 // Update the post if fields provided
-	 if req.MediaURL != nil {
-        arg.MediaUrl = pgtype.Text{String: *req.MediaURL, Valid: true}
-    }
-    
-    if req.PostType != nil {
-        postType := db.PostType(*req.PostType)
-        arg.PostType = db.NullPostType{PostType: postType, Valid: true}
-    }
+	if req.MediaURL != nil {
+		arg.MediaUrl = pgtype.Text{String: *req.MediaURL, Valid: true}
+	}
+	if req.PostType != nil {
+		postType := db.PostType(*req.PostType)
+		arg.PostType = db.NullPostType{PostType: postType, Valid: true}
+	}
 
-	post, err := server.hub.UpdatePost(ctx, arg)
+	post, err := s.hub.UpdatePost(ctx, arg)
 	if err != nil {
+		log.Error("Failed to update post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Post updated successfully")
 	response := newPostResponse(post)
 	ctx.JSON(http.StatusOK, response)
 }
 
 // HighlightPost handler
-func (server *Server) highlightPost(ctx *gin.Context) {
+func (s *Server) highlightPost(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received highlight post request")
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	var id pgtype.UUID
-	err := id.Scan(uri.ID)
-	if err != nil {
+	if err := id.Scan(uri.ID); err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	post, err := server.hub.HighlightPost(ctx, id)
+	post, err := s.hub.HighlightPost(ctx, id)
 	if err != nil {
+		log.Error("Failed to highlight post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Post highlighted successfully")
 	response := newPostResponse(post)
 	ctx.JSON(http.StatusOK, response)
 }
 
 // UnhighlightPost handler
-func (server *Server) unhighlightPost(ctx *gin.Context) {
+func (s *Server) unhighlightPost(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received unhighlight post request")
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	var id pgtype.UUID
-	err := id.Scan(uri.ID)
-	if err != nil {
+	if err := id.Scan(uri.ID); err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	post, err := server.hub.UnhighlightPost(ctx, id)
+	post, err := s.hub.UnhighlightPost(ctx, id)
 	if err != nil {
+		log.Error("Failed to unhighlight post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Post unhighlighted successfully")
 	response := newPostResponse(post)
 	ctx.JSON(http.StatusOK, response)
 }
 
 // DeletePost handler
-func (server *Server) deletePost(ctx *gin.Context) {
+func (s *Server) deletePost(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received delete post request")
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	var id pgtype.UUID
-	err := id.Scan(uri.ID)
-	if err != nil {
+	if err := id.Scan(uri.ID); err != nil {
+		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	err = server.hub.DeletePost(ctx, id)
-	if err != nil {
+	if err := s.hub.DeletePost(ctx, id); err != nil {
+		log.Error("Failed to delete post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	log.Info("Post deleted successfully")
 	ctx.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully"})
 }

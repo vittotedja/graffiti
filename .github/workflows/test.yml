@@ -5,9 +5,9 @@ name: Run unit tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
 
@@ -39,18 +39,22 @@ jobs:
       with:
         go-version: '1.23'
       id: go
+    
+    - name: Print env variables
+      run: printenv
 
     - name: Install golang-migrate
       run: |
         curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.2/migrate.linux-amd64.tar.gz | tar xvz
         sudo mv migrate /usr/bin/migrate
         which migrate 
-    
-    - name: Change directory to graffiti-backend
-      run: cd graffiti-backend
 
     - name: Run migrations
-      run: make migrateup
+      run: |
+        cd graffiti-backend
+        make migrateup
 
     - name: Test
-      run: GOFLAGS=-mod=mod make test
+      run: |
+        cd graffiti-backend 
+        GOFLAGS=-mod=mod make test

@@ -16,6 +16,13 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM users
 ORDER BY id;
 
+-- name: GetUserByEmail :one
+SELECT * FROM users
+WHERE email = $1 LIMIT 1;
+
+-- name: GetUserByUsername :one
+SELECT * FROM users
+WHERE username = $1 LIMIT 1;
 
 -- name: UpdateUser :one
 UPDATE users
@@ -46,3 +53,39 @@ WHERE id = $1;
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1;
+
+-- name: SearchUsersTrigram :many
+SELECT
+    id,
+    username,
+    fullname,
+    profile_picture
+FROM users
+WHERE
+    username % sqlc.arg(search_term)
+    OR
+    fullname % sqlc.arg(search_term)
+ORDER BY GREATEST(
+    similarity(username, sqlc.arg(search_term)),
+    similarity(fullname, sqlc.arg(search_term))
+) DESC
+LIMIT 10;
+
+
+-- name: SearchUsersILike :many
+SELECT
+    id,
+    username,
+    fullname,
+    profile_picture
+FROM users
+WHERE
+    username ILIKE '%' || sqlc.arg(search_term) || '%'
+    OR
+    fullname ILIKE '%' || sqlc.arg(search_term) || '%'
+ORDER BY username ASC
+LIMIT 10;
+
+
+
+

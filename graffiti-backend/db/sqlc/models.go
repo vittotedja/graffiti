@@ -142,6 +142,7 @@ type User struct {
 type Wall struct {
 	ID              pgtype.UUID
 	UserID          pgtype.UUID
+	Title           string
 	Description     pgtype.Text
 	BackgroundImage pgtype.Text
 	IsPublic        pgtype.Bool
