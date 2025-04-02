@@ -64,81 +64,82 @@ export function WallGrid({userId}: WallGridProps) {
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{walls.length === 0 && (
+			{walls && walls.length === 0 && (
 				<div className="col-span-3 flex flex-col justify-center gap-2">
 					<p className="text-muted-foreground">No walls found</p>
 					<p className="text-muted-foreground">Start creating your walls now</p>
 				</div>
 			)}
-			{walls.map((wall) => (
-				<Link href={`/wall/${wall.id}`} key={wall.id}>
-					<Card className="overflow-hidden border-2 border-primary/20 bg-background/80 h-[220px] backdrop-blur-sm hover:shadow-lg transition-all">
-						{/* {wall.isPinned && (
+			{walls &&
+				walls.map((wall) => (
+					<Link href={`/wall/${wall.id}`} key={wall.id}>
+						<Card className="overflow-hidden border-2 border-primary/20 bg-background/80 h-[220px] backdrop-blur-sm hover:shadow-lg transition-all">
+							{/* {wall.isPinned && (
 							<div className="absolute top-2 left-2 z-40 bg-black/35 p-1 rounded-full">
 								<Pin className="h-4 w-4 text-red-600 fill-red-600" />
 							</div>
 						)} */}
-						<CardContent className="p-0">
-							<div className="relative">
-								<Image
-									src={`/mockbday.webp`}
-									alt={wall.title}
-									width={400}
-									height={200}
-									className="w-full h-[220px] object-cover"
-								/>
-								{!userId && (
-									<div className="absolute top-2 right-2">
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button
-													variant="ghost"
-													size="icon"
-													className="h-8 w-8 bg-black/30 text-white hover:bg-black/50 rounded-full cursor-pointer"
-												>
-													<MoreVertical className="h-4 w-4" />
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="end">
-												<DropdownMenuItem className="cursor-pointer">
-													Edit Wall
-												</DropdownMenuItem>
-												<DropdownMenuItem className="cursor-pointer">
-													Change Privacy
-												</DropdownMenuItem>
-												<DropdownMenuItem className="cursor-pointer">
-													Pin Wall
-												</DropdownMenuItem>
-												<DropdownMenuSeparator />
-												<DropdownMenuItem className="text-destructive cursor-pointer">
-													Delete Wall
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									</div>
-								)}
-								<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-									<h3 className="font-bold text-xl text-white font-graffiti">
-										{wall.title}
-									</h3>
-									<div className="flex justify-between items-center mt-1">
-										<span className="text-white/80 text-sm">
-											{formatDate(wall.created_at)}
-										</span>
-										<div className="flex items-center gap-2">
-											{wall.is_public ? (
-												<Globe className="h-4 w-4 text-white/80" />
-											) : (
-												<Lock className="h-4 w-4 text-white/80" />
-											)}
+							<CardContent className="p-0">
+								<div className="relative">
+									<Image
+										src={`/mockbday.webp`}
+										alt={wall.title}
+										width={400}
+										height={200}
+										className="w-full h-[220px] object-cover"
+									/>
+									{!userId && (
+										<div className="absolute top-2 right-2">
+											<DropdownMenu>
+												<DropdownMenuTrigger asChild>
+													<Button
+														variant="ghost"
+														size="icon"
+														className="h-8 w-8 bg-black/30 text-white hover:bg-black/50 rounded-full cursor-pointer"
+													>
+														<MoreVertical className="h-4 w-4" />
+													</Button>
+												</DropdownMenuTrigger>
+												<DropdownMenuContent align="end">
+													<DropdownMenuItem className="cursor-pointer">
+														Edit Wall
+													</DropdownMenuItem>
+													<DropdownMenuItem className="cursor-pointer">
+														Change Privacy
+													</DropdownMenuItem>
+													<DropdownMenuItem className="cursor-pointer">
+														Pin Wall
+													</DropdownMenuItem>
+													<DropdownMenuSeparator />
+													<DropdownMenuItem className="text-destructive cursor-pointer">
+														Delete Wall
+													</DropdownMenuItem>
+												</DropdownMenuContent>
+											</DropdownMenu>
+										</div>
+									)}
+									<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+										<h3 className="font-bold text-xl text-white font-graffiti">
+											{wall.title}
+										</h3>
+										<div className="flex justify-between items-center mt-1">
+											<span className="text-white/80 text-sm">
+												{formatDate(wall.created_at)}
+											</span>
+											<div className="flex items-center gap-2">
+												{wall.is_public ? (
+													<Globe className="h-4 w-4 text-white/80" />
+												) : (
+													<Lock className="h-4 w-4 text-white/80" />
+												)}
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-						</CardContent>
-					</Card>
-				</Link>
-			))}
+							</CardContent>
+						</Card>
+					</Link>
+				))}
 
 			{/* Add New Wall Card */}
 			{!userId && (

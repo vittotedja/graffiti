@@ -34,7 +34,7 @@ func NewServer(config util.Config) *Server {
 		log.Fatal("cannot create token maker", err)
 	}
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
-  	server.router.Use(logger.Middleware())
+	server.router.Use(logger.Middleware())
 	server.registerRoutes()
 
 	return server
@@ -110,7 +110,11 @@ func (s *Server) registerRoutes() {
 		protected.GET("/v1/users/:id/walls", s.listWallsByUser)
 		protected.POST("/v2/walls", s.createNewWall)       //no test yet
 		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
+		// search
+		protected.POST("/v1/users/search", s.searchUsers) //no test
 	}
+
+	s.router.POST("/api/v1/presign", s.presignHandler)
 
 	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
 

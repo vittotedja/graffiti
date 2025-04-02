@@ -162,7 +162,7 @@ function PostCard({post}: PostCardType) {
 							</div>
 						</div>
 					</div>
-					<div className="flex gap-2">
+					<div className="flex gap-2 items-center">
 						{likeCount}
 						<Button
 							variant="ghost"

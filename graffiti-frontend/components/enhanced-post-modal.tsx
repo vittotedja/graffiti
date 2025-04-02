@@ -1,20 +1,6 @@
 "use client";
 
-import type React from "react";
-import {useState, useRef, useEffect} from "react";
-import {
-	Upload,
-	ImageIcon,
-	Brush,
-	Eraser,
-	Save,
-	Undo,
-	Redo,
-	Check,
-	X,
-	ChevronLeft,
-} from "lucide-react";
-import {Button} from "@/components/ui/button";
+import React, {useState, useRef, useEffect, useCallback} from "react";
 import {
 	Dialog,
 	DialogContent,
@@ -22,14 +8,17 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {Slider} from "@/components/ui/slider";
-import {Label} from "@/components/ui/label";
-import {Textarea} from "@/components/ui/textarea";
-import {Input} from "./ui/input";
+import {Button} from "@/components/ui/button";
+import {ChevronLeft} from "lucide-react";
 import {toast} from "sonner";
-import {RequestPost} from "@/types/post";
 import {fetchWithAuth} from "@/lib/auth";
+import {useUser} from "@/hooks/useUser";
+
+import UploadTab from "./upload-tab";
+import DrawTab from "./draw-tab";
+import DetailsTab from "./details-tab";
+import {canvasToBlob, getPresignedUrl, uploadToS3} from "@/lib/s3-uploader";
+import {RequestPost, Platform} from "@/types/post";
 
 interface EnhancedPostModalProps {
 	isOpen: boolean;
@@ -38,46 +27,62 @@ interface EnhancedPostModalProps {
 	onPostCreated: () => void;
 }
 
-type Platform = "youtube" | "tiktok" | "spotify" | "others";
-
 export function EnhancedPostModal({
 	isOpen,
 	onClose,
 	wallId,
 	onPostCreated,
 }: EnhancedPostModalProps) {
+	const {user} = useUser();
 	const [activeTab, setActiveTab] = useState("upload");
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [caption, setCaption] = useState("");
+	const [mediaUrl, setMediaUrl] = useState("");
+	const [tiktokHtml, setTiktokHtml] = useState<string | null>(null);
+	const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
+	const [compositeDataUrl, setCompositeDataUrl] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	// Canvas references
+	const bgCanvasRef = useRef<HTMLCanvasElement>(null);
+	const drawCanvasRef = useRef<HTMLCanvasElement>(null);
+
+	// Drawing state
 	const [isDrawing, setIsDrawing] = useState(false);
 	const [drawingMode, setDrawingMode] = useState("brush");
 	const [brushSize, setBrushSize] = useState(5);
 	const [brushColor, setBrushColor] = useState("#ff3b30");
 	const [drawingHistory, setDrawingHistory] = useState<ImageData[]>([]);
 	const [historyIndex, setHistoryIndex] = useState(-1);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
-
-	const [compositeDataUrl, setCompositeDataUrl] = useState<string | null>(null);
-	const [mediaUrl, setMediaUrl] = useState<string>("");
-	const [tiktokHtml, setTiktokHtml] = useState<string | null>(null);
-
-	// All Refs for processing picture and also doodles
-	const bgCanvasRef = useRef<HTMLCanvasElement>(null);
-	const drawCanvasRef = useRef<HTMLCanvasElement>(null);
 
 	const colors = [
-		"#ff3b30", // Red
-		"#ff9500", // Orange
-		"#ffcc00", // Yellow
-		"#34c759", // Green
-		"#5ac8fa", // Light Blue
-		"#007aff", // Blue
-		"#5856d6", // Purple
-		"#af52de", // Pink
-		"#000000", // Black
-		"#ffffff", // White
+		"#ff3b30",
+		"#ff9500",
+		"#ffcc00",
+		"#34c759",
+		"#5ac8fa",
+		"#007aff",
+		"#5856d6",
+		"#af52de",
+		"#000000",
+		"#ffffff",
 	];
+
+	// Generate composite image
+	const generateComposite = useCallback(() => {
+		if (!bgCanvasRef.current || !drawCanvasRef.current) return;
+		const offscreenCanvas = document.createElement("canvas");
+		offscreenCanvas.width = bgCanvasRef.current.width;
+		offscreenCanvas.height = bgCanvasRef.current.height;
+		const offscreenCtx = offscreenCanvas.getContext("2d");
+		if (offscreenCtx) {
+			offscreenCtx.drawImage(bgCanvasRef.current, 0, 0);
+			offscreenCtx.drawImage(drawCanvasRef.current, 0, 0);
+			const dataUrl = offscreenCanvas.toDataURL("image/png");
+			setCompositeDataUrl(dataUrl);
+			console.log("Composite data URL generated:", dataUrl);
+		}
+	}, []);
 
 	useEffect(() => {
 		if (selectedImage && bgCanvasRef.current && drawCanvasRef.current) {
@@ -85,75 +90,54 @@ export function EnhancedPostModal({
 			const drawCanvas = drawCanvasRef.current;
 			const bgContext = bgCanvas.getContext("2d");
 			const drawContext = drawCanvas.getContext("2d");
+			if (!user || !bgContext || !drawContext) return;
 
-			if (!bgContext || !drawContext) return;
-
-			// Define maximum canvas dimensions
 			const MAX_WIDTH = 480;
 			const MAX_HEIGHT = 480;
 
-			// Check if we're using a placeholder (empty canvas) scenario
 			if (selectedImage.includes("placeholder.svg")) {
-				// Instead of loading an image, set a fixed canvas size
 				bgCanvas.width = MAX_WIDTH;
 				bgCanvas.height = MAX_HEIGHT;
 				drawCanvas.width = MAX_WIDTH;
 				drawCanvas.height = MAX_HEIGHT;
 
-				// Fill the background canvas with white
 				bgContext.fillStyle = "#ffffff";
 				bgContext.fillRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
 
-				// Clear the drawing canvas (or you can fill with transparent pixels)
 				drawContext.clearRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
-
-				// Initialize drawing history with this blank state
-				const initialDrawingState = drawContext.getImageData(
+				const initialState = drawContext.getImageData(
 					0,
 					0,
 					MAX_WIDTH,
 					MAX_HEIGHT
 				);
-				setDrawingHistory([initialDrawingState]);
+				setDrawingHistory([initialState]);
 				setHistoryIndex(0);
 			} else {
-				// For a real uploaded image, load and scale it if needed
 				const img = new Image();
 				img.crossOrigin = "anonymous";
 				img.onload = () => {
 					let width = img.width;
 					let height = img.height;
-					// Calculate a scale factor so that the image fits within our max dimensions
-					const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height, 1); // don't upscale if smaller than max
+					const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height, 1);
 					width = width * scale;
 					height = height * scale;
-
-					// Set both canvases to these dimensions
 					bgCanvas.width = width;
 					bgCanvas.height = height;
 					drawCanvas.width = width;
 					drawCanvas.height = height;
-
-					// Draw the image on the background canvas, scaled
 					bgContext.drawImage(img, 0, 0, width, height);
-
-					// Initialize drawing canvas with a cleared (transparent) state
 					drawContext.clearRect(0, 0, width, height);
-					const initialDrawingState = drawContext.getImageData(
-						0,
-						0,
-						width,
-						height
-					);
-					setDrawingHistory([initialDrawingState]);
+					const initialState = drawContext.getImageData(0, 0, width, height);
+					setDrawingHistory([initialState]);
 					setHistoryIndex(0);
 				};
 				img.src = selectedImage;
 			}
 		}
-	}, [selectedImage]);
+	}, [selectedImage, user]);
 
-	// Handle file upload
+	// File upload handlers
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
@@ -166,68 +150,54 @@ export function EnhancedPostModal({
 		}
 	};
 
-	// Mock image upload for demo purposes
 	const handleMockUpload = () => {
-		// Use a placeholder image
 		setSelectedImage("/placeholder.svg?height=600&width=600");
 		setActiveTab("draw");
 	};
 
+	// Drawing handlers
 	const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
 		if (!drawCanvasRef.current) return;
-
 		const canvas = drawCanvasRef.current;
 		const context = canvas.getContext("2d");
 		if (!context) return;
-
 		const rect = canvas.getBoundingClientRect();
 		const x = (e.clientX - rect.left) * (canvas.width / rect.width);
 		const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-
 		context.beginPath();
 		context.moveTo(x, y);
-
 		if (drawingMode === "brush") {
 			context.globalCompositeOperation = "source-over";
 			context.strokeStyle = brushColor;
 			context.lineWidth = brushSize;
 			context.lineCap = "round";
 		} else if (drawingMode === "eraser") {
-			// Use destination-out so it only clears drawing on the top layer
 			context.globalCompositeOperation = "destination-out";
 			context.lineWidth = brushSize;
 			context.lineCap = "round";
 		}
-
 		setIsDrawing(true);
 	};
 
 	const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
 		if (!isDrawing || !drawCanvasRef.current) return;
-
 		const canvas = drawCanvasRef.current;
 		const context = canvas.getContext("2d");
 		if (!context) return;
-
 		const rect = canvas.getBoundingClientRect();
 		const x = (e.clientX - rect.left) * (canvas.width / rect.width);
 		const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-
 		context.lineTo(x, y);
 		context.stroke();
 	};
 
 	const stopDrawing = () => {
 		if (!isDrawing || !drawCanvasRef.current) return;
-
 		const canvas = drawCanvasRef.current;
 		const context = canvas.getContext("2d");
 		if (!context) return;
-
 		context.closePath();
 		setIsDrawing(false);
-
-		// Save the drawing canvas state to your history for undo/redo functionality
 		const currentState = context.getImageData(
 			0,
 			0,
@@ -239,7 +209,6 @@ export function EnhancedPostModal({
 		setHistoryIndex(newHistory.length);
 	};
 
-	// Undo function: Restores the previous state
 	const undo = () => {
 		if (historyIndex > 0 && drawCanvasRef.current) {
 			const newIndex = historyIndex - 1;
@@ -251,7 +220,6 @@ export function EnhancedPostModal({
 		}
 	};
 
-	// Redo function: Restores the next state if available
 	const redo = () => {
 		if (historyIndex < drawingHistory.length - 1 && drawCanvasRef.current) {
 			const newIndex = historyIndex + 1;
@@ -263,39 +231,10 @@ export function EnhancedPostModal({
 		}
 	};
 
-	// Reset state when modal closes
-	const handleClose = () => {
-		setSelectedImage(null);
-		setCaption("");
-		setActiveTab("upload");
-		onClose();
-	};
-
-	const handleNext = () => {
-		const bgCanvas = bgCanvasRef.current;
-		const drawCanvas = drawCanvasRef.current;
-
-		if (!bgCanvas || !drawCanvas) return;
-		const offscreenCanvas = document.createElement("canvas");
-		offscreenCanvas.width = bgCanvas.width;
-		offscreenCanvas.height = bgCanvas.height;
-		const offscreenCtx = offscreenCanvas.getContext("2d");
-
-		if (offscreenCtx) {
-			// Draw the background layer first...
-			offscreenCtx.drawImage(bgCanvas, 0, 0);
-			// ...then the drawing layer on top
-			offscreenCtx.drawImage(drawCanvas, 0, 0);
-			// Store the combined result as a data URL
-			setCompositeDataUrl(offscreenCanvas.toDataURL("image/png"));
-		}
-	};
-
-	// Functions for Media URL
+	// Media preview functions
 	const getEmbedUrl = (
 		url: string
 	): {embedUrl: string | null; type: Platform} => {
-		// YouTube
 		if (url.includes("youtube.com") || url.includes("youtu.be")) {
 			const videoId = url.includes("youtube.com")
 				? url.split("v=")[1]?.split("&")[0]
@@ -304,10 +243,7 @@ export function EnhancedPostModal({
 				embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : null,
 				type: "youtube",
 			};
-		}
-		// Spotify
-		else if (url.includes("spotify.com")) {
-			// Convert spotify URL to embed URL
+		} else if (url.includes("spotify.com")) {
 			if (
 				url.includes("/track/") ||
 				url.includes("/album/") ||
@@ -324,12 +260,8 @@ export function EnhancedPostModal({
 			}
 			return {embedUrl: url, type: "spotify"};
 		} else if (url.includes("tiktok.com")) {
-			return {
-				embedUrl: url,
-				type: "tiktok",
-			};
+			return {embedUrl: url, type: "tiktok"};
 		}
-		// Other media types
 		return {embedUrl: url, type: "others"};
 	};
 
@@ -340,9 +272,7 @@ export function EnhancedPostModal({
 			});
 			return;
 		}
-
 		const {type} = getEmbedUrl(mediaUrl);
-
 		if (type === "tiktok") {
 			try {
 				const response = await fetch(
@@ -352,13 +282,14 @@ export function EnhancedPostModal({
 				if (data.html) {
 					setTiktokHtml(data.html);
 					setIsPreviewLoaded(true);
-
-					// Ensure TikTok script is loaded dynamically after setting the HTML
 					setTimeout(() => {
-						const script = document.createElement("script");
-						script.src = "https://www.tiktok.com/embed.js";
-						script.async = true;
-						document.body.appendChild(script);
+						if (!document.getElementById("tiktok-embed-script")) {
+							const script = document.createElement("script");
+							script.src = "https://www.tiktok.com/embed.js";
+							script.async = true;
+							script.id = "tiktok-embed-script";
+							document.body.appendChild(script);
+						}
 					}, 500);
 				} else {
 					toast.error("TikTok embed failed", {
@@ -385,7 +316,6 @@ export function EnhancedPostModal({
 	const renderIframe = () => {
 		const {embedUrl, type} = getEmbedUrl(mediaUrl);
 		if (!embedUrl) return null;
-
 		switch (type) {
 			case "youtube":
 				return (
@@ -428,63 +358,85 @@ export function EnhancedPostModal({
 		}
 	};
 
+	// S3 Upload function
+	const handleUploadToS3 = async () => {
+		if (!bgCanvasRef.current || !drawCanvasRef.current) return;
+		const offscreenCanvas = document.createElement("canvas");
+		offscreenCanvas.width = bgCanvasRef.current.width;
+		offscreenCanvas.height = bgCanvasRef.current.height;
+		const offscreenCtx = offscreenCanvas.getContext("2d");
+		if (offscreenCtx) {
+			offscreenCtx.drawImage(bgCanvasRef.current, 0, 0);
+			offscreenCtx.drawImage(drawCanvasRef.current, 0, 0);
+			try {
+				const blob = await canvasToBlob(offscreenCanvas);
+				const filename = `image-${Date.now()}.png`;
+				const presignedUrlData = await getPresignedUrl(filename, blob);
+				await uploadToS3(presignedUrlData.presignedUrl, blob);
+				toast.success("Image uploaded successfully!");
+				return presignedUrlData.publicUrl;
+			} catch (error) {
+				toast.error("Image upload failed.");
+				console.error("S3 Upload Error:", error);
+			}
+		}
+	};
+
 	const uploadPosts = async (postType: "media" | "embed") => {
 		setIsSubmitting(true);
 
 		let newPost: RequestPost;
+
 		if (postType === "media") {
-			const finalImage = compositeDataUrl || selectedImage;
-			//TODO: process finalImage
+			const public_url = await handleUploadToS3();
 			newPost = {
 				post_type: "media",
-				media_url: finalImage,
+				media_url: public_url || "",
 				wall_id: wallId,
-				// caption: caption,
 			};
-		} else if (postType === "embed") {
+		} else {
 			const {embedUrl} = getEmbedUrl(mediaUrl);
 			newPost = {
 				post_type: "embed_link",
 				media_url: embedUrl,
 				wall_id: wallId,
 			};
-
-			try {
-				const response = await fetchWithAuth(
-					"http://localhost:8080/api/v1/posts",
-					{
-						method: "POST",
-						body: JSON.stringify({
-							...newPost,
-							author: "a09a0895-2edd-40ee-8f9d-da18ac9fbc40",
-						}),
-					}
-				);
-				if (!response.ok) throw new Error("Something went wrong");
-				toast.success("successful");
-			} catch (error) {
-				console.log(error);
-
-				toast.error("something went wrong");
-			}
 		}
 
-		// Simulate API delay
-		setTimeout(() => {
-			onPostCreated();
-			// Reset state after posting
-			setSelectedImage(null);
-			setCaption("");
-			setActiveTab("upload");
-			setMediaUrl("");
-			setIsPreviewLoaded(false);
-			setCompositeDataUrl(null);
-			setIsSubmitting(false);
-			onClose();
-		}, 1000);
+		try {
+			if (newPost.media_url == "") return;
+			const response = await fetchWithAuth(
+				"http://localhost:8080/api/v1/posts",
+				{
+					method: "POST",
+					body: JSON.stringify({
+						...newPost,
+						author: user?.id,
+					}),
+				}
+			);
+
+			if (!response.ok) throw new Error("Something went wrong");
+
+			toast.success("Post created successfully");
+		} catch (error) {
+			console.error(error);
+			toast.error("Something went wrong");
+		} finally {
+			setTimeout(() => {
+				onPostCreated();
+				setSelectedImage(null);
+				setCaption("");
+				setActiveTab("upload");
+				setMediaUrl("");
+				setIsPreviewLoaded(false);
+				setCompositeDataUrl(null);
+				setIsSubmitting(false);
+				onClose();
+			}, 1000);
+		}
 	};
 
-	// Handle post submission
 	const handleSubmit = () => {
 		if (mediaUrl && isPreviewLoaded) {
 			uploadPosts("embed");
@@ -492,6 +444,20 @@ export function EnhancedPostModal({
 			uploadPosts("media");
 		}
 	};
+
+	const handleNext = () => {
+		generateComposite();
+		setActiveTab("details");
+	};
+
+	const handleClose = () => {
+		setSelectedImage(null);
+		setCaption("");
+		setActiveTab("upload");
+		onClose();
+	};
+
+	if (!user) return null;
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleClose}>
@@ -506,7 +472,7 @@ export function EnhancedPostModal({
 					</DialogTitle>
 				</DialogHeader>
 
-				{/* Step navigation */}
+				{/* Step Navigation */}
 				{selectedImage && (
 					<div className="flex items-center mb-4">
 						<Button
@@ -520,7 +486,6 @@ export function EnhancedPostModal({
 							<ChevronLeft className="h-4 w-4" />
 							{activeTab === "details" ? "Back to Drawing" : "Back"}
 						</Button>
-
 						<div className="flex-1 flex justify-center">
 							<div className="flex items-center gap-2">
 								<div
@@ -540,317 +505,60 @@ export function EnhancedPostModal({
 								></div>
 							</div>
 						</div>
-
-						{activeTab === "draw" && (
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => {
-									setActiveTab("details");
-									handleNext();
-								}}
-							>
-								Next
-							</Button>
-						)}
 					</div>
 				)}
 
-				{/* Upload Tab */}
-				{activeTab === "upload" && (
-					<div className="grid gap-6">
-						<Tabs defaultValue="upload" className="w-full">
-							<TabsList className="grid w-full grid-cols-2">
-								<TabsTrigger value="upload">Upload</TabsTrigger>
-								<TabsTrigger value="embedlink">Embed Link</TabsTrigger>
-							</TabsList>
-
-							<TabsContent value="upload" className="mt-4">
-								<div className="border-2 border-dashed border-primary/20 rounded-md p-8 text-center">
-									<div className="flex flex-col items-center gap-3">
-										<ImageIcon className="h-12 w-12 text-muted-foreground" />
-										<div className="text-sm text-muted-foreground">
-											Drag and drop an image or click to browse
-										</div>
-										<div className="flex gap-2">
-											<Button
-												variant="outline"
-												size="sm"
-												className="mt-2 cursor-pointer relative"
-											>
-												<Upload className="h-4 w-4 mr-2" />
-												Upload Image
-												<input
-													type="file"
-													accept="image/*"
-													className="absolute inset-0 w-full h-full opacity-0"
-													onChange={handleFileUpload}
-												/>
-											</Button>
-
-											<Button
-												onClick={handleMockUpload}
-												variant="default"
-												size="sm"
-												className="mt-2"
-											>
-												Use Demo Image
-											</Button>
-										</div>
-									</div>
-								</div>
-							</TabsContent>
-
-							<TabsContent value="embedlink" className="mt-4">
-								<div className="border-2 border-primary/20 rounded-md p-8 text-center bg-black/5">
-									<div className="space-y-2">
-										<Label htmlFor="url">Media URL</Label>
-										<div className="flex gap-2">
-											<Input
-												id="url"
-												placeholder="Paste YouTube, TikTok or other media URL"
-												value={mediaUrl}
-												onChange={(e) => setMediaUrl(e.target.value)}
-											/>
-											<Button
-												type="button"
-												variant="outline"
-												onClick={handlePreview}
-												disabled={!mediaUrl}
-											>
-												Preview
-											</Button>
-										</div>
-									</div>
-
-									{isPreviewLoaded && (
-										<div className="space-y-2 mt-4">
-											<div className="flex items-center justify-between">
-												<Label>Preview</Label>
-												<Button
-													type="button"
-													variant="ghost"
-													size="icon"
-													onClick={handleReset}
-													className="h-6 w-6"
-												>
-													<X className="h-4 w-4" />
-												</Button>
-											</div>
-											<div className="rounded-md overflow-hidden border bg-muted">
-												{renderIframe()}
-											</div>
-											<div className="space-y-2 mt-4">
-												<Label htmlFor="caption">Caption</Label>
-												<Textarea
-													id="caption"
-													placeholder="Add a caption to your media..."
-													value={caption}
-													onChange={(e) => setCaption(e.target.value)}
-													rows={3}
-												/>
-											</div>
-											<Button
-												className="mt-4"
-												onClick={handleSubmit}
-												disabled={isSubmitting}
-											>
-												{isSubmitting ? (
-													<div className="flex items-center gap-2">
-														<div className="h-4 w-4 rounded-full border-2 border-t-transparent border-white animate-spin"></div>
-														Posting...
-													</div>
-												) : (
-													<>
-														<Save className="h-4 w-4 mr-2" />
-														Post to Wall
-													</>
-												)}
-											</Button>
-										</div>
-									)}
-								</div>
-							</TabsContent>
-						</Tabs>
-					</div>
-				)}
-
-				{/* Drawing Tab */}
-				{activeTab === "draw" && selectedImage && (
-					<div className="grid gap-4 md:grid-cols-[1fr_250px]">
-						{/* Canvas Area */}
-						<div
-							className="relative border rounded-md overflow-hidden bg-white"
-							style={{
-								width: selectedImage
-									? drawCanvasRef.current?.width || 600
-									: "auto",
-								height: selectedImage
-									? drawCanvasRef.current?.height || 400
-									: "auto",
-							}}
-						>
-							<canvas
-								ref={bgCanvasRef}
-								className="absolute inset-0"
-								style={{zIndex: 0}}
-							/>
-							<canvas
-								ref={drawCanvasRef}
-								className="absolute inset-0"
-								style={{zIndex: 1}}
-								onMouseDown={startDrawing}
-								onMouseMove={draw}
-								onMouseUp={stopDrawing}
-								onMouseLeave={stopDrawing}
-							/>
-						</div>
-
-						{/* Drawing Tools */}
-						<div className="bg-black/5 backdrop-blur-sm rounded-xl p-4">
-							<div className="grid gap-4">
-								<div className="flex flex-wrap gap-2 justify-center">
-									<Button
-										variant={drawingMode === "brush" ? "default" : "outline"}
-										size="icon"
-										onClick={() => setDrawingMode("brush")}
-									>
-										<Brush className="h-5 w-5" />
-									</Button>
-									<Button
-										variant={drawingMode === "eraser" ? "default" : "outline"}
-										size="icon"
-										onClick={() => setDrawingMode("eraser")}
-									>
-										<Eraser className="h-5 w-5" />
-									</Button>
-									<Button
-										variant="outline"
-										size="icon"
-										onClick={undo}
-										disabled={historyIndex <= 0}
-									>
-										<Undo className="h-5 w-5" />
-									</Button>
-									<Button
-										variant="outline"
-										size="icon"
-										onClick={redo}
-										disabled={historyIndex >= drawingHistory.length - 1}
-									>
-										<Redo className="h-5 w-5" />
-									</Button>
-								</div>
-
-								<div className="space-y-2">
-									<div className="flex justify-between items-center">
-										<Label>Brush Size</Label>
-										<span className="text-sm">{brushSize}px</span>
-									</div>
-									<Slider
-										value={[brushSize]}
-										min={1}
-										max={50}
-										step={1}
-										onValueChange={(value: React.SetStateAction<number>[]) =>
-											setBrushSize(value[0])
-										}
-									/>
-								</div>
-
-								<div>
-									<Label className="mb-2 block">Color</Label>
-									<div className="flex flex-wrap gap-2">
-										{colors.map((color) => (
-											<button
-												key={color}
-												className={`h-8 w-8 rounded-full ${
-													brushColor === color
-														? "ring-2 ring-offset-2 ring-primary"
-														: "ring-2 ring-offset-1 ring-gray-700"
-												}`}
-												style={{backgroundColor: color}}
-												onClick={() => setBrushColor(color)}
-											/>
-										))}
-									</div>
-								</div>
-
-								<div className="grid grid-cols-2 gap-2 mt-4">
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => setActiveTab("upload")}
-									>
-										<X className="h-4 w-4 mr-2" />
-										Cancel
-									</Button>
-									<Button
-										size="sm"
-										onClick={() => {
-											setActiveTab("details");
-											handleNext();
-										}}
-									>
-										<Check className="h-4 w-4 mr-2" />
-										Next
-									</Button>
-								</div>
-							</div>
-						</div>
-					</div>
-				)}
-
-				{/* Details Tab */}
-				{activeTab === "details" && selectedImage && (
-					<div className="grid gap-6 md:grid-cols-[1fr_1fr]">
-						<div className="relative border rounded-md overflow-hidden bg-white">
-							{compositeDataUrl ? (
-								// eslint-disable-next-line @next/next/no-img-element
-								<img
-									src={compositeDataUrl}
-									alt="Combined Preview"
-									className="max-w-full h-auto"
-								/>
-							) : (
-								<p>Loading preview...</p>
-							)}
-						</div>
-
-						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="caption">Caption</Label>
-								<Textarea
-									id="caption"
-									placeholder="Write a caption for your post..."
-									value={caption}
-									onChange={(e) => setCaption(e.target.value)}
-									className="resize-none h-32"
-								/>
-							</div>
-
-							<div className="pt-4">
-								<Button
-									className="w-full"
-									onClick={handleSubmit}
-									disabled={isSubmitting}
-								>
-									{isSubmitting ? (
-										<div className="flex items-center gap-2">
-											<div className="h-4 w-4 rounded-full border-2 border-t-transparent border-white animate-spin"></div>
-											Posting...
-										</div>
-									) : (
-										<>
-											<Save className="h-4 w-4 mr-2" />
-											Post to Wall
-										</>
-									)}
-								</Button>
-							</div>
-						</div>
-					</div>
-				)}
+				{/* Hide/Show Tab Components using CSS */}
+				<div className={activeTab !== "upload" ? "hidden" : ""}>
+					<UploadTab
+						mediaUrl={mediaUrl}
+						setMediaUrl={setMediaUrl}
+						caption={caption}
+						setCaption={setCaption}
+						handleFileUpload={handleFileUpload}
+						handleMockUpload={handleMockUpload}
+						handlePreview={handlePreview}
+						isPreviewLoaded={isPreviewLoaded}
+						renderIframe={renderIframe}
+						handleReset={handleReset}
+						handleSubmit={handleSubmit}
+						isSubmitting={isSubmitting}
+					/>
+				</div>
+				<div className={activeTab !== "draw" ? "hidden" : ""}>
+					{selectedImage && (
+						<DrawTab
+							selectedImage={selectedImage}
+							bgCanvasRef={bgCanvasRef}
+							drawCanvasRef={drawCanvasRef}
+							startDrawing={startDrawing}
+							draw={draw}
+							stopDrawing={stopDrawing}
+							drawingMode={drawingMode}
+							setDrawingMode={setDrawingMode}
+							brushSize={brushSize}
+							setBrushSize={setBrushSize}
+							brushColor={brushColor}
+							setBrushColor={setBrushColor}
+							colors={colors}
+							undo={undo}
+							redo={redo}
+							setActiveTab={setActiveTab}
+							handleNext={handleNext}
+						/>
+					)}
+				</div>
+				<div className={activeTab !== "details" ? "hidden" : ""}>
+					{selectedImage && (
+						<DetailsTab
+							compositeDataUrl={compositeDataUrl}
+							caption={caption}
+							setCaption={setCaption}
+							handleSubmit={handleSubmit}
+							isSubmitting={isSubmitting}
+						/>
+					)}
+				</div>
 
 				<DialogFooter>
 					{activeTab === "upload" && (

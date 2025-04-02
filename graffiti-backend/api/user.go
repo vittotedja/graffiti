@@ -469,6 +469,8 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received search users request")
 
+	user := ctx.MustGet("currentUser").(db.User)
+
 	var req UserSearchRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON body", err)
@@ -502,6 +504,9 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 	switch v := rawUsers.(type) {
 	case []db.SearchUsersTrigramRow:
 		for _, u := range v {
+			if u.ID == user.ID {
+				continue
+			}
 			respList = append(respList, UserSearchResponse{
 				ID:             u.ID.String(),
 				Username:       u.Username,
@@ -511,6 +516,10 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 		}
 	case []db.SearchUsersILikeRow:
 		for _, u := range v {
+			if u.ID == user.ID {
+				continue
+			}
+
 			respList = append(respList, UserSearchResponse{
 				ID:             u.ID.String(),
 				Username:       u.Username,
