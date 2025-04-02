@@ -195,7 +195,10 @@ func TestListPosts(t *testing.T) {
 	// Fetch all posts
 	allPosts, err := testHub.ListPosts(context.Background())
 	require.NoError(t, err)
-	require.NotEmpty(t, allPosts)
+	require.NotEmpty(t, allPosts, "Posts list should not be empty")
+
+	// Ensure the number of fetched posts is greater than the number of created posts
+	require.Greater(t, len(allPosts), 5, "The number of fetched posts should be greater than 5")
 }
 
 func TestListPostsByWall(t *testing.T) {
