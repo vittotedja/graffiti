@@ -1,4 +1,4 @@
-# This workflow will build the server image and push to ecr
+# This workflow will build the server image, push to ecr, deploy to ecs
 name: Deploy to production
 
 on:
@@ -56,6 +56,7 @@ jobs:
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: graffiti-backend/ecs-task-definition.json
+        execution-role-arn: ${{ secrets.EXECUTION_ROLE_ARN }}
         container-name: graffiti-container
         image: ${{ steps.build-image.outputs.image }}
 
