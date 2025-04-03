@@ -116,6 +116,9 @@ func (s *Server) registerRoutes() {
 
 		//uploads
 		protected.POST("/v1/presign", s.presignHandler)
+
+		//friends
+		protected.POST("/v1/friend-requests", s.createFriendRequest) // working
 	}
 
 	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
@@ -157,7 +160,6 @@ func (s *Server) registerRoutes() {
 
 	// Updated Friendship API routes
 	// Friend Requests
-	s.router.POST("/api/v1/friend-requests", s.createFriendRequest)       // working
 	s.router.PUT("/api/v1/friend-requests/accept", s.acceptFriendRequest) // working
 
 	// User Blocking

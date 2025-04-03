@@ -214,7 +214,10 @@ export function Navbar() {
 								>
 									<Avatar className="h-8 w-8">
 										<AvatarImage
-											src="/placeholder.svg?height=32&width=32"
+											src={
+												user.profile_picture ||
+												"/placeholder.svg?height=32&width=32"
+											}
 											alt="User"
 										/>
 										<AvatarFallback>

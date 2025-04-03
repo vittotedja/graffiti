@@ -9,6 +9,9 @@ import {formatFullName} from "@/lib/formatter";
 import {usePathname} from "next/navigation";
 import {fetchWithAuth} from "@/lib/auth";
 import {User} from "@/types/user";
+import {Button} from "@/components/ui/button";
+import {UserPlus2} from "lucide-react";
+import {toast} from "sonner";
 
 export default function ProfilePage() {
 	const pathname = usePathname();
@@ -37,6 +40,26 @@ export default function ProfilePage() {
 
 	if (splitPath[1] != "profile") return;
 
+	const addFriend = async () => {
+		if (!user) return;
+		try {
+			const response = await fetchWithAuth(
+				"http://localhost:8080/api/v1/friend-requests",
+				{
+					method: "POST",
+					body: JSON.stringify({
+						to_user_id: user.id,
+					}),
+				}
+			);
+			if (!response.ok) throw new Error("Error Adding Friends");
+			toast.success("Successfully sent friend request!");
+		} catch (error) {
+			console.error(error);
+			toast.warning("Error Adding Friends");
+		}
+	};
+
 	if (!user) return <p>Not logged in</p>;
 
 	return (
@@ -48,7 +71,7 @@ export default function ProfilePage() {
 						{/* Background image with more visibility */}
 						<div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60"></div>
 						<Image
-							src="/mockbg.jpg"
+							src={user.background_image || "/mockbg.jpg"}
 							alt="Home Banner"
 							width={1200}
 							height={400}
@@ -61,7 +84,10 @@ export default function ProfilePage() {
 							<div className="flex items-end gap-4">
 								<Avatar className="h-16 w-16 md:h-24 md:w-24 border-4 border-background">
 									<AvatarImage
-										src="/placeholder.svg?height=96&width=96"
+										src={
+											user.profile_picture ||
+											"/placeholder.svg?height=96&width=96"
+										}
 										alt="User Avatar"
 									/>
 									<AvatarFallback>
@@ -75,7 +101,20 @@ export default function ProfilePage() {
 									<h2 className="text-md md:text-md font-medium text-white/55 font-graffiti">
 										@{user.username}
 									</h2>
+									<h2 className="text-sm italic text-white/55 font-graffiti">
+										{user.bio}
+									</h2>
 								</div>
+							</div>
+							<div className="flex gap-2 md:gap-3">
+								<Button
+									variant="outline"
+									className="bg-black/50 text-white border-white/20 hover:bg-black/70 text-xs md:text-sm h-8 md:h-9"
+									onClick={addFriend}
+								>
+									<UserPlus2 />
+									Add Friend
+								</Button>
 							</div>
 						</div>
 					</div>

@@ -84,6 +84,9 @@ export default function HomePage() {
 									<h2 className="text-md md:text-md font-medium text-white/55 font-graffiti">
 										@{user.username}
 									</h2>
+									<h2 className="text-sm italic text-white/55 font-graffiti">
+										{user.bio}
+									</h2>
 								</div>
 							</div>
 
