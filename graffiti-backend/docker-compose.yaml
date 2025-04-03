@@ -14,3 +14,7 @@ services:
       - "8080:8080"
     environment:
       - DB_SOURCE=postgresql://root:secret1234@postgres:5432/graffiti?sslmode=disable #change this for prod later, Wait ini perlu compose ga si artinya since we only need the api app lowkey
+  redis:
+    image: redis:7.4.2-alpine
+    ports:
+      - "6379:6379"
