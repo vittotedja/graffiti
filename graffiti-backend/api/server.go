@@ -1,7 +1,9 @@
 package api
 
 import (
+	ratelimiter "github.com/vittotedja/graffiti/graffiti-backend/util/rate-limit"
 	"log"
+	"os"
 	"time"
 
 	"context"
@@ -34,7 +36,14 @@ func NewServer(config util.Config) *Server {
 		log.Fatal("cannot create token maker", err)
 	}
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
-  	server.router.Use(logger.Middleware())
+	server.router.Use(logger.Middleware())
+	limiter := ratelimiter.NewTokenBucketLimiter(
+		os.Getenv("REDIS_HOST"),
+		60,   // Capacity = 60 tokens
+		60.0, // Refill rate = 60 tokens per second
+		2*time.Minute,
+	)
+	server.router.Use(limiter.Middleware())
 	server.registerRoutes()
 
 	return server
