@@ -39,7 +39,7 @@ func (tb *TokenBucketLimiter) Middleware() gin.HandlerFunc {
 		}
 
 		ctx := context.Background()
-		now := float64(time.Now().Unix())
+		now := float64(time.Now().UnixNano()) / 1e9
 		keyTokens := fmt.Sprintf("tokens:%s", identifier)
 		keyLastRefill := fmt.Sprintf("tokens_last_refill:%s", identifier)
 
@@ -55,21 +55,22 @@ func (tb *TokenBucketLimiter) Middleware() gin.HandlerFunc {
 			local last_refill = tonumber(redis.call("get", last_refill_key)) or now
 
 			local elapsed = now - last_refill
-			local refill = elapsed * refill_rate
+			local refill = math.floor(elapsed * refill_rate)
 			tokens = math.min(capacity, tokens + refill)
 
 			if tokens < 1 then
-				return {0, tokens}
+				 return {0, math.max(0, tokens)}
 			end
 
 			tokens = tokens - 1
+
 			redis.call("setex", tokens_key, ttl, tokens)
 			redis.call("setex", last_refill_key, ttl, now)
 			return {1, tokens}
 		`)
 
 		result, err := luaScript.Run(ctx, tb.RedisClient, []string{keyTokens, keyLastRefill},
-			now, 1, 1.0, int(tb.Window.Seconds())).Result() // Capacity=1, RefillRate=1.0/s
+			now, tb.Capacity, tb.RefillRate, int(tb.Window.Seconds())).Result()
 
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Rate limiter error"})
