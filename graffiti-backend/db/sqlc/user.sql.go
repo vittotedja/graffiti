@@ -373,3 +373,57 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	)
 	return i, err
 }
+
+const updateUserNew = `-- name: UpdateUserNew :one
+UPDATE users
+SET
+    username = COALESCE($2, username),
+    fullname = COALESCE($3, fullname),
+    email = COALESCE($4, email),
+    hashed_password = COALESCE($5, hashed_password),
+    profile_picture = COALESCE($6, profile_picture),
+    bio = COALESCE($7, bio),
+    background_image = COALESCE($8, background_image)
+WHERE id = $1
+RETURNING id, username, fullname, email, hashed_password, profile_picture, bio, has_onboarded, background_image, onboarding_at, created_at, updated_at
+`
+
+type UpdateUserNewParams struct {
+	ID              pgtype.UUID
+	Username        string
+	Fullname        pgtype.Text
+	Email           string
+	HashedPassword  string
+	ProfilePicture  pgtype.Text
+	Bio             pgtype.Text
+	BackgroundImage pgtype.Text
+}
+
+func (q *Queries) UpdateUserNew(ctx context.Context, arg UpdateUserNewParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUserNew,
+		arg.ID,
+		arg.Username,
+		arg.Fullname,
+		arg.Email,
+		arg.HashedPassword,
+		arg.ProfilePicture,
+		arg.Bio,
+		arg.BackgroundImage,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Fullname,
+		&i.Email,
+		&i.HashedPassword,
+		&i.ProfilePicture,
+		&i.Bio,
+		&i.HasOnboarded,
+		&i.BackgroundImage,
+		&i.OnboardingAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

@@ -43,6 +43,19 @@ SET
 WHERE id = $1
 RETURNING *;
 
+-- name: UpdateUserNew :one
+UPDATE users
+SET
+    username = COALESCE($2, username),
+    fullname = COALESCE($3, fullname),
+    email = COALESCE($4, email),
+    hashed_password = COALESCE($5, hashed_password),
+    profile_picture = COALESCE($6, profile_picture),
+    bio = COALESCE($7, bio),
+    background_image = COALESCE($8, background_image)
+WHERE id = $1
+RETURNING *;
+
 -- name: FinishOnboarding :exec
 UPDATE users
 SET 

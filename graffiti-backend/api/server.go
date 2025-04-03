@@ -112,9 +112,11 @@ func (s *Server) registerRoutes() {
 		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
 		// search
 		protected.POST("/v1/users/search", s.searchUsers) //no test
-	}
+		protected.POST("/v2/users", s.updateUserNew)      // no test
 
-	s.router.POST("/api/v1/presign", s.presignHandler)
+		//uploads
+		protected.POST("/v1/presign", s.presignHandler)
+	}
 
 	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
 

@@ -13,12 +13,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 )
 
 type PresignRequest struct {
 	Filename    string `json:"filename"`
 	ContentType string `json:"content_type"`
 	FileSize    int64  `json:"file_size"`
+	UploadType  string `json:"upload_type"`
 }
 
 func (s *Server) presignHandler(ctx *gin.Context) {
@@ -27,6 +29,8 @@ func (s *Server) presignHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
 		return
 	}
+
+	user := ctx.MustGet("currentUser").(db.User)
 
 	// Validate file type (optional)
 	ext := getFileExtension(req.Filename)
@@ -46,6 +50,14 @@ func (s *Server) presignHandler(ctx *gin.Context) {
 	// Generate unique filename
 	filename := uuid.New().String() + ext
 	key := "uploads/" + filename
+
+	if req.UploadType == "profile" {
+		key = "profiles/" + user.ID.String() + ext
+	}
+
+	if req.UploadType == "background_image" {
+		key = "bg/" + user.ID.String() + ext
+	}
 
 	// Get presigned URL
 	presignedURL, err := s.generatePresignedURL(key, req.ContentType)

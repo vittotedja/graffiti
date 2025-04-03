@@ -38,6 +38,16 @@ type updateUserRequest struct {
 	Password *string `json:"password"`
 }
 
+type updateUserNewRequest struct {
+	Username        *string `json:"username"`
+	Fullname        *string `json:"fullname"`
+	Email           *string `json:"email"`
+	Password        *string `json:"password"`
+	ProfilePicture  *string `json:"profile_picture"`
+	Bio             *string `json:"bio"`
+	BackgroundImage *string `json:"background_image"`
+}
+
 type updateProfileRequest struct {
 	ProfilePicture  string `json:"profile_picture"`
 	Bio             string `json:"bio"`
@@ -390,6 +400,96 @@ func (s *Server) updateProfile(ctx *gin.Context) {
 	}
 
 	log.Info("Profile updated successfully")
+	ctx.JSON(http.StatusOK, resp)
+}
+
+func (s *Server) updateUserNew(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received update user request")
+
+	currentUser := ctx.MustGet("currentUser").(db.User)
+
+	// Parse the request body
+	var req updateUserNewRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// Handle optional fields with fallback to current values
+	username := currentUser.Username
+	if req.Username != nil && *req.Username != "" {
+		username = *req.Username
+	}
+
+	fullname := pgtype.Text{String: currentUser.Fullname.String, Valid: true}
+	if req.Fullname != nil && *req.Fullname != "" {
+		fullname = pgtype.Text{String: *req.Fullname, Valid: true}
+	}
+
+	email := currentUser.Email
+	if req.Email != nil && *req.Email != "" {
+		email = *req.Email
+	}
+
+	hashedPassword := currentUser.HashedPassword
+	if req.Password != nil && *req.Password != "" {
+		hashedPassword = hashPassword(*req.Password)
+	}
+
+	profilePicture := currentUser.ProfilePicture
+	if req.ProfilePicture != nil {
+		profilePicture = pgtype.Text{String: *req.ProfilePicture, Valid: true}
+	}
+
+	bio := currentUser.Bio
+	if req.Bio != nil {
+		bio = pgtype.Text{String: *req.Bio, Valid: true}
+	}
+
+	backgroundImage := currentUser.BackgroundImage
+	if req.BackgroundImage != nil {
+		backgroundImage = pgtype.Text{String: *req.BackgroundImage, Valid: true}
+	}
+
+	// Call the unified update method
+	arg := db.UpdateUserNewParams{
+		ID:              currentUser.ID,
+		Username:        username,
+		Fullname:        fullname,
+		Email:           email,
+		HashedPassword:  hashedPassword,
+		ProfilePicture:  profilePicture,
+		Bio:             bio,
+		BackgroundImage: backgroundImage,
+	}
+
+	user, err := s.hub.UpdateUserNew(ctx, arg)
+	if err != nil {
+		log.Error("Failed to update user", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// Prepare response
+	resp := getUserResponse{
+		ID:              user.ID.String(),
+		Username:        user.Username,
+		Fullname:        user.Fullname.String,
+		Email:           user.Email,
+		CreatedAt:       user.CreatedAt.Time.Format(time.RFC3339),
+		ProfilePicture:  user.ProfilePicture.String,
+		Bio:             user.Bio.String,
+		BackgroundImage: user.BackgroundImage.String,
+	}
+
+	if user.OnboardingAt.Valid {
+		resp.OnboardingAt = user.OnboardingAt.Time.Format(time.RFC3339)
+	}
+
+	log.Info("User updated successfully")
 	ctx.JSON(http.StatusOK, resp)
 }
 

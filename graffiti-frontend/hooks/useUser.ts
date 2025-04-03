@@ -20,11 +20,12 @@ export function useUser(redirectIfNull = false) {
 			method: "POST",
 		})
 			.then((res) => {
-				if (!res.ok) throw new Error("Unauthorize	d");
+				if (!res.ok) throw new Error("Unauthorized");
 				return res.json();
 			})
 			.then((data) => {
 				setUser(data.user);
+				console.log(data.user);
 			})
 			.catch(() => {
 				setUser(null);

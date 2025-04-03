@@ -12,10 +12,12 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {cn} from "@/lib/utils";
 import {useUser} from "@/hooks/useUser";
 import {formatFullName} from "@/lib/formatter";
+import {EditProfileModal} from "@/components/edit-profile-modal";
 
 export default function HomePage() {
 	const {user, loading} = useUser();
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
+	const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
 	const [fabOpen, setFabOpen] = useState(false);
 
 	// Optional ripple effect when FAB is clicked
@@ -52,7 +54,7 @@ export default function HomePage() {
 						{/* Background image with more visibility */}
 						<div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60"></div>
 						<Image
-							src="/mockbg.jpg"
+							src={user.background_image || "/mockbg.jpg"}
 							alt="Home Banner"
 							width={1200}
 							height={400}
@@ -65,7 +67,10 @@ export default function HomePage() {
 							<div className="flex items-end gap-4">
 								<Avatar className="h-16 w-16 md:h-24 md:w-24 border-4 border-background">
 									<AvatarImage
-										src="/placeholder.svg?height=96&width=96"
+										src={
+											user.profile_picture ||
+											"/placeholder.svg?height=96&width=96"
+										}
 										alt="User Avatar"
 									/>
 									<AvatarFallback>
@@ -87,6 +92,7 @@ export default function HomePage() {
 								<Button
 									variant="outline"
 									className="bg-black/50 text-white border-white/20 hover:bg-black/70 text-xs md:text-sm h-8 md:h-9"
+									onClick={() => setEditProfileModalOpen(true)}
 								>
 									<Pencil />
 									Edit Home
@@ -176,6 +182,13 @@ export default function HomePage() {
 			<CreateWallModal
 				isOpen={createWallModalOpen}
 				onClose={() => setCreateWallModalOpen(false)}
+			/>
+			{/* Edit Profile Modal */}
+			<EditProfileModal
+				isOpen={editProfileModalOpen}
+				onClose={() => setEditProfileModalOpen(false)}
+				user={user}
+				onSave={() => console.log("hello")}
 			/>
 		</div>
 	);

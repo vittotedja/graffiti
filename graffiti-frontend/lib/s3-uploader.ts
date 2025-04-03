@@ -31,12 +31,15 @@ export function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
  */
 export async function getPresignedUrl(
 	filename: string,
-	file: Blob
+	file: Blob,
+	upload_type: string = "uploads"
 ): Promise<PresignedUrlDataType> {
+	console.log(upload_type);
 	const requestBody = {
 		filename,
 		content_type: file.type,
 		file_size: file.size,
+		upload_type,
 	};
 
 	const response = await fetchWithAuth("http://localhost:8080/api/v1/presign", {
