@@ -39,7 +39,7 @@ func NewServer(config util.Config) *Server {
 	server.router.Use(logger.Middleware())
 	limiter := ratelimiter.NewTokenBucketLimiter(
 		os.Getenv("REDIS_HOST"),
-		60,   // Capacity = 60 tokens
+		5,    // Capacity = 10 tokens
 		60.0, // Refill rate = 60 tokens per second
 		2*time.Minute,
 	)
