@@ -78,7 +78,7 @@ func (tb *TokenBucketLimiter) Middleware() gin.HandlerFunc {
 
 		res := result.([]interface{})
 		allowed := res[0].(int64)
-		remaining := res[1].(float64)
+		remaining := res[1].(int64)
 
 		if allowed == 0 {
 			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
