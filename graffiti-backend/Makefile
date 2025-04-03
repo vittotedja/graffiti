@@ -2,6 +2,7 @@
 NETWORK_NAME := graffiti_dev_network
 POSTGRES_CONTAINER := postgres
 GRAFFITI_CONTAINER := graffiti
+REDIS_CONTAINER := redis
 
 # Create new network for backend and postgres container to communicate
 create-network:
@@ -46,5 +47,15 @@ rebuild-server-docker:
 run-server-docker:
 	docker run --name $(GRAFFITI_CONTAINER) --network $(NETWORK_NAME) -p 8080:8080 -e ENV=devdocker -e DB_SOURCE="postgresql://root:secret1234@$(POSTGRES_CONTAINER):5432/graffiti?sslmode=disable" -d graffiti:latest
 
-.PHONY: create-network connect-postgres-network postgres createdb dropdb sqlc migrateup migratedown test server rebuild-server-docker run-server-docker
+REDIS_CONTAINER := redis
+
+# Start Redis container in the same network
+redis:
+	docker run --name $(REDIS_CONTAINER) --network $(NETWORK_NAME) -p 6379:6379 -d redis:7.4.2-alpine
+
+# Connect Redis container to the graffiti_dev_network if already running
+connect-redis-network:
+	docker network connect $(NETWORK_NAME) $(REDIS_CONTAINER)
+
+.PHONY: create-network connect-postgres-network postgres createdb dropdb sqlc migrateup migratedown test server rebuild-server-docker run-server-docker redis connect-redis-network
 
