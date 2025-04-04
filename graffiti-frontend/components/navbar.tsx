@@ -229,11 +229,11 @@ export function Navbar() {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end">
 								<DropdownMenuItem asChild>
-									<Link href="/profile">Profile</Link>
+									<Link href="/">Profile</Link>
 								</DropdownMenuItem>
-								<DropdownMenuItem asChild>
+								{/* <DropdownMenuItem asChild>
 									<Link href="/settings">Settings</Link>
-								</DropdownMenuItem>
+								</DropdownMenuItem> */}
 								<DropdownMenuSeparator />
 								<DropdownMenuItem>Sign out</DropdownMenuItem>
 							</DropdownMenuContent>

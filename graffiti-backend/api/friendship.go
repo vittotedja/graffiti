@@ -392,43 +392,48 @@ func (s *Server) getSentPendingFriendRequests(ctx *gin.Context) {
 }
 
 // ListFriendshipByUserPairs retrieves a friendship by user pairs
-// func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
-// 	meta := logger.GetMetadata(ctx.Request.Context())
-// 	log := meta.GetLogger()
-// 	log.Info("Received list friendship by user pairs request")
+func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received list friendship by user pairs request")
 
-// 	var req createFriendRequestRequest
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		log.Error("Failed to bind JSON", err)
-// 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-// 		return
-// 	}
+	var req createFriendRequestRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 
-// 	// Validate user IDs
-// 	var fromUserID, toUserID pgtype.UUID
-// 	if err := fromUserID.Scan(req.FromUserID); err != nil {
-// 		log.Error("Invalid from_user_id", err)
-// 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-// 		return
-// 	}
-// 	if err := toUserID.Scan(req.ToUserID); err != nil {
-// 		log.Error("Invalid to_user_id", err)
-// 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-// 		return
-// 	}
+	user := ctx.MustGet("currentUser").(db.User)
 
-// 	params := db.ListFriendshipByUserPairsParams{
-// 		FromUser: fromUserID,
-// 		ToUser:   toUserID,
-// 	}
+	fromUserID := user.ID
 
-// 	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
-// 	if err != nil {
-// 		log.Error("Failed to list friendship by user pairs", err)
-// 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-// 		return
-// 	}
+	// Validate user IDs
+	var toUserID pgtype.UUID
+	if err := toUserID.Scan(req.ToUserID); err != nil {
+		log.Error("Invalid to_user_id", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 
-// 	log.Info("Listed friendship by user pairs successfully")
-// 	ctx.JSON(http.StatusOK, friendship)
-// }
+	if fromUserID == toUserID {
+		log.Errorf("User pairs could not be the same user for user %s", fromUserID)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "You are not able to befriend yourself"})
+		return
+	}
+
+	params := db.ListFriendshipByUserPairsParams{
+		FromUser: fromUserID,
+		ToUser:   toUserID,
+	}
+
+	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	if err != nil {
+		log.Error("Failed to list friendship by user pairs", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Listed friendship by user pairs successfully")
+	ctx.JSON(http.StatusOK, friendship)
+}

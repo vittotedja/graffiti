@@ -119,6 +119,7 @@ func (s *Server) registerRoutes() {
 
 		//friends
 		protected.POST("/v1/friend-requests", s.createFriendRequest) // working
+		protected.POST("/v1/friendships", s.listFriendshipByUserPairs)
 	}
 
 	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
@@ -176,7 +177,6 @@ func (s *Server) registerRoutes() {
 	s.router.GET("/api/v1/users/:id/accepted-friends/count", s.getNumberOfFriends)                      // working
 	s.router.GET("/api/v1/users/:id/friend-requests/pending/count", s.getNumberOfPendingFriendRequests) // working
 	// router for listFriendshipByUserPairs
-	// s.router.GET("/api/v1/friendships", s.listFriendshipByUserPairs)
 
 	// Set up routes for the like API
 	s.router.POST("/api/v1/likes", s.createLike)

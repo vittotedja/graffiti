@@ -3,7 +3,7 @@
 import {useState, useEffect, useMemo} from "react";
 import Image from "next/image";
 import {formatDistanceToNow} from "date-fns";
-import {Heart} from "lucide-react";
+import {Heart, MoreVertical, Pencil, Trash} from "lucide-react";
 
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
@@ -11,6 +11,12 @@ import {Card, CardContent, CardFooter} from "@/components/ui/card";
 import {formatFullName} from "@/lib/formatter";
 import {toast} from "sonner";
 import {Post} from "@/types/post";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 type PostCardType = {
 	post: Post;
@@ -132,50 +138,78 @@ function PostCard({post}: PostCardType) {
 	};
 
 	return (
-		<Card className="overflow-hidden border border-border/40 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-colors shadow-cyan-200">
-			<CardContent className="p-0">
-				{post.post_type === "embed_link" && renderIframe()}
-				{post.post_type === "media" && post.media_url && (
-					<div className="relative aspect-square">
-						<Image
-							src={post.media_url || "/placeholder.svg"}
-							alt="Post image"
-							fill
-							className="object-cover"
-						/>
-					</div>
-				)}
-			</CardContent>
-			<CardFooter className="p-4 flex flex-col gap-3">
-				<div className="flex items-center justify-between w-full">
-					<div className="flex items-center gap-2">
-						<Avatar className="h-8 w-8">
-							<AvatarImage src={post.profile_picture} alt={post.username} />
-							<AvatarFallback>{formatFullName(post.fullname)}</AvatarFallback>
-						</Avatar>
-						<div className="text-sm">
-							<div className="font-medium">@{post.username}</div>
-							<div className="text-xs text-muted-foreground">
-								{formatDistanceToNow(new Date(post.created_at), {
-									addSuffix: true,
-								})}
+		<div className="relative">
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild className="relative">
+					<Button
+						variant="ghost"
+						size="icon"
+						className="h-8 w-8 absolute top-2 right-2 z-10 bg-gray-700"
+					>
+						<MoreVertical className="h-4 w-4" />
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end">
+					{/* <DropdownMenuItem>
+						<Link href={`/profile/${user.id}`}>View Profile</Link>
+					</DropdownMenuItem> */}
+					{/* <DropdownMenuSeparator /> */}
+					<DropdownMenuItem>
+						<Pencil />
+						Edit Post
+					</DropdownMenuItem>
+					<DropdownMenuItem className="text-red-500">
+						<Trash className="text-red-500" />
+						Remove Post
+					</DropdownMenuItem>
+					{/* <DropdownMenuItem>Block</DropdownMenuItem> */}
+				</DropdownMenuContent>
+			</DropdownMenu>
+			<Card className="overflow-hidden border border-border/40 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-colors shadow-cyan-200">
+				<CardContent className="p-0">
+					{post.post_type === "embed_link" && renderIframe()}
+					{post.post_type === "media" && post.media_url && (
+						<div className="relative aspect-square">
+							<Image
+								src={post.media_url || "/placeholder.svg"}
+								alt="Post image"
+								fill
+								className="object-cover"
+							/>
+						</div>
+					)}
+				</CardContent>
+				<CardFooter className="p-4 flex flex-col gap-3">
+					<div className="flex items-center justify-between w-full">
+						<div className="flex items-center gap-2">
+							<Avatar className="h-8 w-8">
+								<AvatarImage src={post.profile_picture} alt={post.username} />
+								<AvatarFallback>{formatFullName(post.fullname)}</AvatarFallback>
+							</Avatar>
+							<div className="text-sm">
+								<div className="font-medium">@{post.username}</div>
+								<div className="text-xs text-muted-foreground">
+									{formatDistanceToNow(new Date(post.created_at), {
+										addSuffix: true,
+									})}
+								</div>
 							</div>
 						</div>
+						<div className="flex gap-2 items-center">
+							{likeCount}
+							<Button
+								variant="ghost"
+								size="icon"
+								className={liked ? "text-red-500" : ""}
+								onClick={handleLike}
+							>
+								<Heart className={`h-5 w-5 ${liked ? "fill-red-500" : ""}`} />
+							</Button>
+						</div>
 					</div>
-					<div className="flex gap-2 items-center">
-						{likeCount}
-						<Button
-							variant="ghost"
-							size="icon"
-							className={liked ? "text-red-500" : ""}
-							onClick={handleLike}
-						>
-							<Heart className={`h-5 w-5 ${liked ? "fill-red-500" : ""}`} />
-						</Button>
-					</div>
-				</div>
-			</CardFooter>
-		</Card>
+				</CardFooter>
+			</Card>
+		</div>
 	);
 }
 

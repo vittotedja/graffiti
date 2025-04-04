@@ -82,7 +82,7 @@ export default function FriendsList() {
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem>Block</DropdownMenuItem>
-								<DropdownMenuItem className="text-destructive">
+								<DropdownMenuItem className="text-red-500">
 									Remove Friend
 								</DropdownMenuItem>
 							</DropdownMenuContent>
