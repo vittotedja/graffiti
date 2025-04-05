@@ -35,6 +35,15 @@ type getNumberOfMutualFriendsRequest struct {
 	UserID2 string `json:"user_id_2" binding:"required"`
 }
 
+type discoverRequest struct {
+	UserID string `json:"user_id" binding:"required"`
+}
+
+type getMutualFriendsRequest struct {
+	UserID1 string `json:"user_id_1" binding:"required"`
+	UserID2 string `json:"user_id_2" binding:"required"`
+}
+
 // CreateFriendRequest handles creating a new friend request
 func (s *Server) createFriendRequest(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
@@ -441,12 +450,7 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 }
 
 func (s *Server) getNumberOfMutualFriends(ctx *gin.Context) {
-	type request struct {
-		UserID1 string `json:"user_id_1" binding:"required"`
-		UserID2 string `json:"user_id_2" binding:"required"`
-	}
-
-	var req request
+	var req getNumberOfMutualFriendsRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
@@ -475,11 +479,7 @@ func (s *Server) getNumberOfMutualFriends(ctx *gin.Context) {
 }
 
 func (s *Server) discoverFriendsByMutuals(ctx *gin.Context) {
-	type request struct {
-		UserID string `json:"user_id" binding:"required"`
-	}
-
-	var req request
+	var req discoverRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
@@ -497,4 +497,33 @@ func (s *Server) discoverFriendsByMutuals(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, results)
+}
+
+func (s *Server) getMutualFriends(ctx *gin.Context) {
+	var req getMutualFriendsRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var userID1, userID2 pgtype.UUID
+	if err := userID1.Scan(req.UserID1); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if err := userID2.Scan(req.UserID2); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	mutuals, err := s.hub.Queries.ListMutualFriends(ctx, db.ListMutualFriendsParams{
+		UserID:   userID1,
+		UserID_2: userID2,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, mutuals)
 }
