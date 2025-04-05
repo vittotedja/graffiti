@@ -60,6 +60,7 @@ setup-dev: create-network postgres
 	@sleep 5
 	make createdb
 	make migrateup
+	make redis
 
 
 .PHONY: create-network connect-postgres-network postgres createdb dropdb sqlc migrateup migratedown test server rebuild-server-docker run-server-docker redis connect-redis-network
