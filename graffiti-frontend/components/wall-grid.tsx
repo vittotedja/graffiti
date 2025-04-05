@@ -105,9 +105,6 @@ export function WallGrid({userId}: WallGridProps) {
 														Edit Wall
 													</DropdownMenuItem>
 													<DropdownMenuItem className="cursor-pointer">
-														Change Privacy
-													</DropdownMenuItem>
-													<DropdownMenuItem className="cursor-pointer">
 														Pin Wall
 													</DropdownMenuItem>
 													<DropdownMenuSeparator />
