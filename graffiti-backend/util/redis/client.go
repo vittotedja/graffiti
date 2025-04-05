@@ -8,10 +8,11 @@ import (
 
 func NewRedisClient(cfg util.Config) *redis.Client {
 	opt := &redis.Options{
-		Addr:     cfg.RedisHost,
-		Password: cfg.RedisAuth,
+		Addr: cfg.RedisHost,
 	}
-
+	if cfg.RedisAuth != "" {
+		opt.Password = cfg.RedisAuth
+	}
 	if cfg.RedisTLS {
 		opt.TLSConfig = &tls.Config{}
 	}
