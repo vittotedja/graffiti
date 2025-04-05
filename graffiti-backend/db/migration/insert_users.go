@@ -85,6 +85,10 @@ func main() {
 	log.Println("✅ Users seeded.")
 
 	log.Println("👥 Creating friendships...")
+
+	var friendshipWg sync.WaitGroup
+	friendshipSemaphore := make(chan struct{}, maxConcurrency)
+
 	for i := 0; i < totalUsers; i++ {
 		user := users[i]
 		friendCount := rand.Intn(maxFriendsPerUser) + 1
@@ -94,23 +98,32 @@ func main() {
 			if friendIndex == i {
 				continue // avoid self friendship
 			}
-
 			friend := users[friendIndex]
 
-			// Always insert in one direction (can still query symmetrically later)
-			_, err := hub.CreateFriendship(ctx, db.CreateFriendshipParams{
-				FromUser: user.ID,
-				ToUser:   friend.ID,
-				Status: db.NullStatus{
-					Status: "friends",
-					Valid:  true,
-				},
-			})
-			if err != nil {
-				log.Printf("friendship error: %v", err)
-			}
+			friendshipWg.Add(1)
+			friendshipSemaphore <- struct{}{}
+
+			go func(fromUser, toUser pgtype.UUID) {
+				defer friendshipWg.Done()
+				defer func() { <-friendshipSemaphore }()
+
+				// Insert one-way friendship
+				_, err := hub.CreateFriendship(ctx, db.CreateFriendshipParams{
+					FromUser: fromUser,
+					ToUser:   toUser,
+					Status: db.NullStatus{
+						Status: "friends",
+						Valid:  true,
+					},
+				})
+				if err != nil {
+					log.Printf("friendship error (%s -> %s): %v", fromUser, toUser, err)
+				}
+			}(user.ID, friend.ID)
 		}
 	}
+
+	friendshipWg.Wait()
 
 	// Refresh materialized view
 	log.Println("🔄 Refreshing materialized view...")
