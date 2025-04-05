@@ -30,6 +30,11 @@ type unblockUserRequest struct {
 	ToUserID   string `json:"to_user_id" binding:"required"`
 }
 
+type getNumberOfMutualFriendsRequest struct {
+	UserID1 string `json:"user_id_1" binding:"required"`
+	UserID2 string `json:"user_id_2" binding:"required"`
+}
+
 // CreateFriendRequest handles creating a new friend request
 func (s *Server) createFriendRequest(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
@@ -433,4 +438,50 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 
 	log.Info("Listed friendship by user pairs successfully")
 	ctx.JSON(http.StatusOK, friendship)
+}
+
+func (s *Server) getNumberOfMutualFriends(ctx *gin.Context) {
+	type request struct {
+		UserID1 string `json:"user_id_1" binding:"required"`
+		UserID2 string `json:"user_id_2" binding:"required"`
+	}
+
+	var req request
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var userID1, userID2 pgtype.UUID
+	if err := userID1.Scan(req.UserID1); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if err := userID2.Scan(req.UserID2); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	count, err := s.hub.Queries.GetNumberOfMutualFriends(ctx, db.GetNumberOfMutualFriendsParams{
+		UserID:   userID1,
+		UserID_2: userID2,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"mutual_friends_count": count})
+}
+
+func (s *Server) discoverFriendsByMutuals(ctx *gin.Context) {
+	user := ctx.MustGet("currentUser").(db.User)
+
+	results, err := s.hub.Queries.DiscoverFriendsByMutuals(ctx, user.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, results)
 }
