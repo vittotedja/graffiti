@@ -9,6 +9,9 @@ type Config struct {
 	DBDriver      string `mapstructure:"DB_DRIVER"`
 	DBSource      string `mapstructure:"DB_SOURCE"`
 	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
+	RedisHost     string `mapstructure:"REDIS_HOST"`
+	RedisAuth     string `mapstructure:"REDIS_AUTH"`
+	RedisTLS      bool   `mapstructure:"REDIS_TLS"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
@@ -24,10 +27,10 @@ func LoadConfig(path string) (config Config, err error) {
 	}
 
 	// if err := viper.ReadInConfig(); err != nil {
-    //     if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-    //         return config, err
-    //     }
-    // }
+	//     if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+	//         return config, err
+	//     }
+	// }
 
 	err = viper.Unmarshal(&config)
 	return
