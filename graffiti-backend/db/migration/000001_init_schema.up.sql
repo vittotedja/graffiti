@@ -69,13 +69,13 @@ CREATE TABLE
 
 -- Materialized view for accepted (mutual) friendships
 CREATE MATERIALIZED VIEW accepted_friendships_mv AS
-SELECT
+SELECT DISTINCT
     from_user AS user_id,
     to_user AS friend_id
 FROM friendships
 WHERE status = 'friends'
-UNION ALL
-SELECT
+UNION
+SELECT DISTINCT
     to_user AS user_id,
     from_user AS friend_id
 FROM friendships
