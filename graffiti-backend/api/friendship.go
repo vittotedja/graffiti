@@ -475,9 +475,22 @@ func (s *Server) getNumberOfMutualFriends(ctx *gin.Context) {
 }
 
 func (s *Server) discoverFriendsByMutuals(ctx *gin.Context) {
-	user := ctx.MustGet("currentUser").(db.User)
+	type request struct {
+		UserID string `json:"user_id" binding:"required"`
+	}
 
-	results, err := s.hub.Queries.DiscoverFriendsByMutuals(ctx, user.ID)
+	var req request
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	var userID pgtype.UUID
+	if err := userID.Scan(req.UserID); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	results, err := s.hub.Queries.DiscoverFriendsByMutuals(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
