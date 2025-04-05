@@ -214,7 +214,10 @@ export function Navbar() {
 								>
 									<Avatar className="h-8 w-8">
 										<AvatarImage
-											src="/placeholder.svg?height=32&width=32"
+											src={
+												user.profile_picture ||
+												"/placeholder.svg?height=32&width=32"
+											}
 											alt="User"
 										/>
 										<AvatarFallback>
@@ -226,11 +229,11 @@ export function Navbar() {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end">
 								<DropdownMenuItem asChild>
-									<Link href="/profile">Profile</Link>
+									<Link href="/">Profile</Link>
 								</DropdownMenuItem>
-								<DropdownMenuItem asChild>
+								{/* <DropdownMenuItem asChild>
 									<Link href="/settings">Settings</Link>
-								</DropdownMenuItem>
+								</DropdownMenuItem> */}
 								<DropdownMenuSeparator />
 								<DropdownMenuItem>Sign out</DropdownMenuItem>
 							</DropdownMenuContent>

@@ -34,7 +34,7 @@ func NewServer(config util.Config) *Server {
 		log.Fatal("cannot create token maker", err)
 	}
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
-  	server.router.Use(logger.Middleware())
+	server.router.Use(logger.Middleware())
 	server.registerRoutes()
 
 	return server
@@ -110,6 +110,16 @@ func (s *Server) registerRoutes() {
 		protected.GET("/v1/users/:id/walls", s.listWallsByUser)
 		protected.POST("/v2/walls", s.createNewWall)       //no test yet
 		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
+		// search
+		protected.POST("/v1/users/search", s.searchUsers) //no test
+		protected.POST("/v2/users", s.updateUserNew)      // no test
+
+		//uploads
+		protected.POST("/v1/presign", s.presignHandler)
+
+		//friends
+		protected.POST("/v1/friend-requests", s.createFriendRequest) // working
+		protected.POST("/v1/friendships", s.listFriendshipByUserPairs)
 	}
 
 	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
@@ -151,7 +161,6 @@ func (s *Server) registerRoutes() {
 
 	// Updated Friendship API routes
 	// Friend Requests
-	s.router.POST("/api/v1/friend-requests", s.createFriendRequest)       // working
 	s.router.PUT("/api/v1/friend-requests/accept", s.acceptFriendRequest) // working
 
 	// User Blocking
@@ -168,7 +177,6 @@ func (s *Server) registerRoutes() {
 	s.router.GET("/api/v1/users/:id/accepted-friends/count", s.getNumberOfFriends)                      // working
 	s.router.GET("/api/v1/users/:id/friend-requests/pending/count", s.getNumberOfPendingFriendRequests) // working
 	// router for listFriendshipByUserPairs
-	// s.router.GET("/api/v1/friendships", s.listFriendshipByUserPairs)
 
 	// Set up routes for the like API
 	s.router.POST("/api/v1/likes", s.createLike)
