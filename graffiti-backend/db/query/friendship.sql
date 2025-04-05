@@ -115,6 +115,14 @@ AND af2.user_id NOT IN (
 GROUP BY u.id
 ORDER BY mutual_friend_count DESC;
 
+-- name: ListMutualFriends :many
+SELECT u.id, u.fullname, u.username, u.profile_picture
+FROM users u
+         JOIN accepted_friendships_mv af1 ON af1.friend_id = u.id
+         JOIN accepted_friendships_mv af2 ON af2.friend_id = u.id
+WHERE af1.user_id = $1 AND af2.user_id = $2;
+
+
 
 
 
