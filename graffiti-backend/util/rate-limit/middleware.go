@@ -17,10 +17,7 @@ type TokenBucketLimiter struct {
 	Window      time.Duration
 }
 
-func NewTokenBucketLimiter(redisAddr string, capacity int, refillRate float64, ttl time.Duration) *TokenBucketLimiter {
-	rdb := redis.NewClient(&redis.Options{
-		Addr: redisAddr,
-	})
+func NewTokenBucketLimiter(rdb *redis.Client, capacity int, refillRate float64, ttl time.Duration) *TokenBucketLimiter {
 	return &TokenBucketLimiter{
 		RedisClient: rdb,
 		Capacity:    capacity,
