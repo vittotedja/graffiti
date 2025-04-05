@@ -44,7 +44,7 @@ func NewServer(config util.Config) *Server {
 
 	limiter := ratelimiter.NewTokenBucketLimiter(
 		redisClient,
-		5,    // Capacity = 10 tokens
+		5,    // Capacity = 5 tokens
 		60.0, // Refill rate = 60 tokens per second
 		2*time.Minute,
 	)
@@ -170,7 +170,7 @@ func (s *Server) registerRoutes() {
 	s.router.POST("/api/v1/friend-requests", s.createFriendRequest)       // working
 	s.router.PUT("/api/v1/friend-requests/accept", s.acceptFriendRequest) // working
 	s.router.POST("/api/v1/friends/mutual/count", s.getNumberOfMutualFriends)
-	s.router.GET("/api/v1/friends/discover", s.discoverFriendsByMutuals)
+	s.router.GET("/api/v1/friends/discover", s.getNumberOfMutualFriends)
 
 	// User Blocking
 	s.router.PUT("/api/v1/users/block", s.blockUser)
