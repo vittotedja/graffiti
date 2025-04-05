@@ -124,6 +124,24 @@ func (q *Queries) GetNumberOfFriends(ctx context.Context, fromUser pgtype.UUID) 
 	return count, err
 }
 
+const getNumberOfMutualFriends = `-- name: GetNumberOfMutualFriends :one
+SELECT COUNT(*) FROM accepted_friendships_mv af1
+JOIN accepted_friendships_mv af2 ON af1.friend_id = af2.friend_id
+WHERE af1.user_id = $1 AND af2.user_id = $2
+`
+
+type GetNumberOfMutualFriendsParams struct {
+	UserID   pgtype.UUID
+	UserID_2 pgtype.UUID
+}
+
+func (q *Queries) GetNumberOfMutualFriends(ctx context.Context, arg GetNumberOfMutualFriendsParams) (int64, error) {
+	row := q.db.QueryRow(ctx, getNumberOfMutualFriends, arg.UserID, arg.UserID_2)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const getNumberOfPendingFriendRequests = `-- name: GetNumberOfPendingFriendRequests :one
 SELECT COUNT(*) FROM friendships
 WHERE to_user = $1 AND status = 'pending'
@@ -312,6 +330,51 @@ func (q *Queries) ListFriendshipsByUserIdAndStatus(ctx context.Context, arg List
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMutualFriends = `-- name: ListMutualFriends :many
+SELECT u.id, u.fullname, u.username, u.profile_picture
+FROM users u
+         JOIN accepted_friendships_mv af1 ON af1.friend_id = u.id
+         JOIN accepted_friendships_mv af2 ON af1.friend_id = af2.friend_id
+WHERE af1.user_id = $1 AND af2.user_id = $2
+`
+
+type ListMutualFriendsParams struct {
+	UserID   pgtype.UUID
+	UserID_2 pgtype.UUID
+}
+
+type ListMutualFriendsRow struct {
+	ID             pgtype.UUID
+	Fullname       pgtype.Text
+	Username       string
+	ProfilePicture pgtype.Text
+}
+
+func (q *Queries) ListMutualFriends(ctx context.Context, arg ListMutualFriendsParams) ([]ListMutualFriendsRow, error) {
+	rows, err := q.db.Query(ctx, listMutualFriends, arg.UserID, arg.UserID_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListMutualFriendsRow
+	for rows.Next() {
+		var i ListMutualFriendsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Fullname,
+			&i.Username,
+			&i.ProfilePicture,
 		); err != nil {
 			return nil, err
 		}

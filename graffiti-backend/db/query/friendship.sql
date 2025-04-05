@@ -92,5 +92,17 @@ WHERE to_user = $1 AND status = 'pending';
 DELETE FROM friendships
 WHERE id = $1;
 
+-- name: GetNumberOfMutualFriends :one
+SELECT COUNT(*) FROM accepted_friendships_mv af1
+JOIN accepted_friendships_mv af2 ON af1.friend_id = af2.friend_id
+WHERE af1.user_id = $1 AND af2.user_id = $2;
+
+-- name: ListMutualFriends :many
+SELECT u.id, u.fullname, u.username, u.profile_picture
+FROM users u
+         JOIN accepted_friendships_mv af1 ON af1.friend_id = u.id
+         JOIN accepted_friendships_mv af2 ON af1.friend_id = af2.friend_id
+WHERE af1.user_id = $1 AND af2.user_id = $2;
+
 
 
