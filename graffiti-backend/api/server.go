@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/redis/go-redis/v9"
+	cron "github.com/vittotedja/graffiti/graffiti-backend/util/cron"
 	ratelimiter "github.com/vittotedja/graffiti/graffiti-backend/util/rate-limit"
 	"log"
 	"time"
@@ -72,6 +73,8 @@ func (s *Server) Start() error {
 		Addr:    s.config.ServerAddress,
 		Handler: s.router,
 	}
+
+	cron.ScheduleMaterializedViewRefresh(s.db)
 
 	logger.Global().Info("Server listening on %s", s.config.ServerAddress)
 	return s.httpServer.ListenAndServe()
