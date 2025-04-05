@@ -169,6 +169,8 @@ func (s *Server) registerRoutes() {
 	// Friend Requests
 	s.router.POST("/api/v1/friend-requests", s.createFriendRequest)       // working
 	s.router.PUT("/api/v1/friend-requests/accept", s.acceptFriendRequest) // working
+	s.router.POST("/api/v1/friends/mutual/count", s.getNumberOfMutualFriends)
+	s.router.GET("/api/v1/friends/discover", s.discoverFriendsByMutuals)
 
 	// User Blocking
 	s.router.PUT("/api/v1/users/block", s.blockUser)
