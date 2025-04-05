@@ -96,6 +96,11 @@ func (s *Server) registerRoutes() {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	// ALB Health check endpoint
+	s.router.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Healthy")
+	})	
+
 	s.router.POST("/api/v1/auth/register", s.Register)
 	s.router.POST("/api/v1/auth/login", s.Login)
 	// s.router.POST("/api/v1/auth/logout", s.Logout)
