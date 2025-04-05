@@ -37,7 +37,7 @@ jobs:
     - name: Load secrets and save to app.env
       run: |
         cd graffiti-backend
-        aws secretsmanager get-secret-value --secret-id graffiti_secrets --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
+        aws secretsmanager get-secret-value --secret-id graffiti_secrets --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > .env
 
     - name: Build, tag, and push docker image to Amazon ECR
       id: build-image
