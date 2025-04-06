@@ -16,6 +16,7 @@ type Config struct {
 	AWSS3Bucket              string `mapstructure:"AWS_S3_BUCKET"`
 	CloudfrontDomain         string `mapstructure:"CLOUDFRONT_DOMAIN"`
 	CloudfrontDistributionID string `mapstructure:"CLOUDFRONT_DISTRIBUTION_ID"`
+	FrontendURL              string `mapstructure:"FRONTEND_URL"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

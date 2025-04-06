@@ -87,9 +87,10 @@ func (s *Server) Shutdown() error {
 
 func (s *Server) registerRoutes() {
 
+	frontendURL := s.config.FrontendURL
 	// Apply CORS middleware
 	s.router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // frontend URL
+		AllowOrigins:     []string{frontendURL}, // frontend URL
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
