@@ -16,7 +16,7 @@ export function useUser(redirectIfNull = false) {
 			return;
 		}
 
-		fetchWithAuth("http://localhost:8080/api/v1/auth/me", {
+		fetchWithAuth("/api/v1/auth/me", {
 			method: "POST",
 		})
 			.then((res) => {

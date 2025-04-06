@@ -26,22 +26,17 @@ export default function ProfilePage() {
 		const fetchUser = async () => {
 			if (!userId) return;
 			try {
-				const response = await fetchWithAuth(
-					`http://localhost:8080/api/v1/users/${userId}`
-				);
+				const response = await fetchWithAuth(`/api/v1/users/${userId}`);
 				if (!response) return;
 				const data = await response.json();
 				setUser(data);
 
-				const isFriendResp = await fetchWithAuth(
-					"http://localhost:8080/api/v1/friendships",
-					{
-						method: "POST",
-						body: JSON.stringify({
-							to_user_id: userId,
-						}),
-					}
-				);
+				const isFriendResp = await fetchWithAuth("/api/v1/friendships", {
+					method: "POST",
+					body: JSON.stringify({
+						to_user_id: userId,
+					}),
+				});
 				if (!isFriendResp.ok) return;
 				const isFriendsData = await isFriendResp.json();
 				if (isFriendsData.err) {
@@ -61,15 +56,12 @@ export default function ProfilePage() {
 	const addFriend = async () => {
 		if (!user) return;
 		try {
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v1/friend-requests",
-				{
-					method: "POST",
-					body: JSON.stringify({
-						to_user_id: user.id,
-					}),
-				}
-			);
+			const response = await fetchWithAuth("/api/v1/friend-requests", {
+				method: "POST",
+				body: JSON.stringify({
+					to_user_id: user.id,
+				}),
+			});
 			if (!response.ok) throw new Error("Error Adding Friends");
 			toast.success("Successfully sent friend request!");
 		} catch (error) {
@@ -82,15 +74,12 @@ export default function ProfilePage() {
 		if (!user) return;
 		console.log(friendshipID);
 		try {
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v1/friendships",
-				{
-					method: "DELETE",
-					body: JSON.stringify({
-						friendship_id: friendshipID,
-					}),
-				}
-			);
+			const response = await fetchWithAuth("/api/v1/friendships", {
+				method: "DELETE",
+				body: JSON.stringify({
+					friendship_id: friendshipID,
+				}),
+			});
 			if (!response.ok) throw new Error("Error Removing Friends");
 			toast.success("Successfully removed friend!");
 		} catch (error) {

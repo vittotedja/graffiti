@@ -31,12 +31,9 @@ export default function WallPage() {
 
 	const fetchWallData = async (id: string) => {
 		try {
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v1/walls/" + id,
-				{
-					method: "GET",
-				}
-			);
+			const response = await fetchWithAuth("/api/v1/walls/" + id, {
+				method: "GET",
+			});
 			if (!response.ok) {
 				throw new Error("Failed to fetch wall data");
 			}
@@ -50,12 +47,9 @@ export default function WallPage() {
 
 	const fetchPostData = async (id: string) => {
 		try {
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v2/walls/" + id + "/posts",
-				{
-					method: "GET",
-				}
-			);
+			const response = await fetchWithAuth("/api/v2/walls/" + id + "/posts", {
+				method: "GET",
+			});
 			if (!response.ok) {
 				throw new Error("Failed to fetch post data");
 			}
@@ -70,8 +64,8 @@ export default function WallPage() {
 		if (!id) return;
 
 		const endpoint = wallData?.is_public
-			? "http://localhost:8080/api/v1/walls/" + id + "/privatize"
-			: "http://localhost:8080/api/v1/walls/" + id + "/publicize";
+			? "/api/v1/walls/" + id + "/privatize"
+			: "/api/v1/walls/" + id + "/publicize";
 		try {
 			const response = await fetchWithAuth(endpoint, {
 				method: "PUT",

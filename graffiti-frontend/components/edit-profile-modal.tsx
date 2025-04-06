@@ -104,19 +104,16 @@ export function EditProfileModal({
 			}
 
 			// Update DB
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v2/users",
-				{
-					method: "POST",
-					body: JSON.stringify({
-						username,
-						fullname,
-						profile_picture: avatarUrl,
-						background_image: backgroundUrl,
-						bio,
-					}),
-				}
-			);
+			const response = await fetchWithAuth("/api/v2/users", {
+				method: "POST",
+				body: JSON.stringify({
+					username,
+					fullname,
+					profile_picture: avatarUrl,
+					background_image: backgroundUrl,
+					bio,
+				}),
+			});
 			if (!response.ok) throw new Error("Profile failed to update");
 
 			toast("Profile updated", {

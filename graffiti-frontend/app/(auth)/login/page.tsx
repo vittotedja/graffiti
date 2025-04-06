@@ -41,14 +41,17 @@ export default function Login() {
 		}
 
 		try {
-			const res = await fetch("http://localhost:8080/api/v1/auth/login", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({email, password}),
-				credentials: "include",
-			});
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({email, password}),
+					credentials: "include",
+				}
+			);
 
 			const data = await res.json();
 
@@ -106,13 +109,16 @@ export default function Login() {
 				"Sending:",
 				JSON.stringify({username, fullname, email, password})
 			);
-			const res = await fetch("http://localhost:8080/api/v1/auth/register", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({username, fullname, email, password}),
-			});
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({username, fullname, email, password}),
+				}
+			);
 
 			const data = await res.json();
 

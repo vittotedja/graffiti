@@ -89,7 +89,7 @@ export function CreateWallModal({
 				// Update existing wall
 				console.log("Updating wall with data:", sentWallData.id);
 				const response = await fetchWithAuth(
-					`http://localhost:8080/api/v1/walls/${sentWallData.id}`,
+					`/api/v1/walls/${sentWallData.id}`,
 					{
 						method: "PUT",
 						headers: {"Content-Type": "application/json"},
@@ -106,17 +106,14 @@ export function CreateWallModal({
 
 				toast.success("Wall updated successfully!");
 			} else {
-				const response = await fetchWithAuth(
-					"http://localhost:8080/api/v2/walls",
-					{
-						method: "POST",
-						headers: {"Content-Type": "application/json"},
-						body: JSON.stringify({
-							...wallData,
-							background_image: wallImageUrl || undefined,
-						}),
-					}
-				);
+				const response = await fetchWithAuth("/api/v2/walls", {
+					method: "POST",
+					headers: {"Content-Type": "application/json"},
+					body: JSON.stringify({
+						...wallData,
+						background_image: wallImageUrl || undefined,
+					}),
+				});
 
 				if (!response.ok) {
 					throw new Error("Failed to create wall");

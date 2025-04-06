@@ -42,7 +42,7 @@ export async function getPresignedUrl(
 		upload_type,
 	};
 
-	const response = await fetchWithAuth("http://localhost:8080/api/v1/presign", {
+	const response = await fetchWithAuth("/api/v1/presign", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

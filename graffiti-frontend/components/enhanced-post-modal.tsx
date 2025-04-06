@@ -405,16 +405,13 @@ export function EnhancedPostModal({
 
 		try {
 			if (newPost.media_url == "") return;
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v1/posts",
-				{
-					method: "POST",
-					body: JSON.stringify({
-						...newPost,
-						author: user?.id,
-					}),
-				}
-			);
+			const response = await fetchWithAuth("/api/v1/posts", {
+				method: "POST",
+				body: JSON.stringify({
+					...newPost,
+					author: user?.id,
+				}),
+			});
 
 			if (!response.ok) throw new Error("Something went wrong");
 

@@ -11,7 +11,7 @@ import {Input} from "@/components/ui/input";
 import {fetchWithAuth} from "@/lib/auth";
 import {formatFullName} from "@/lib/formatter";
 import {User} from "@/types/user";
-import {MoreVertical, Search} from "lucide-react";
+import {Ban, Eye, MoreVertical, Search} from "lucide-react";
 import Link from "next/link";
 import {useEffect, useState} from "react";
 
@@ -33,15 +33,12 @@ export default function SearchFriends() {
 
 	const searchFunction = async (debouncedQuery: string) => {
 		if (debouncedQuery.length <= 0) return;
-		const response = await fetchWithAuth(
-			"http://localhost:8080/api/v1/users/search",
-			{
-				method: "POST",
-				body: JSON.stringify({
-					search_term: debouncedQuery,
-				}),
-			}
-		);
+		const response = await fetchWithAuth("/api/v1/users/search", {
+			method: "POST",
+			body: JSON.stringify({
+				search_term: debouncedQuery,
+			}),
+		});
 		if (!response.ok) return;
 		const data = await response.json();
 		setUserList(data);
@@ -95,14 +92,19 @@ export default function SearchFriends() {
 									</DropdownMenuTrigger>
 									<DropdownMenuContent align="end">
 										<DropdownMenuItem>
-											<Link href={`/profile/${user.id}`}>View Profile</Link>
+											<Link
+												href={`/profile/${user.id}`}
+												className="flex items-center gap-2"
+											>
+												<Eye />
+												View Profile
+											</Link>
 										</DropdownMenuItem>
 										<DropdownMenuSeparator />
-										<DropdownMenuItem>Add Friend</DropdownMenuItem>
 										<DropdownMenuItem className="text-destructive">
-											Remove Friend
+											<Ban className="text-destructive h-4 w-4" />
+											Block
 										</DropdownMenuItem>
-										<DropdownMenuItem>Block</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
 							</div>

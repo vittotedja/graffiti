@@ -40,9 +40,7 @@ export function WallGrid({userId}: WallGridProps) {
 	useEffect(() => {
 		const fetchFriendWallData = async () => {
 			try {
-				const response = await fetchWithAuth(
-					`http://localhost:8080/api/v1/users/${userId}/walls`
-				);
+				const response = await fetchWithAuth(`/api/v1/users/${userId}/walls`);
 				if (!response) return;
 
 				const data = await response.json();
@@ -55,9 +53,7 @@ export function WallGrid({userId}: WallGridProps) {
 
 		const fetchWallData = async () => {
 			try {
-				const response = await fetchWithAuth(
-					"http://localhost:8080/api/v2/walls"
-				);
+				const response = await fetchWithAuth("/api/v2/walls");
 				if (!response) return; // already redirected if 401
 
 				const data = await response.json();
