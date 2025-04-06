@@ -5,16 +5,17 @@ import (
 )
 
 type Config struct {
-	Env              string `mapstructure:"ENV"`
-	DBDriver         string `mapstructure:"DB_DRIVER"`
-	DBSource         string `mapstructure:"DB_SOURCE"`
-	ServerAddress    string `mapstructure:"SERVER_ADDRESS"`
-	AWSRegion        string `mapstructure:"AWS_REGION"`
-	AWSAccessKeyID   string `mapstructure:"AWS_ACCESS_KEY_ID"`
-	AWSSecretKey     string `mapstructure:"AWS_SECRET_ACCESS_KEY"`
-	AWSSessionToken  string `mapstructure:"AWS_SESSION_TOKEN"`
-	AWSS3Bucket      string `mapstructure:"AWS_S3_BUCKET"`
-	CloudfrontDomain string `mapstructure:"CLOUDFRONT_DOMAIN"`
+	Env                      string `mapstructure:"ENV"`
+	DBDriver                 string `mapstructure:"DB_DRIVER"`
+	DBSource                 string `mapstructure:"DB_SOURCE"`
+	ServerAddress            string `mapstructure:"SERVER_ADDRESS"`
+	AWSRegion                string `mapstructure:"AWS_REGION"`
+	AWSAccessKeyID           string `mapstructure:"AWS_ACCESS_KEY_ID"`
+	AWSSecretKey             string `mapstructure:"AWS_SECRET_ACCESS_KEY"`
+	AWSSessionToken          string `mapstructure:"AWS_SESSION_TOKEN"`
+	AWSS3Bucket              string `mapstructure:"AWS_S3_BUCKET"`
+	CloudfrontDomain         string `mapstructure:"CLOUDFRONT_DOMAIN"`
+	CloudfrontDistributionID string `mapstructure:"CLOUDFRONT_DISTRIBUTION_ID"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

@@ -43,8 +43,10 @@ type wallResponse struct {
 }
 
 type updateWallRequest struct {
+	Title           string  `json:"title"`
 	Description     *string `json:"description"`
 	BackgroundImage *string `json:"background_image"`
+	IsPublic        *bool   `json:"is_public"`
 }
 
 // Convert DB wall to API response
@@ -287,6 +289,8 @@ func (s *Server) updateWall(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received update wall request")
 
+	currentUser := ctx.MustGet("currentUser").(db.User)
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -317,10 +321,22 @@ func (s *Server) updateWall(ctx *gin.Context) {
 		return
 	}
 
+	if currentWall.UserID != currentUser.ID {
+		log.Error("Unauthorized to update wall", errors.New("user not authorized to update this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to update this wall")))
+		return
+	}
+
 	arg := db.UpdateWallParams{
 		ID:              id,
+		Title:           currentWall.Title,
 		Description:     currentWall.Description,
 		BackgroundImage: currentWall.BackgroundImage,
+		IsPublic:        currentWall.IsPublic,
+	}
+
+	if req.Title != "" {
+		arg.Title = req.Title
 	}
 
 	if req.Description != nil && *req.Description != "" {
@@ -328,6 +344,10 @@ func (s *Server) updateWall(ctx *gin.Context) {
 	}
 	if req.BackgroundImage != nil {
 		arg.BackgroundImage = pgtype.Text{String: *req.BackgroundImage, Valid: true}
+	}
+
+	if req.IsPublic != nil {
+		arg.IsPublic = pgtype.Bool{Bool: *req.IsPublic, Valid: true}
 	}
 
 	wall, err := s.hub.UpdateWall(ctx, arg)

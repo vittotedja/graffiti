@@ -16,7 +16,7 @@ import {toast} from "sonner";
 import {cn} from "@/lib/utils";
 import {getPresignedUrl, uploadToS3} from "@/lib/s3-uploader";
 import {fetchWithAuth} from "@/lib/auth";
-// import {fetchWithAuth} from "@/lib/auth";
+import Image from "next/image";
 
 interface EditProfileModalProps {
 	isOpen: boolean;
@@ -163,18 +163,20 @@ export function EditProfileModal({
 					{/* Background Image Section */}
 					<div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted">
 						{backgroundPreview ? (
-							// eslint-disable-next-line @next/next/no-img-element
-							<img
+							<Image
 								src={backgroundPreview}
 								alt="Background preview"
 								className="w-full h-full object-cover"
+								width={"1000"}
+								height={"400"}
 							/>
 						) : user.background_image ? (
-							// eslint-disable-next-line @next/next/no-img-element
-							<img
+							<Image
 								src={user.background_image}
 								alt="Background"
 								className="w-full h-full object-cover"
+								width={"1000"}
+								height={"400"}
 							/>
 						) : (
 							<div className="absolute inset-0 flex items-center justify-center bg-muted">

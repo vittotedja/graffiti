@@ -108,8 +108,11 @@ func (s *Server) registerRoutes() {
 		// Protected Walls Endpoint
 		protected.GET("/v2/walls", s.getOwnWall)
 		protected.GET("/v1/users/:id/walls", s.listWallsByUser)
-		protected.POST("/v2/walls", s.createNewWall)       //no test yet
+		protected.POST("/v2/walls", s.createNewWall) //no test yet
+		protected.PUT("/v1/walls/:id", s.updateWall) // working
+
 		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
+		protected.DELETE("/v1/friendships", s.deleteFriendship)
 		// search
 		protected.POST("/v1/users/search", s.searchUsers) //no test
 		protected.POST("/v2/users", s.updateUserNew)      // no test
@@ -140,7 +143,6 @@ func (s *Server) registerRoutes() {
 	s.router.POST("/api/v1/walls", s.createWall)
 	s.router.GET("/api/v1/walls/:id", s.getWall)                 // working
 	s.router.GET("/api/v1/walls", s.listWalls)                   // working
-	s.router.PUT("/api/v1/walls/:id", s.updateWall)              // working
 	s.router.PUT("/api/v1/walls/:id/publicize", s.publicizeWall) // working
 	s.router.PUT("/api/v1/walls/:id/privatize", s.privatizeWall) // working
 	s.router.PUT("/api/v1/walls/:id/archive", s.archiveWall)

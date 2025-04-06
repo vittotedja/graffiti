@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -10,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/cloudfront"
+	"github.com/aws/aws-sdk-go-v2/service/cloudfront/types"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -109,12 +112,35 @@ func (s *Server) generatePresignedURL(key, contentType string) (string, error) {
 		ContentType: aws.String(contentType),
 	}
 
+	log.Println("key is ", key)
+
 	// Generate the presigned URL with expiration
 	presignResult, err := presignClient.PresignPutObject(context.TODO(), putObjectInput,
 		s3.WithPresignExpires(15*time.Minute)) // URL expires in 15 minutes
 	if err != nil {
 		return "", fmt.Errorf("failed to presign: %w", err)
 	}
+
+	go func() {
+		cfClient := cloudfront.NewFromConfig(cfg)
+		callerReference := fmt.Sprintf("invalidate-%d", time.Now().UnixNano())
+
+		_, err := cfClient.CreateInvalidation(context.TODO(), &cloudfront.CreateInvalidationInput{
+			DistributionId: aws.String(s.config.CloudfrontDistributionID),
+			InvalidationBatch: &types.InvalidationBatch{
+				CallerReference: aws.String(callerReference),
+				Paths: &types.Paths{
+					Quantity: aws.Int32(1),
+					Items:    []string{"/" + key},
+				},
+			},
+		})
+		if err != nil {
+			fmt.Println("Failed to invalidate CloudFront:", err)
+		}
+
+		log.Println("Invalidation request sent to CloudFront")
+	}()
 
 	return presignResult.URL, nil
 }

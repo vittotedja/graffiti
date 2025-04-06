@@ -26,6 +26,7 @@ type WallGridProps = {
 export function WallGrid({userId}: WallGridProps) {
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
 	const [walls, setWalls] = useState<Wall[]>([]);
+	const [sentWallData, setSentWallData] = useState<Wall | null>(null);
 
 	useEffect(() => {
 		const fetchFriendWallData = async () => {
@@ -82,7 +83,7 @@ export function WallGrid({userId}: WallGridProps) {
 							<CardContent className="p-0">
 								<div className="relative">
 									<Image
-										src={`/mockbday.webp`}
+										src={wall.background_image || `/mockbday.webp`}
 										alt={wall.title}
 										width={400}
 										height={200}
@@ -101,7 +102,14 @@ export function WallGrid({userId}: WallGridProps) {
 													</Button>
 												</DropdownMenuTrigger>
 												<DropdownMenuContent align="end">
-													<DropdownMenuItem className="cursor-pointer">
+													<DropdownMenuItem
+														className="cursor-pointer"
+														onClick={(e) => {
+															e.preventDefault();
+															setSentWallData(wall); // <- pass the wall you want to edit
+															setCreateWallModalOpen(true);
+														}}
+													>
 														Edit Wall
 													</DropdownMenuItem>
 													<DropdownMenuItem className="cursor-pointer">
@@ -143,7 +151,10 @@ export function WallGrid({userId}: WallGridProps) {
 				<>
 					<Card
 						className="overflow-hidden border-2 border-dashed border-primary/40 bg-background/80 backdrop-blur-sm hover:bg-accent/10 transition-all h-[220px] flex items-center justify-center cursor-pointer"
-						onClick={() => setCreateWallModalOpen(true)}
+						onClick={() => {
+							setSentWallData(null);
+							setCreateWallModalOpen(true);
+						}}
 					>
 						<CardContent className="flex flex-col items-center justify-center p-6 text-center">
 							<div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
@@ -161,6 +172,7 @@ export function WallGrid({userId}: WallGridProps) {
 					<CreateWallModal
 						isOpen={createWallModalOpen}
 						onClose={() => setCreateWallModalOpen(false)}
+						sentWallData={sentWallData}
 					/>
 				</>
 			)}

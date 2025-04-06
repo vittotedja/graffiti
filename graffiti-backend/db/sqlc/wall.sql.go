@@ -277,20 +277,30 @@ func (q *Queries) UnarchiveWall(ctx context.Context, id pgtype.UUID) error {
 const updateWall = `-- name: UpdateWall :one
 UPDATE walls
 SET 
-    description = COALESCE($2, description),
-    background_image = COALESCE($3, background_image)
+    title = COALESCE($2, title),
+    description = COALESCE($3, description),
+    background_image = COALESCE($4, background_image),
+    is_public = COALESCE($5, is_public)
 WHERE id = $1
 RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at
 `
 
 type UpdateWallParams struct {
 	ID              pgtype.UUID
+	Title           string
 	Description     pgtype.Text
 	BackgroundImage pgtype.Text
+	IsPublic        pgtype.Bool
 }
 
 func (q *Queries) UpdateWall(ctx context.Context, arg UpdateWallParams) (Wall, error) {
-	row := q.db.QueryRow(ctx, updateWall, arg.ID, arg.Description, arg.BackgroundImage)
+	row := q.db.QueryRow(ctx, updateWall,
+		arg.ID,
+		arg.Title,
+		arg.Description,
+		arg.BackgroundImage,
+		arg.IsPublic,
+	)
 	var i Wall
 	err := row.Scan(
 		&i.ID,

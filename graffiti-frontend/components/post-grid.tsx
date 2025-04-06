@@ -150,10 +150,6 @@ function PostCard({post}: PostCardType) {
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
-					{/* <DropdownMenuItem>
-						<Link href={`/profile/${user.id}`}>View Profile</Link>
-					</DropdownMenuItem> */}
-					{/* <DropdownMenuSeparator /> */}
 					<DropdownMenuItem>
 						<Pencil />
 						Edit Post
@@ -162,7 +158,6 @@ function PostCard({post}: PostCardType) {
 						<Trash className="text-red-500" />
 						Remove Post
 					</DropdownMenuItem>
-					{/* <DropdownMenuItem>Block</DropdownMenuItem> */}
 				</DropdownMenuContent>
 			</DropdownMenu>
 			<Card className="overflow-hidden border border-border/40 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-colors shadow-cyan-200">

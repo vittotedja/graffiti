@@ -33,8 +33,10 @@ ORDER BY id;
 -- name: UpdateWall :one
 UPDATE walls
 SET 
-    description = COALESCE($2, description),
-    background_image = COALESCE($3, background_image)
+    title = COALESCE($2, title),
+    description = COALESCE($3, description),
+    background_image = COALESCE($4, background_image),
+    is_public = COALESCE($5, is_public)
 WHERE id = $1
 RETURNING *;
 

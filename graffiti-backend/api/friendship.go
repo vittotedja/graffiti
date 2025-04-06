@@ -15,7 +15,7 @@ type createFriendRequestRequest struct {
 	ToUserID string `json:"to_user_id" binding:"required"`
 }
 
-type acceptFriendRequestRequest struct {
+type FriendshipIDRequest struct {
 	FriendshipID string `json:"friendship_id" binding:"required"`
 }
 
@@ -129,7 +129,7 @@ func (s *Server) acceptFriendRequest(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received accept friend request")
 
-	var req acceptFriendRequestRequest
+	var req FriendshipIDRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -436,4 +436,41 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 
 	log.Info("Listed friendship by user pairs successfully")
 	ctx.JSON(http.StatusOK, friendship)
+}
+
+func (s *Server) deleteFriendship(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received delete friendship request")
+
+	_, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("User not found in context", nil)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		return
+	}
+
+	var req FriendshipIDRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var friendshipID pgtype.UUID
+	if err := friendshipID.Scan(req.FriendshipID); err != nil {
+		log.Error("Invalid FriendshipID", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	err := s.hub.DeleteFriendship(ctx, friendshipID)
+	if err != nil {
+		log.Error("Failed to delete friendship", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Friendship deleted successfully")
+	ctx.JSON(http.StatusOK, gin.H{"message": "Friendship deleted successfully"})
 }

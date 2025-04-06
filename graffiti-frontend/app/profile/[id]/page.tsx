@@ -18,6 +18,7 @@ export default function ProfilePage() {
 	const splitPath = pathname.split("/");
 	const [user, setUser] = useState<User>();
 	const [isFriend, setIsFriend] = useState<boolean>(false);
+	const [friendshipID, setFriendshipID] = useState<string>("");
 
 	const userId = splitPath[2];
 
@@ -41,9 +42,12 @@ export default function ProfilePage() {
 						}),
 					}
 				);
+				if (!isFriendResp.ok) return;
 				const isFriendsData = await isFriendResp.json();
-				console.log(isFriendsData.Status.Status);
-				setIsFriend(isFriendsData.Status.Status == "friends");
+				if (isFriendsData.err) {
+					setFriendshipID(isFriendsData.ID);
+					setIsFriend(isFriendsData.Status.Status == "friends");
+				}
 			} catch (err) {
 				console.error("Failed to fetch wall data:", err);
 			}
@@ -71,6 +75,27 @@ export default function ProfilePage() {
 		} catch (error) {
 			console.error(error);
 			toast.warning("Error Adding Friends");
+		}
+	};
+
+	const removeFriend = async () => {
+		if (!user) return;
+		console.log(friendshipID);
+		try {
+			const response = await fetchWithAuth(
+				"http://localhost:8080/api/v1/friendships",
+				{
+					method: "DELETE",
+					body: JSON.stringify({
+						friendship_id: friendshipID,
+					}),
+				}
+			);
+			if (!response.ok) throw new Error("Error Removing Friends");
+			toast.success("Successfully removed friend!");
+		} catch (error) {
+			console.error(error);
+			toast.warning("Error Removing Friends");
 		}
 	};
 
@@ -134,7 +159,7 @@ export default function ProfilePage() {
 									<Button
 										variant="destructive"
 										className=" border-white/20 hover:bg-red-500/50 text-xs md:text-sm h-8 md:h-9"
-										// onClick={addFriend}
+										onClick={removeFriend}
 									>
 										<UserMinus2 />
 										Remove Friend
