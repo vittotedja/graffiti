@@ -12,9 +12,10 @@ INSERT INTO walls(
     user_id,
     title,
     description,
-    is_public
+    is_public,
+    background_image
 ) VALUES (
-    $1, $2, $3, $4
+    $1, $2, $3, $4, $5
 ) RETURNING *;
 
 -- name: GetWall :one

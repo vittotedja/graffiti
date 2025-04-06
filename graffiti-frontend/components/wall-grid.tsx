@@ -2,7 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {MoreVertical, Lock, Globe, Plus} from "lucide-react";
+import {
+	MoreVertical,
+	Lock,
+	Globe,
+	Plus,
+	Archive,
+	Pin,
+	Pencil,
+	Trash2,
+} from "lucide-react";
 import {useEffect, useState} from "react";
 
 import {Button} from "@/components/ui/button";
@@ -110,14 +119,18 @@ export function WallGrid({userId}: WallGridProps) {
 															setCreateWallModalOpen(true);
 														}}
 													>
+														<Pencil />
 														Edit Wall
 													</DropdownMenuItem>
 													<DropdownMenuItem className="cursor-pointer">
-														Pin Wall
+														<Pin /> Pin Wall
+													</DropdownMenuItem>
+													<DropdownMenuItem className="text-gray-400 cursor-pointer">
+														<Archive /> Archive Wall
 													</DropdownMenuItem>
 													<DropdownMenuSeparator />
 													<DropdownMenuItem className="text-destructive cursor-pointer">
-														Delete Wall
+														<Trash2 className="text-destructive" /> Delete Wall
 													</DropdownMenuItem>
 												</DropdownMenuContent>
 											</DropdownMenu>

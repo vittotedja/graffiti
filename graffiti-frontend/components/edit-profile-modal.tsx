@@ -120,7 +120,8 @@ export function EditProfileModal({
 			if (!response.ok) throw new Error("Profile failed to update");
 
 			toast("Profile updated", {
-				description: "Your profile has been updated successfully.",
+				description:
+					"Your profile has been updated successfully. Changes may take a few minutes to reflect.",
 			});
 
 			onClose();

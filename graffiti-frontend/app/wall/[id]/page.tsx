@@ -10,6 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {useUser} from "@/hooks/useUser";
 import {PostGrid} from "@/components/post-grid";
 import {EnhancedPostModal} from "@/components/enhanced-post-modal";
 import {useParams} from "next/navigation";
@@ -17,12 +18,14 @@ import {Switch} from "@/components/ui/switch";
 import {fetchWithAuth} from "@/lib/auth";
 import {Wall} from "@/types/wall";
 import {Post} from "@/types/post";
+import {toast} from "sonner";
 
 type SortOption = "latest" | "oldest" | "popular";
 type FilterOption = "all" | "photos" | "embed";
 
 export default function WallPage() {
 	const params = useParams();
+	const {user} = useUser();
 	const [id, setId] = useState<string | null>(null);
 	const [wallData, setWallData] = useState<Wall>();
 
@@ -60,6 +63,27 @@ export default function WallPage() {
 			setPosts(data);
 		} catch (error) {
 			console.error("Error fetching wall data:", error);
+		}
+	};
+
+	const changePrivacy = async () => {
+		if (!id) return;
+
+		const endpoint = wallData?.is_public
+			? "http://localhost:8080/api/v1/walls/" + id + "/privatize"
+			: "http://localhost:8080/api/v1/walls/" + id + "/publicize";
+		try {
+			const response = await fetchWithAuth(endpoint, {
+				method: "PUT",
+			});
+			if (!response.ok) {
+				throw new Error("Failed to update wall privacy");
+			}
+			toast.success("Wall privacy updated successfully!");
+			// const data = await response.json();
+			// setWallData(data);
+		} catch (error) {
+			console.error("Error updating wall privacy:", error);
 		}
 	};
 
@@ -162,32 +186,34 @@ export default function WallPage() {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-					<div className="flex items-center gap-2">
-						<Switch
-							className="cursor-pointer"
-							checked={!wallData?.is_public}
-							// TODO: Fix this to toggle the wall privacy
-							onCheckedChange={() =>
-								setWallData((prev) => {
-									if (prev) {
-										return {...prev, is_public: !prev.is_public};
-									}
-									return prev;
-								})
-							}
-						/>
-						{wallData?.is_public ? (
-							<div className="flex gap-2 items-center">
-								<Globe className="h-4 w-4 text-primary" />
-								Public
-							</div>
-						) : (
-							<div className="flex gap-2 items-center">
-								<Lock className="h-4 w-4 text-primary" />
-								Private
-							</div>
-						)}
-					</div>
+					{user?.id === wallData?.user_id && (
+						<div className="flex items-center gap-2">
+							<Switch
+								className="cursor-pointer"
+								checked={!wallData?.is_public}
+								onCheckedChange={() => {
+									changePrivacy();
+									setWallData((prev) => {
+										if (prev) {
+											return {...prev, is_public: !prev.is_public};
+										}
+										return prev;
+									});
+								}}
+							/>
+							{wallData?.is_public ? (
+								<div className="flex gap-2 items-center">
+									<Globe className="h-4 w-4 text-primary" />
+									Public
+								</div>
+							) : (
+								<div className="flex gap-2 items-center">
+									<Lock className="h-4 w-4 text-primary" />
+									Private
+								</div>
+							)}
+						</div>
+					)}
 				</div>
 
 				{/* Posts Grid */}

@@ -118,6 +118,10 @@ func (s *Server) createNewWall(ctx *gin.Context) {
 		Description: pgtype.Text{String: req.Description, Valid: req.Description != ""},
 		Title:       req.Title,
 		IsPublic:    pgtype.Bool{Bool: req.IsPublic, Valid: true},
+		BackgroundImage: pgtype.Text{
+			String: req.BackgroundImage,
+			Valid:  req.BackgroundImage != "",
+		},
 	}
 
 	wall, err := s.hub.CreateTestWall(ctx, arg)
@@ -367,6 +371,13 @@ func (s *Server) publicizeWall(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received publicize wall request")
 
+	user, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -381,6 +392,19 @@ func (s *Server) publicizeWall(ctx *gin.Context) {
 	if err := id.Scan(uri.ID); err != nil {
 		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != user.ID {
+		log.Error("Unauthorized to publicize wall", errors.New("user not authorized to publicize this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to publicize this wall")))
 		return
 	}
 
@@ -401,6 +425,13 @@ func (s *Server) privatizeWall(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received privatize wall request")
 
+	user, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -415,6 +446,19 @@ func (s *Server) privatizeWall(ctx *gin.Context) {
 	if err := id.Scan(uri.ID); err != nil {
 		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != user.ID {
+		log.Error("Unauthorized to publicize wall", errors.New("user not authorized to publicize this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to publicize this wall")))
 		return
 	}
 
