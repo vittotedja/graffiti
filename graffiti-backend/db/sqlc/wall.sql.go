@@ -218,6 +218,33 @@ func (q *Queries) ListWallsByUser(ctx context.Context, userID pgtype.UUID) ([]Wa
 	return items, nil
 }
 
+const pinUnpinWall = `-- name: PinUnpinWall :one
+UPDATE walls
+    set is_pinned = not is_pinned
+WHERE id = $1
+RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at, is_pinned
+`
+
+func (q *Queries) PinUnpinWall(ctx context.Context, id pgtype.UUID) (Wall, error) {
+	row := q.db.QueryRow(ctx, pinUnpinWall, id)
+	var i Wall
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Title,
+		&i.Description,
+		&i.BackgroundImage,
+		&i.IsPublic,
+		&i.IsArchived,
+		&i.IsDeleted,
+		&i.PopularityScore,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.IsPinned,
+	)
+	return i, err
+}
+
 const privatizeWall = `-- name: PrivatizeWall :one
 UPDATE walls
     set is_public = false

@@ -113,6 +113,7 @@ func (s *Server) registerRoutes() {
 		protected.PUT("/v1/walls/:id", s.updateWall)              // working
 		protected.PUT("/v1/walls/:id/publicize", s.publicizeWall) // working
 		protected.PUT("/v1/walls/:id/privatize", s.privatizeWall) // working
+		protected.PUT("/v1/walls/:id/pin", s.pinWall)             // working
 
 		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
 		protected.DELETE("/v1/friendships", s.deleteFriendship)

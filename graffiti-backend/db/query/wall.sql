@@ -69,3 +69,9 @@ UPDATE walls
     set is_public = false
 WHERE id = $1
 RETURNING *;
+
+-- name: PinUnpinWall :one
+UPDATE walls
+    set is_pinned = not is_pinned
+WHERE id = $1
+RETURNING *;

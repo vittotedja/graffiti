@@ -1,5 +1,5 @@
 export type Wall = {
-	id: number;
+	id: string;
 	user_id: number;
 	title: string;
 	description: string;
@@ -7,6 +7,7 @@ export type Wall = {
 	is_public: boolean;
 	is_archived: boolean;
 	is_deleted: boolean;
+	is_pinned: boolean;
 	popularity_score: number;
 	created_at: string;
 	updated_at: string;

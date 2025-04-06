@@ -38,6 +38,7 @@ type wallResponse struct {
 	IsArchived      bool      `json:"is_archived"`
 	IsDeleted       bool      `json:"is_deleted"`
 	PopularityScore float64   `json:"popularity_score"`
+	IsPinned        bool      `json:"is_pinned"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
@@ -60,6 +61,7 @@ func newWallResponse(wall db.Wall) wallResponse {
 		IsPublic:        wall.IsPublic.Bool,
 		IsArchived:      wall.IsArchived.Bool,
 		IsDeleted:       wall.IsDeleted.Bool,
+		IsPinned:        wall.IsPinned.Bool,
 		PopularityScore: wall.PopularityScore.Float64,
 		CreatedAt:       wall.CreatedAt.Time,
 		UpdatedAt:       wall.UpdatedAt.Time,
@@ -572,4 +574,57 @@ func (s *Server) deleteWall(ctx *gin.Context) {
 
 	log.Info("Wall deleted successfully")
 	ctx.JSON(http.StatusOK, gin.H{"message": "Wall deleted successfully"})
+}
+
+func (s *Server) pinWall(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received pin wall request")
+
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
+	var uri struct {
+		ID string `uri:"id" binding:"required,uuid"`
+	}
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var id pgtype.UUID
+	if err := id.Scan(uri.ID); err != nil {
+		log.Error("Invalid ID", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != currentUser.ID {
+		log.Error("Unauthorized to update wall", errors.New("user not authorized to update this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to update this wall")))
+		return
+	}
+
+	wall, err := s.hub.PinUnpinWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to update wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Wall updated successfully")
+	ctx.JSON(http.StatusOK, newWallResponse(wall))
+
 }
