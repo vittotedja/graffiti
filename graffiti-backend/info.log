@@ -1,0 +1,766 @@
+time="2025-03-31T17:40:26+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T17:41:25+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T17:41:25+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T17:41:25+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T17:49:33+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T17:49:33+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T17:49:33+08:00" level=info msg="Database connection closed."
+time="2025-03-31T17:49:33+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T17:49:33+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T17:49:38+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T17:49:38+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T17:49:38+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T17:53:52+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T17:53:52+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T17:53:52+08:00" level=info msg="Database connection closed."
+time="2025-03-31T17:53:52+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T17:53:52+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T17:53:55+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T17:53:55+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T17:53:55+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T17:56:24+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T17:56:24+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T17:56:24+08:00" level=info msg="Database connection closed."
+time="2025-03-31T17:56:24+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T17:56:24+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T17:56:28+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T17:56:28+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T17:56:28+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T17:57:24+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T17:57:24+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T17:57:24+08:00" level=info msg="Database connection closed."
+time="2025-03-31T17:57:24+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T17:57:24+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T17:57:27+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T17:57:27+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T17:57:27+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T17:58:23+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T17:58:23+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T17:58:23+08:00" level=info msg="Database connection closed."
+time="2025-03-31T17:58:23+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T17:58:23+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T20:57:02+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T20:57:02+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T20:57:02+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T20:58:09+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T20:58:09+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T20:58:09+08:00" level=info msg="Database connection closed."
+time="2025-03-31T20:58:09+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T20:58:09+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T20:58:59+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T20:58:59+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T20:58:59+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T21:06:07+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T21:06:07+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T21:06:08+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T21:06:08+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T21:06:08+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T21:06:08+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T21:16:07+08:00" level=info msg="Received get wall request" request_id= route=
+time="2025-03-31T21:16:07+08:00" level=info msg="Wall retrieved successfully" request_id= route=
+time="2025-03-31T21:16:07+08:00" level=info msg="Received get wall request" request_id= route=
+time="2025-03-31T21:16:07+08:00" level=info msg="Wall retrieved successfully" request_id= route=
+time="2025-03-31T21:57:12+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T21:57:12+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T21:57:12+08:00" level=info msg="Database connection closed."
+time="2025-03-31T21:57:12+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T21:57:12+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T21:57:15+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T21:57:15+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T21:57:15+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T21:57:28+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T21:57:28+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T21:57:28+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T21:57:28+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T21:57:33+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T21:57:33+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T21:57:33+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T21:57:33+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T21:57:38+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T21:57:38+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T21:57:38+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T21:57:38+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T21:57:38+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T21:57:38+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T21:58:19+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T21:58:19+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T21:58:48+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T21:58:48+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T21:58:48+08:00" level=info msg="Database connection closed."
+time="2025-03-31T21:58:48+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T21:58:48+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T21:58:52+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T21:58:52+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T21:58:52+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T21:59:00+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T21:59:00+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T21:59:33+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T21:59:33+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T21:59:33+08:00" level=info msg="Database connection closed."
+time="2025-03-31T21:59:33+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T21:59:33+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T21:59:36+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T21:59:36+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T21:59:36+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T21:59:40+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T21:59:40+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:00:39+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:00:39+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:00:39+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:00:39+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:00:39+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T22:00:43+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T22:00:43+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T22:00:43+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T22:00:52+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:00:52+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:01:20+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:01:20+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:01:20+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:01:20+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:01:20+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T22:01:24+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T22:01:24+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T22:01:24+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T22:01:29+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:01:29+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:01:41+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:01:41+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:01:41+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:01:41+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:01:51+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:01:51+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:01:51+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:01:51+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:01:54+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:01:54+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:01:54+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:01:54+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:02:02+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:02:02+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:02:02+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:02:02+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:02:02+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:02:02+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:04:09+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:04:09+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:04:09+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:04:09+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:04:09+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:04:09+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:05:11+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:05:11+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:05:11+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:05:11+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:05:11+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:05:11+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:07:56+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:07:56+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:07:56+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:07:56+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:07:56+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T22:08:00+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T22:08:00+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T22:08:00+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T22:08:08+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:08:08+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:08:08+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:08:08+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:08:08+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:08:08+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:08:57+08:00" level=info msg="Received create friend request" request_id= route=
+time="2025-03-31T22:08:57+08:00" level=info msg="Friend request created successfully" request_id= route=
+time="2025-03-31T22:11:35+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:11:35+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:11:35+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:11:35+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:11:35+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T22:11:37+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T22:11:37+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T22:11:37+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T22:11:49+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:11:49+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:11:49+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:11:49+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:11:49+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:11:49+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:11:52+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:11:52+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:11:52+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:11:52+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:13:21+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:13:21+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:13:21+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:13:21+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:13:21+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T22:13:24+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T22:13:24+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T22:13:24+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T22:14:42+08:00" level=info msg="Received accept friend request" request_id= route=
+time="2025-03-31T22:14:42+08:00" level=info msg="Friend request accepted successfully" request_id= route=
+time="2025-03-31T22:14:57+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:14:57+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:14:57+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:14:57+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:14:59+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:14:59+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:14:59+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:14:59+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:14:59+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:14:59+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:14:59+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:14:59+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:20:09+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:20:09+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:20:09+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:20:09+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:20:09+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T22:20:12+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T22:20:12+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T22:20:12+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T22:20:22+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:20:22+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:20:22+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:20:22+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:21:20+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:21:20+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:21:21+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:21:21+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:24:31+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:24:31+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:24:31+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:24:31+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:24:31+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T22:24:34+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T22:24:34+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T22:24:34+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T22:25:13+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:25:13+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:25:13+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:25:13+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:25:13+08:00" level=info msg="Server shut down successfully"
+time="2025-03-31T22:25:17+08:00" level=info msg="Logger initialized successfully"
+time="2025-03-31T22:25:17+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-03-31T22:25:17+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-03-31T22:33:58+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:33:58+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:33:58+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:33:58+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:36:47+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:36:47+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:36:47+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:36:47+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:36:49+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:36:49+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:36:49+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:36:49+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:36:53+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:36:53+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:36:53+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:36:53+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:36:57+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:36:57+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:36:57+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:36:57+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:37:08+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:37:08+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:37:08+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:37:08+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:37:15+08:00" level=info msg="Received get wall request" request_id= route=
+time="2025-03-31T22:37:15+08:00" level=info msg="Wall retrieved successfully" request_id= route=
+time="2025-03-31T22:37:15+08:00" level=info msg="Received get wall request" request_id= route=
+time="2025-03-31T22:37:15+08:00" level=info msg="Wall retrieved successfully" request_id= route=
+time="2025-03-31T22:37:18+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:37:18+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:37:18+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:37:18+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:37:18+08:00" level=info msg="Received get wall request" request_id= route=
+time="2025-03-31T22:37:18+08:00" level=info msg="Wall retrieved successfully" request_id= route=
+time="2025-03-31T22:37:18+08:00" level=info msg="Received get wall request" request_id= route=
+time="2025-03-31T22:37:18+08:00" level=info msg="Wall retrieved successfully" request_id= route=
+time="2025-03-31T22:37:19+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:37:19+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:37:19+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:37:19+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:51:32+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:51:32+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:51:32+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:51:32+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:51:58+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:51:58+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:51:58+08:00" level=info msg="Received get own wall request" request_id= route=
+time="2025-03-31T22:51:58+08:00" level=info msg="Walls listed successfully" request_id= route=
+time="2025-03-31T22:52:05+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:52:05+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:52:05+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:52:05+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:52:05+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:52:05+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:52:05+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:52:05+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:52:07+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:52:07+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:52:07+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:52:07+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:52:07+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:52:07+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:52:27+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:52:27+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:52:27+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:52:27+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:52:27+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:52:27+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:52:37+08:00" level=info msg="Received get user request" request_id= route=
+time="2025-03-31T22:52:37+08:00" level=info msg="User retrieved successfully" request_id= route=
+time="2025-03-31T22:52:37+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:52:37+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:52:37+08:00" level=info msg="Received list walls by user request" request_id= route=
+time="2025-03-31T22:52:37+08:00" level=info msg="Walls by user listed successfully" request_id= route=
+time="2025-03-31T22:54:51+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-03-31T22:54:51+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-03-31T22:54:51+08:00" level=info msg="Database connection closed."
+time="2025-03-31T22:54:51+08:00" level=info msg="Server shut down successfully."
+time="2025-03-31T22:54:51+08:00" level=info msg="Server shut down successfully"
+time="2025-04-01T13:35:01+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-01T13:35:01+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-01T13:35:01+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-01T13:36:34+08:00" level=info msg="Received get own wall request" request_id=a4e9d63f-faca-48ce-bd44-c355cae497f6 route=/api/v2/walls
+time="2025-04-01T13:36:34+08:00" level=info msg="Walls listed successfully" request_id=a4e9d63f-faca-48ce-bd44-c355cae497f6 route=/api/v2/walls
+time="2025-04-01T13:36:34+08:00" level=info msg="Received get own wall request" request_id=ed7a8930-f619-4bf1-ba45-6f96278ee071 route=/api/v2/walls
+time="2025-04-01T13:36:34+08:00" level=info msg="Walls listed successfully" request_id=ed7a8930-f619-4bf1-ba45-6f96278ee071 route=/api/v2/walls
+time="2025-04-01T13:36:39+08:00" level=info msg="Received get own wall request" request_id=af48fd09-1e66-4413-8df9-25473bd01d18 route=/api/v2/walls
+time="2025-04-01T13:36:39+08:00" level=info msg="Walls listed successfully" request_id=af48fd09-1e66-4413-8df9-25473bd01d18 route=/api/v2/walls
+time="2025-04-01T13:36:39+08:00" level=info msg="Received get own wall request" request_id=609206f3-2ee4-43ac-930a-30b6bb9a5de9 route=/api/v2/walls
+time="2025-04-01T13:36:39+08:00" level=info msg="Walls listed successfully" request_id=609206f3-2ee4-43ac-930a-30b6bb9a5de9 route=/api/v2/walls
+time="2025-04-01T13:37:11+08:00" level=info msg="Received get own wall request" request_id=9a64d099-f7b6-4c97-bfcc-24e62881b529 route=/api/v2/walls
+time="2025-04-01T13:37:11+08:00" level=info msg="Walls listed successfully" request_id=9a64d099-f7b6-4c97-bfcc-24e62881b529 route=/api/v2/walls
+time="2025-04-01T13:37:11+08:00" level=info msg="Received get own wall request" request_id=4b034be8-3aaf-4a46-abe7-ab8ab6672366 route=/api/v2/walls
+time="2025-04-01T13:37:11+08:00" level=info msg="Walls listed successfully" request_id=4b034be8-3aaf-4a46-abe7-ab8ab6672366 route=/api/v2/walls
+time="2025-04-01T13:38:45+08:00" level=info msg="Received get wall request" request_id=61d129bf-97b2-4e30-97c1-2d0e72c898a0 route="/api/v1/walls/:id"
+time="2025-04-01T13:38:45+08:00" level=info msg="Wall retrieved successfully" request_id=61d129bf-97b2-4e30-97c1-2d0e72c898a0 route="/api/v1/walls/:id"
+time="2025-04-01T13:38:45+08:00" level=info msg="Received get wall request" request_id=f2397189-7ecc-4460-9827-2ac24292d3c7 route="/api/v1/walls/:id"
+time="2025-04-01T13:38:45+08:00" level=info msg="Wall retrieved successfully" request_id=f2397189-7ecc-4460-9827-2ac24292d3c7 route="/api/v1/walls/:id"
+time="2025-04-01T13:43:26+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-01T13:43:26+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-01T13:43:26+08:00" level=info msg="Database connection closed."
+time="2025-04-01T13:43:26+08:00" level=info msg="Server shut down successfully."
+time="2025-04-01T13:43:26+08:00" level=info msg="Server shut down successfully"
+time="2025-04-01T13:43:30+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-01T13:43:30+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-01T13:43:30+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-01T13:44:21+08:00" level=info msg="Received search users request" request_id=8016e756-7415-428e-a217-7f20c459acc7 route=/api/v1/users/search
+time="2025-04-01T13:44:21+08:00" level=info msg="User search returned results successfully" request_id=8016e756-7415-428e-a217-7f20c459acc7 route=/api/v1/users/search
+time="2025-04-01T14:24:20+08:00" level=info msg="Received search users request" request_id=d1ca1ede-e087-4056-8c4c-f90eaed84316 route=/api/v1/users/search
+time="2025-04-01T14:24:20+08:00" level=info msg="User search returned results successfully" request_id=d1ca1ede-e087-4056-8c4c-f90eaed84316 route=/api/v1/users/search
+time="2025-04-01T14:25:40+08:00" level=info msg="Received get own wall request" request_id=7641d694-f34e-48d6-9faf-f95cfa0ecdc7 route=/api/v2/walls
+time="2025-04-01T14:25:40+08:00" level=info msg="Walls listed successfully" request_id=7641d694-f34e-48d6-9faf-f95cfa0ecdc7 route=/api/v2/walls
+time="2025-04-01T14:25:40+08:00" level=info msg="Received get own wall request" request_id=816de403-aa91-4557-bfea-5dc2855674f6 route=/api/v2/walls
+time="2025-04-01T14:25:40+08:00" level=info msg="Walls listed successfully" request_id=816de403-aa91-4557-bfea-5dc2855674f6 route=/api/v2/walls
+time="2025-04-01T14:25:42+08:00" level=info msg="Received get own wall request" request_id=c4285a24-9247-4b85-b3de-cc30020d4dcb route=/api/v2/walls
+time="2025-04-01T14:25:42+08:00" level=info msg="Walls listed successfully" request_id=c4285a24-9247-4b85-b3de-cc30020d4dcb route=/api/v2/walls
+time="2025-04-01T14:25:42+08:00" level=info msg="Received get own wall request" request_id=026249e6-e488-4819-abf1-12f4d5617e98 route=/api/v2/walls
+time="2025-04-01T14:25:42+08:00" level=info msg="Walls listed successfully" request_id=026249e6-e488-4819-abf1-12f4d5617e98 route=/api/v2/walls
+time="2025-04-01T14:32:31+08:00" level=info msg="Received get own wall request" request_id=e2e546aa-f58a-479e-94e1-1660c247401a route=/api/v2/walls
+time="2025-04-01T14:32:31+08:00" level=info msg="Walls listed successfully" request_id=e2e546aa-f58a-479e-94e1-1660c247401a route=/api/v2/walls
+time="2025-04-01T14:32:31+08:00" level=info msg="Received get own wall request" request_id=07f8557d-8c43-436f-82e4-d67780d7d30d route=/api/v2/walls
+time="2025-04-01T14:32:31+08:00" level=info msg="Walls listed successfully" request_id=07f8557d-8c43-436f-82e4-d67780d7d30d route=/api/v2/walls
+time="2025-04-01T14:33:42+08:00" level=info msg="Received search users request" request_id=60ea8eb6-9224-4e9d-8f78-728a08dfca81 route=/api/v1/users/search
+time="2025-04-01T14:33:42+08:00" level=info msg="Received search users request" request_id=1bfc640c-81fa-4142-a876-4968d860481d route=/api/v1/users/search
+time="2025-04-01T14:34:32+08:00" level=info msg="Received search users request" request_id=c157ae48-e631-419a-b4ab-2d3cbfe0649f route=/api/v1/users/search
+time="2025-04-01T14:34:32+08:00" level=info msg="User search returned results successfully" request_id=c157ae48-e631-419a-b4ab-2d3cbfe0649f route=/api/v1/users/search
+time="2025-04-01T14:41:37+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-01T14:41:37+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-01T14:41:37+08:00" level=info msg="Database connection closed."
+time="2025-04-01T14:41:37+08:00" level=info msg="Server shut down successfully."
+time="2025-04-01T14:41:37+08:00" level=info msg="Server shut down successfully"
+time="2025-04-01T14:41:43+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-01T14:41:43+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-01T14:41:43+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-01T14:42:50+08:00" level=info msg="Received get own wall request" request_id=ca435279-462f-4c72-9a89-80ac2eb3b127 route=/api/v2/walls
+time="2025-04-01T14:42:50+08:00" level=info msg="Walls listed successfully" request_id=ca435279-462f-4c72-9a89-80ac2eb3b127 route=/api/v2/walls
+time="2025-04-01T14:42:50+08:00" level=info msg="Received get own wall request" request_id=87ddbe18-ab71-41a6-bd8b-7262746632c9 route=/api/v2/walls
+time="2025-04-01T14:42:50+08:00" level=info msg="Walls listed successfully" request_id=87ddbe18-ab71-41a6-bd8b-7262746632c9 route=/api/v2/walls
+time="2025-04-01T14:42:54+08:00" level=info msg="Received search users request" request_id=bd5b84b0-1aee-4b92-9c12-465e4eca56f3 route=/api/v1/users/search
+time="2025-04-01T14:42:54+08:00" level=info msg="User search returned results successfully" request_id=bd5b84b0-1aee-4b92-9c12-465e4eca56f3 route=/api/v1/users/search
+time="2025-04-01T14:44:01+08:00" level=info msg="Received search users request" request_id=4a74d7d0-3fac-44cb-9e17-7f3b8ea67729 route=/api/v1/users/search
+time="2025-04-01T14:44:01+08:00" level=info msg="User search returned results successfully" request_id=4a74d7d0-3fac-44cb-9e17-7f3b8ea67729 route=/api/v1/users/search
+time="2025-04-01T14:53:03+08:00" level=info msg="Received search users request" request_id=f2524e62-9c54-497d-b738-2f3a4e3c0907 route=/api/v1/users/search
+time="2025-04-01T14:53:03+08:00" level=info msg="User search returned results successfully" request_id=f2524e62-9c54-497d-b738-2f3a4e3c0907 route=/api/v1/users/search
+time="2025-04-01T15:06:44+08:00" level=info msg="Received search users request" request_id=5fbb75ec-8fff-4bcc-a14f-7ff50a354dc9 route=/api/v1/users/search
+time="2025-04-01T15:06:44+08:00" level=info msg="User search returned results successfully" request_id=5fbb75ec-8fff-4bcc-a14f-7ff50a354dc9 route=/api/v1/users/search
+time="2025-04-01T15:11:19+08:00" level=info msg="Received search users request" request_id=463e92d8-87e8-40dc-b331-0cea5405285f route=/api/v1/users/search
+time="2025-04-01T15:11:19+08:00" level=info msg="User search returned results successfully" request_id=463e92d8-87e8-40dc-b331-0cea5405285f route=/api/v1/users/search
+time="2025-04-01T15:21:34+08:00" level=info msg="Received search users request" request_id=e755fcad-bb52-4b70-823c-9dc0969a91a0 route=/api/v1/users/search
+time="2025-04-01T15:21:35+08:00" level=info msg="User search returned results successfully" request_id=e755fcad-bb52-4b70-823c-9dc0969a91a0 route=/api/v1/users/search
+time="2025-04-01T15:23:26+08:00" level=info msg="Received search users request" request_id=7595a5cb-a434-47f3-890b-1c5531dcc360 route=/api/v1/users/search
+time="2025-04-01T15:23:26+08:00" level=info msg="User search returned results successfully" request_id=7595a5cb-a434-47f3-890b-1c5531dcc360 route=/api/v1/users/search
+time="2025-04-01T15:23:28+08:00" level=info msg="Received search users request" request_id=e6a6a97d-d833-47b5-bdc1-d9eb3105293f route=/api/v1/users/search
+time="2025-04-01T15:23:28+08:00" level=info msg="User search returned results successfully" request_id=e6a6a97d-d833-47b5-bdc1-d9eb3105293f route=/api/v1/users/search
+time="2025-04-01T15:24:17+08:00" level=info msg="Received get user request" request_id=4006da31-0ff3-4971-9692-7d27b3de2097 route="/api/v1/users/:id"
+time="2025-04-01T15:24:17+08:00" level=info msg="User retrieved successfully" request_id=4006da31-0ff3-4971-9692-7d27b3de2097 route="/api/v1/users/:id"
+time="2025-04-01T15:24:17+08:00" level=info msg="Received get user request" request_id=a67715ff-b9db-410d-a62a-818a1a82ad8a route="/api/v1/users/:id"
+time="2025-04-01T15:24:17+08:00" level=info msg="User retrieved successfully" request_id=a67715ff-b9db-410d-a62a-818a1a82ad8a route="/api/v1/users/:id"
+time="2025-04-01T15:24:17+08:00" level=info msg="Received list walls by user request" request_id=3dd3d5f0-f9ed-4403-9c64-5d643f87fd5f route="/api/v1/users/:id/walls"
+time="2025-04-01T15:24:17+08:00" level=info msg="Walls by user listed successfully" request_id=3dd3d5f0-f9ed-4403-9c64-5d643f87fd5f route="/api/v1/users/:id/walls"
+time="2025-04-01T15:24:17+08:00" level=info msg="Received list walls by user request" request_id=f6718d3e-226e-4e4f-a45c-2d0ad5f9d564 route="/api/v1/users/:id/walls"
+time="2025-04-01T15:24:17+08:00" level=info msg="Walls by user listed successfully" request_id=f6718d3e-226e-4e4f-a45c-2d0ad5f9d564 route="/api/v1/users/:id/walls"
+time="2025-04-01T15:24:58+08:00" level=info msg="Received get own wall request" request_id=f98dfa22-d9d5-46af-b0ab-6ff059c02dd2 route=/api/v2/walls
+time="2025-04-01T15:24:58+08:00" level=info msg="Walls listed successfully" request_id=f98dfa22-d9d5-46af-b0ab-6ff059c02dd2 route=/api/v2/walls
+time="2025-04-01T15:24:58+08:00" level=info msg="Received get own wall request" request_id=6c6444e5-1c4c-4730-a720-47b83125d269 route=/api/v2/walls
+time="2025-04-01T15:24:58+08:00" level=info msg="Walls listed successfully" request_id=6c6444e5-1c4c-4730-a720-47b83125d269 route=/api/v2/walls
+time="2025-04-01T15:25:01+08:00" level=info msg="Received get wall request" request_id=d3912678-db53-4f8a-a59f-b82c888e7500 route="/api/v1/walls/:id"
+time="2025-04-01T15:25:01+08:00" level=info msg="Wall retrieved successfully" request_id=d3912678-db53-4f8a-a59f-b82c888e7500 route="/api/v1/walls/:id"
+time="2025-04-01T15:25:01+08:00" level=info msg="Received get wall request" request_id=d34a220e-f929-4490-ac09-1e089c6b3536 route="/api/v1/walls/:id"
+time="2025-04-01T15:25:01+08:00" level=info msg="Wall retrieved successfully" request_id=d34a220e-f929-4490-ac09-1e089c6b3536 route="/api/v1/walls/:id"
+time="2025-04-01T15:25:19+08:00" level=info msg="Received create post request" request_id=180e1ec4-37db-4495-a052-f5fdda620344 route=/api/v1/posts
+time="2025-04-01T15:25:19+08:00" level=info msg="Post created successfully" request_id=180e1ec4-37db-4495-a052-f5fdda620344 route=/api/v1/posts
+time="2025-04-01T15:25:25+08:00" level=info msg="Received get wall request" request_id=a35cac22-3022-42d7-84c3-afdd64136ae9 route="/api/v1/walls/:id"
+time="2025-04-01T15:25:25+08:00" level=info msg="Wall retrieved successfully" request_id=a35cac22-3022-42d7-84c3-afdd64136ae9 route="/api/v1/walls/:id"
+time="2025-04-01T15:26:02+08:00" level=info msg="Received get wall request" request_id=cf5a91fd-9b6f-48a8-b1f6-d6a1f8cec4e1 route="/api/v1/walls/:id"
+time="2025-04-01T15:26:02+08:00" level=info msg="Wall retrieved successfully" request_id=cf5a91fd-9b6f-48a8-b1f6-d6a1f8cec4e1 route="/api/v1/walls/:id"
+time="2025-04-01T15:26:22+08:00" level=info msg="Received get wall request" request_id=fc9ab64b-1ad5-4ff4-971d-62e8441c78bf route="/api/v1/walls/:id"
+time="2025-04-01T15:26:22+08:00" level=info msg="Wall retrieved successfully" request_id=fc9ab64b-1ad5-4ff4-971d-62e8441c78bf route="/api/v1/walls/:id"
+time="2025-04-01T15:33:09+08:00" level=info msg="Received get wall request" request_id=2f8d1dd4-6a18-4e56-8a46-d243fc388cb2 route="/api/v1/walls/:id"
+time="2025-04-01T15:33:09+08:00" level=info msg="Wall retrieved successfully" request_id=2f8d1dd4-6a18-4e56-8a46-d243fc388cb2 route="/api/v1/walls/:id"
+time="2025-04-01T15:33:38+08:00" level=info msg="Received get own wall request" request_id=69739b90-c859-4900-bc78-d45742ab6948 route=/api/v2/walls
+time="2025-04-01T15:33:38+08:00" level=info msg="Walls listed successfully" request_id=69739b90-c859-4900-bc78-d45742ab6948 route=/api/v2/walls
+time="2025-04-01T15:33:38+08:00" level=info msg="Received get own wall request" request_id=679b4be1-21dc-4823-8bb1-2cc2e1f8d25c route=/api/v2/walls
+time="2025-04-01T15:33:38+08:00" level=info msg="Walls listed successfully" request_id=679b4be1-21dc-4823-8bb1-2cc2e1f8d25c route=/api/v2/walls
+time="2025-04-01T15:33:39+08:00" level=info msg="Received get wall request" request_id=28c5debe-6a80-40f5-8ef6-59093076007f route="/api/v1/walls/:id"
+time="2025-04-01T15:33:39+08:00" level=info msg="Wall retrieved successfully" request_id=28c5debe-6a80-40f5-8ef6-59093076007f route="/api/v1/walls/:id"
+time="2025-04-01T15:33:39+08:00" level=info msg="Received get wall request" request_id=fc1c6b98-16ad-4a5e-b7fe-995e1e7285a3 route="/api/v1/walls/:id"
+time="2025-04-01T15:33:39+08:00" level=info msg="Wall retrieved successfully" request_id=fc1c6b98-16ad-4a5e-b7fe-995e1e7285a3 route="/api/v1/walls/:id"
+time="2025-04-01T15:33:54+08:00" level=info msg="Received create post request" request_id=61c168dd-b418-4a38-85ca-cde8e5172fef route=/api/v1/posts
+time="2025-04-01T15:33:54+08:00" level=info msg="Post created successfully" request_id=61c168dd-b418-4a38-85ca-cde8e5172fef route=/api/v1/posts
+time="2025-04-01T15:33:57+08:00" level=info msg="Received get wall request" request_id=39c7c5c3-4a4b-4969-b415-e9ca72ca0eac route="/api/v1/walls/:id"
+time="2025-04-01T15:33:57+08:00" level=info msg="Wall retrieved successfully" request_id=39c7c5c3-4a4b-4969-b415-e9ca72ca0eac route="/api/v1/walls/:id"
+time="2025-04-01T15:35:17+08:00" level=info msg="Received get wall request" request_id=bde68470-b1f5-4dd8-b768-8b47f6157568 route="/api/v1/walls/:id"
+time="2025-04-01T15:35:17+08:00" level=info msg="Wall retrieved successfully" request_id=bde68470-b1f5-4dd8-b768-8b47f6157568 route="/api/v1/walls/:id"
+time="2025-04-01T15:35:22+08:00" level=info msg="Received create post request" request_id=8dc40dad-25b1-4778-a7bb-256b60a35b28 route=/api/v1/posts
+time="2025-04-01T15:35:22+08:00" level=info msg="Post created successfully" request_id=8dc40dad-25b1-4778-a7bb-256b60a35b28 route=/api/v1/posts
+time="2025-04-01T15:35:34+08:00" level=info msg="Received get wall request" request_id=5e96ed60-53f5-4923-a1b0-576ff9a7f396 route="/api/v1/walls/:id"
+time="2025-04-01T15:35:34+08:00" level=info msg="Wall retrieved successfully" request_id=5e96ed60-53f5-4923-a1b0-576ff9a7f396 route="/api/v1/walls/:id"
+time="2025-04-01T15:37:35+08:00" level=info msg="Received get wall request" request_id=b8e55dd6-aba1-493d-adc9-65314c36f85d route="/api/v1/walls/:id"
+time="2025-04-01T15:37:35+08:00" level=info msg="Wall retrieved successfully" request_id=b8e55dd6-aba1-493d-adc9-65314c36f85d route="/api/v1/walls/:id"
+time="2025-04-01T15:39:08+08:00" level=info msg="Received get wall request" request_id=0c07ebe8-d559-4720-822b-3b7c8da24fcc route="/api/v1/walls/:id"
+time="2025-04-01T15:39:08+08:00" level=info msg="Wall retrieved successfully" request_id=0c07ebe8-d559-4720-822b-3b7c8da24fcc route="/api/v1/walls/:id"
+time="2025-04-01T15:41:28+08:00" level=info msg="Received get wall request" request_id=57212a79-a507-4682-9385-bdbdbc1c6e4b route="/api/v1/walls/:id"
+time="2025-04-01T15:41:28+08:00" level=info msg="Wall retrieved successfully" request_id=57212a79-a507-4682-9385-bdbdbc1c6e4b route="/api/v1/walls/:id"
+time="2025-04-01T22:27:56+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-01T22:27:56+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-01T22:27:56+08:00" level=info msg="Database connection closed."
+time="2025-04-01T22:27:56+08:00" level=info msg="Server shut down successfully."
+time="2025-04-01T22:27:56+08:00" level=info msg="Server shut down successfully"
+time="2025-04-01T22:28:03+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-01T22:28:03+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-01T22:28:03+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-01T22:29:06+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-01T22:29:06+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-01T22:29:06+08:00" level=info msg="Database connection closed."
+time="2025-04-01T22:29:06+08:00" level=info msg="Server shut down successfully."
+time="2025-04-01T22:29:06+08:00" level=info msg="Server shut down successfully"
+time="2025-04-01T22:29:09+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-01T22:29:09+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-01T22:29:09+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-01T22:30:05+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-01T22:30:05+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-01T22:30:05+08:00" level=info msg="Database connection closed."
+time="2025-04-01T22:30:05+08:00" level=info msg="Server shut down successfully."
+time="2025-04-01T22:30:05+08:00" level=info msg="Server shut down successfully"
+time="2025-04-01T22:30:09+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-01T22:30:09+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-01T22:30:09+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-01T22:30:44+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-01T22:30:44+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-01T22:30:44+08:00" level=info msg="Database connection closed."
+time="2025-04-01T22:30:44+08:00" level=info msg="Server shut down successfully."
+time="2025-04-01T22:30:44+08:00" level=info msg="Server shut down successfully"
+time="2025-04-01T22:30:47+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-01T22:30:47+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-01T22:30:47+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-01T22:33:38+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-01T22:33:38+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-01T22:33:38+08:00" level=info msg="Database connection closed."
+time="2025-04-01T22:33:38+08:00" level=info msg="Server shut down successfully."
+time="2025-04-01T22:33:38+08:00" level=info msg="Server shut down successfully"
+time="2025-04-01T22:33:42+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-01T22:33:42+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-01T22:33:42+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T09:06:02+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T09:06:02+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T09:06:02+08:00" level=info msg="Database connection closed."
+time="2025-04-02T09:06:02+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T09:06:02+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T09:10:18+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T09:10:18+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T09:10:18+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T09:15:59+08:00" level=info msg="Received get own wall request" request_id=57024b4d-36ad-4ad7-9d9a-c007144f4e60 route=/api/v2/walls
+time="2025-04-02T09:15:59+08:00" level=info msg="Walls listed successfully" request_id=57024b4d-36ad-4ad7-9d9a-c007144f4e60 route=/api/v2/walls
+time="2025-04-02T09:15:59+08:00" level=info msg="Received get own wall request" request_id=2af1a24d-caa2-4cb9-a7a7-2177d1390cb7 route=/api/v2/walls
+time="2025-04-02T09:15:59+08:00" level=info msg="Walls listed successfully" request_id=2af1a24d-caa2-4cb9-a7a7-2177d1390cb7 route=/api/v2/walls
+time="2025-04-02T09:16:04+08:00" level=info msg="Received get wall request" request_id=35db85d2-6995-4b74-bd17-4ac4a595daca route="/api/v1/walls/:id"
+time="2025-04-02T09:16:04+08:00" level=info msg="Wall retrieved successfully" request_id=35db85d2-6995-4b74-bd17-4ac4a595daca route="/api/v1/walls/:id"
+time="2025-04-02T09:16:04+08:00" level=info msg="Received get wall request" request_id=baf91dfa-6e4b-4eb1-b555-dc15b1dfc6dd route="/api/v1/walls/:id"
+time="2025-04-02T09:16:04+08:00" level=info msg="Wall retrieved successfully" request_id=baf91dfa-6e4b-4eb1-b555-dc15b1dfc6dd route="/api/v1/walls/:id"
+time="2025-04-02T09:16:05+08:00" level=info msg="Received get own wall request" request_id=a7f70c9f-de67-42ff-8fbc-17e18faa7c51 route=/api/v2/walls
+time="2025-04-02T09:16:05+08:00" level=info msg="Walls listed successfully" request_id=a7f70c9f-de67-42ff-8fbc-17e18faa7c51 route=/api/v2/walls
+time="2025-04-02T09:16:05+08:00" level=info msg="Received get own wall request" request_id=61658799-4c3c-4de1-9b0b-89098c85fc2a route=/api/v2/walls
+time="2025-04-02T09:16:05+08:00" level=info msg="Walls listed successfully" request_id=61658799-4c3c-4de1-9b0b-89098c85fc2a route=/api/v2/walls
+time="2025-04-02T09:16:06+08:00" level=info msg="Received get wall request" request_id=380702b3-1331-4245-a231-a6a2be98d981 route="/api/v1/walls/:id"
+time="2025-04-02T09:16:06+08:00" level=info msg="Wall retrieved successfully" request_id=380702b3-1331-4245-a231-a6a2be98d981 route="/api/v1/walls/:id"
+time="2025-04-02T09:16:06+08:00" level=info msg="Received get wall request" request_id=a070f4df-e3bc-4b35-a693-4579a8fc6d9d route="/api/v1/walls/:id"
+time="2025-04-02T09:16:06+08:00" level=info msg="Wall retrieved successfully" request_id=a070f4df-e3bc-4b35-a693-4579a8fc6d9d route="/api/v1/walls/:id"
+time="2025-04-02T09:16:44+08:00" level=info msg="Received create post request" request_id=105d761e-8f4e-4959-b00c-b4883a3fb45e route=/api/v1/posts
+time="2025-04-02T09:16:44+08:00" level=info msg="Post created successfully" request_id=105d761e-8f4e-4959-b00c-b4883a3fb45e route=/api/v1/posts
+time="2025-04-02T09:17:06+08:00" level=info msg="Received create post request" request_id=0ad823ea-4f29-4b18-8709-6ed00a9af499 route=/api/v1/posts
+time="2025-04-02T09:17:06+08:00" level=info msg="Post created successfully" request_id=0ad823ea-4f29-4b18-8709-6ed00a9af499 route=/api/v1/posts
+time="2025-04-02T09:17:23+08:00" level=info msg="Received search users request" request_id=8bed82a9-e86a-4f8e-8fe7-b149a4e39316 route=/api/v1/users/search
+time="2025-04-02T09:17:23+08:00" level=info msg="User search returned results successfully" request_id=8bed82a9-e86a-4f8e-8fe7-b149a4e39316 route=/api/v1/users/search
+time="2025-04-02T09:17:25+08:00" level=info msg="Received get user request" request_id=ba668fdf-919a-4f77-b61f-b9d9024a261c route="/api/v1/users/:id"
+time="2025-04-02T09:17:25+08:00" level=info msg="User retrieved successfully" request_id=ba668fdf-919a-4f77-b61f-b9d9024a261c route="/api/v1/users/:id"
+time="2025-04-02T09:17:25+08:00" level=info msg="Received get user request" request_id=2f423049-602a-4a50-90a5-81d90c88e9ab route="/api/v1/users/:id"
+time="2025-04-02T09:17:25+08:00" level=info msg="User retrieved successfully" request_id=2f423049-602a-4a50-90a5-81d90c88e9ab route="/api/v1/users/:id"
+time="2025-04-02T09:17:25+08:00" level=info msg="Received list walls by user request" request_id=5c76454f-db34-4559-86da-94eb6c226640 route="/api/v1/users/:id/walls"
+time="2025-04-02T09:17:25+08:00" level=info msg="Walls by user listed successfully" request_id=5c76454f-db34-4559-86da-94eb6c226640 route="/api/v1/users/:id/walls"
+time="2025-04-02T09:17:25+08:00" level=info msg="Received list walls by user request" request_id=4471527c-709a-4305-bf55-be2a6a088d34 route="/api/v1/users/:id/walls"
+time="2025-04-02T09:17:25+08:00" level=info msg="Walls by user listed successfully" request_id=4471527c-709a-4305-bf55-be2a6a088d34 route="/api/v1/users/:id/walls"
+time="2025-04-02T09:23:15+08:00" level=info msg="Received get own wall request" request_id=10a5826b-4560-4edb-8f9b-8c57e5e2cdde route=/api/v2/walls
+time="2025-04-02T09:23:15+08:00" level=info msg="Walls listed successfully" request_id=10a5826b-4560-4edb-8f9b-8c57e5e2cdde route=/api/v2/walls
+time="2025-04-02T09:23:15+08:00" level=info msg="Received get own wall request" request_id=9f3bcd34-6145-4077-91a1-d7bd37c92f01 route=/api/v2/walls
+time="2025-04-02T09:23:15+08:00" level=info msg="Walls listed successfully" request_id=9f3bcd34-6145-4077-91a1-d7bd37c92f01 route=/api/v2/walls
+time="2025-04-02T09:23:17+08:00" level=info msg="Received get wall request" request_id=aee832fd-b647-4615-8d8c-2a49d1adcb45 route="/api/v1/walls/:id"
+time="2025-04-02T09:23:17+08:00" level=info msg="Wall retrieved successfully" request_id=aee832fd-b647-4615-8d8c-2a49d1adcb45 route="/api/v1/walls/:id"
+time="2025-04-02T09:23:17+08:00" level=info msg="Received get wall request" request_id=b4b31503-16b3-4b29-b31d-89d974a3f48f route="/api/v1/walls/:id"
+time="2025-04-02T09:23:17+08:00" level=info msg="Wall retrieved successfully" request_id=b4b31503-16b3-4b29-b31d-89d974a3f48f route="/api/v1/walls/:id"
+time="2025-04-02T10:32:14+08:00" level=info msg="Received get wall request" request_id=a9fef0da-abd8-4b02-838e-22d1c19a92a9 route="/api/v1/walls/:id"
+time="2025-04-02T10:32:14+08:00" level=info msg="Wall retrieved successfully" request_id=a9fef0da-abd8-4b02-838e-22d1c19a92a9 route="/api/v1/walls/:id"
+time="2025-04-02T10:32:26+08:00" level=info msg="Received get own wall request" request_id=c677e9f1-ac9d-476e-8ac7-77ed8c33adda route=/api/v2/walls
+time="2025-04-02T10:32:26+08:00" level=info msg="Walls listed successfully" request_id=c677e9f1-ac9d-476e-8ac7-77ed8c33adda route=/api/v2/walls
+time="2025-04-02T10:32:26+08:00" level=info msg="Received get own wall request" request_id=b561c9c4-462c-43c0-b5e5-61a20db7bdf0 route=/api/v2/walls
+time="2025-04-02T10:32:26+08:00" level=info msg="Walls listed successfully" request_id=b561c9c4-462c-43c0-b5e5-61a20db7bdf0 route=/api/v2/walls
+time="2025-04-02T10:32:31+08:00" level=info msg="Received get wall request" request_id=edc4e057-2000-464a-ba0a-53c3cb390ce3 route="/api/v1/walls/:id"
+time="2025-04-02T10:32:31+08:00" level=info msg="Wall retrieved successfully" request_id=edc4e057-2000-464a-ba0a-53c3cb390ce3 route="/api/v1/walls/:id"
+time="2025-04-02T10:32:31+08:00" level=info msg="Received get wall request" request_id=6797f9d4-4f83-4b74-ae43-0a28507ef27f route="/api/v1/walls/:id"
+time="2025-04-02T10:32:31+08:00" level=info msg="Wall retrieved successfully" request_id=6797f9d4-4f83-4b74-ae43-0a28507ef27f route="/api/v1/walls/:id"
+time="2025-04-02T10:33:12+08:00" level=info msg="Received get wall request" request_id=d722a3ca-a5f2-454d-afb9-30d8319d7626 route="/api/v1/walls/:id"
+time="2025-04-02T10:33:12+08:00" level=info msg="Wall retrieved successfully" request_id=d722a3ca-a5f2-454d-afb9-30d8319d7626 route="/api/v1/walls/:id"
+time="2025-04-02T10:34:31+08:00" level=info msg="Received get wall request" request_id=1017d900-1718-42a8-ab86-6018942c1c9c route="/api/v1/walls/:id"
+time="2025-04-02T10:34:31+08:00" level=info msg="Wall retrieved successfully" request_id=1017d900-1718-42a8-ab86-6018942c1c9c route="/api/v1/walls/:id"
+time="2025-04-02T10:36:02+08:00" level=info msg="Received get wall request" request_id=3efccfbe-20be-4173-8116-204478bfd15c route="/api/v1/walls/:id"
+time="2025-04-02T10:36:02+08:00" level=info msg="Wall retrieved successfully" request_id=3efccfbe-20be-4173-8116-204478bfd15c route="/api/v1/walls/:id"
+time="2025-04-02T10:42:47+08:00" level=info msg="Received get wall request" request_id=e73091b7-ba46-48bb-b0ea-7292890e9b12 route="/api/v1/walls/:id"
+time="2025-04-02T10:42:47+08:00" level=info msg="Wall retrieved successfully" request_id=e73091b7-ba46-48bb-b0ea-7292890e9b12 route="/api/v1/walls/:id"
+time="2025-04-02T10:42:50+08:00" level=info msg="Received get wall request" request_id=884abb0e-5ad6-42ed-af42-0292cb4286b5 route="/api/v1/walls/:id"
+time="2025-04-02T10:42:50+08:00" level=info msg="Wall retrieved successfully" request_id=884abb0e-5ad6-42ed-af42-0292cb4286b5 route="/api/v1/walls/:id"
+time="2025-04-02T10:43:20+08:00" level=info msg="Received get wall request" request_id=f98d3c78-8837-4319-bb05-8e70a552ce8c route="/api/v1/walls/:id"
+time="2025-04-02T10:43:20+08:00" level=info msg="Wall retrieved successfully" request_id=f98d3c78-8837-4319-bb05-8e70a552ce8c route="/api/v1/walls/:id"
+time="2025-04-02T10:45:07+08:00" level=info msg="Received get wall request" request_id=d0cc476c-4163-48c3-8e6b-277e95ff2955 route="/api/v1/walls/:id"
+time="2025-04-02T10:45:07+08:00" level=info msg="Wall retrieved successfully" request_id=d0cc476c-4163-48c3-8e6b-277e95ff2955 route="/api/v1/walls/:id"
+time="2025-04-02T10:45:23+08:00" level=info msg="Received get wall request" request_id=984c5aa3-6848-41a8-b00d-1e7652991900 route="/api/v1/walls/:id"
+time="2025-04-02T10:45:23+08:00" level=info msg="Wall retrieved successfully" request_id=984c5aa3-6848-41a8-b00d-1e7652991900 route="/api/v1/walls/:id"
+time="2025-04-02T10:48:51+08:00" level=info msg="Received get wall request" request_id=db869643-eaf2-451c-a515-dfae9d0d3739 route="/api/v1/walls/:id"
+time="2025-04-02T10:48:51+08:00" level=info msg="Wall retrieved successfully" request_id=db869643-eaf2-451c-a515-dfae9d0d3739 route="/api/v1/walls/:id"
+time="2025-04-02T10:50:06+08:00" level=info msg="Received get wall request" request_id=2f5d7746-132b-41df-b076-0c212a3354d8 route="/api/v1/walls/:id"
+time="2025-04-02T10:50:06+08:00" level=info msg="Wall retrieved successfully" request_id=2f5d7746-132b-41df-b076-0c212a3354d8 route="/api/v1/walls/:id"
+time="2025-04-02T10:55:36+08:00" level=info msg="Received get own wall request" request_id=7d05b1e6-939f-45b2-94fb-2f46caa84587 route=/api/v2/walls
+time="2025-04-02T10:55:36+08:00" level=info msg="Walls listed successfully" request_id=7d05b1e6-939f-45b2-94fb-2f46caa84587 route=/api/v2/walls
+time="2025-04-02T10:55:36+08:00" level=info msg="Received get own wall request" request_id=19b8c54b-12aa-49f2-ac36-f4b20aa93d88 route=/api/v2/walls
+time="2025-04-02T10:55:36+08:00" level=info msg="Walls listed successfully" request_id=19b8c54b-12aa-49f2-ac36-f4b20aa93d88 route=/api/v2/walls
+time="2025-04-02T10:55:39+08:00" level=info msg="Received get wall request" request_id=7504d0b2-3b9d-4705-9c0f-e591d74b7288 route="/api/v1/walls/:id"
+time="2025-04-02T10:55:39+08:00" level=info msg="Wall retrieved successfully" request_id=7504d0b2-3b9d-4705-9c0f-e591d74b7288 route="/api/v1/walls/:id"
+time="2025-04-02T11:06:18+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T11:06:18+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T11:06:18+08:00" level=info msg="Database connection closed."
+time="2025-04-02T11:06:18+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T11:06:18+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T11:06:22+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T11:06:22+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T11:06:22+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T11:11:02+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T11:11:02+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T11:11:02+08:00" level=info msg="Database connection closed."
+time="2025-04-02T11:11:02+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T11:11:02+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T11:11:05+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T11:11:05+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T11:11:05+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T11:19:36+08:00" level=info msg="Received get wall request" request_id=e6de1ec9-81e4-47e2-b8c5-17aff8f69a9d route="/api/v1/walls/:id"
+time="2025-04-02T11:19:36+08:00" level=info msg="Wall retrieved successfully" request_id=e6de1ec9-81e4-47e2-b8c5-17aff8f69a9d route="/api/v1/walls/:id"
+time="2025-04-02T11:19:39+08:00" level=info msg="Received get wall request" request_id=f312057f-bfed-4ac6-b62c-e6943f4dc4df route="/api/v1/walls/:id"
+time="2025-04-02T11:19:39+08:00" level=info msg="Wall retrieved successfully" request_id=f312057f-bfed-4ac6-b62c-e6943f4dc4df route="/api/v1/walls/:id"
+time="2025-04-02T11:22:40+08:00" level=info msg="Received get wall request" request_id=400af32c-85e1-4146-a366-dbf6c2d14424 route="/api/v1/walls/:id"
+time="2025-04-02T11:22:40+08:00" level=info msg="Wall retrieved successfully" request_id=400af32c-85e1-4146-a366-dbf6c2d14424 route="/api/v1/walls/:id"
+time="2025-04-02T11:25:22+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T11:25:22+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T11:25:22+08:00" level=info msg="Database connection closed."
+time="2025-04-02T11:25:22+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T11:25:22+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T11:25:26+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T11:25:26+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T11:25:26+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T11:25:48+08:00" level=info msg="Received get wall request" request_id=8eae3494-099d-4f7f-a24e-bbe20b7f8843 route="/api/v1/walls/:id"
+time="2025-04-02T11:25:48+08:00" level=info msg="Wall retrieved successfully" request_id=8eae3494-099d-4f7f-a24e-bbe20b7f8843 route="/api/v1/walls/:id"
+time="2025-04-02T15:23:56+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T15:23:56+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T15:23:56+08:00" level=info msg="Database connection closed."
+time="2025-04-02T15:23:56+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T15:23:56+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T15:33:49+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T15:33:49+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T15:33:49+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T15:34:30+08:00" level=info msg="Received get wall request" request_id=97fa4d0e-d870-4143-9908-516d6af2bec9 route="/api/v1/walls/:id"
+time="2025-04-02T15:34:30+08:00" level=info msg="Wall retrieved successfully" request_id=97fa4d0e-d870-4143-9908-516d6af2bec9 route="/api/v1/walls/:id"
+time="2025-04-02T15:34:46+08:00" level=info msg="Received get own wall request" request_id=3b7b7c56-7087-436d-b0d3-5c13d1267830 route=/api/v2/walls
+time="2025-04-02T15:34:46+08:00" level=info msg="Walls listed successfully" request_id=3b7b7c56-7087-436d-b0d3-5c13d1267830 route=/api/v2/walls
+time="2025-04-02T15:34:46+08:00" level=info msg="Received get own wall request" request_id=dbe42808-68d0-47d6-aaf4-649a5856c556 route=/api/v2/walls
+time="2025-04-02T15:34:46+08:00" level=info msg="Walls listed successfully" request_id=dbe42808-68d0-47d6-aaf4-649a5856c556 route=/api/v2/walls
+time="2025-04-02T15:34:57+08:00" level=info msg="Received get wall request" request_id=b0c97a48-3d1b-4054-8792-3cb905cb5358 route="/api/v1/walls/:id"
+time="2025-04-02T15:34:57+08:00" level=info msg="Wall retrieved successfully" request_id=b0c97a48-3d1b-4054-8792-3cb905cb5358 route="/api/v1/walls/:id"
+time="2025-04-02T15:34:57+08:00" level=info msg="Received get wall request" request_id=f3d9b459-d8a9-402d-bafc-2f272240c599 route="/api/v1/walls/:id"
+time="2025-04-02T15:34:57+08:00" level=info msg="Wall retrieved successfully" request_id=f3d9b459-d8a9-402d-bafc-2f272240c599 route="/api/v1/walls/:id"
+time="2025-04-02T15:36:06+08:00" level=info msg="Received get wall request" request_id=f109d7d0-26eb-467e-ab9b-8455e6c05b0b route="/api/v1/walls/:id"
+time="2025-04-02T15:36:06+08:00" level=info msg="Wall retrieved successfully" request_id=f109d7d0-26eb-467e-ab9b-8455e6c05b0b route="/api/v1/walls/:id"
+time="2025-04-02T15:36:08+08:00" level=info msg="Received get wall request" request_id=5491cf46-157b-43d8-aec1-447c44fd59f9 route="/api/v1/walls/:id"
+time="2025-04-02T15:36:08+08:00" level=info msg="Wall retrieved successfully" request_id=5491cf46-157b-43d8-aec1-447c44fd59f9 route="/api/v1/walls/:id"
+time="2025-04-02T15:40:09+08:00" level=info msg="Received get wall request" request_id=30af5320-41a4-4086-bde8-b96dec1c9990 route="/api/v1/walls/:id"
+time="2025-04-02T15:40:09+08:00" level=info msg="Wall retrieved successfully" request_id=30af5320-41a4-4086-bde8-b96dec1c9990 route="/api/v1/walls/:id"
+time="2025-04-02T15:41:04+08:00" level=info msg="Received get wall request" request_id=91e9e53b-e405-40a2-9882-6b1f7cb1d893 route="/api/v1/walls/:id"
+time="2025-04-02T15:41:04+08:00" level=info msg="Wall retrieved successfully" request_id=91e9e53b-e405-40a2-9882-6b1f7cb1d893 route="/api/v1/walls/:id"
+time="2025-04-02T15:41:06+08:00" level=info msg="Received get wall request" request_id=bbd90360-1ea8-4b59-8eee-d4f39556d316 route="/api/v1/walls/:id"
+time="2025-04-02T15:41:06+08:00" level=info msg="Wall retrieved successfully" request_id=bbd90360-1ea8-4b59-8eee-d4f39556d316 route="/api/v1/walls/:id"
+time="2025-04-02T15:42:21+08:00" level=info msg="Received get wall request" request_id=abe59108-a2ff-4e62-925b-6f6df48e6208 route="/api/v1/walls/:id"
+time="2025-04-02T15:42:21+08:00" level=info msg="Wall retrieved successfully" request_id=abe59108-a2ff-4e62-925b-6f6df48e6208 route="/api/v1/walls/:id"
+time="2025-04-02T15:42:38+08:00" level=info msg="Received get wall request" request_id=d27501c1-0233-455e-8737-a5cd6b247d44 route="/api/v1/walls/:id"
+time="2025-04-02T15:42:38+08:00" level=info msg="Wall retrieved successfully" request_id=d27501c1-0233-455e-8737-a5cd6b247d44 route="/api/v1/walls/:id"
+time="2025-04-02T15:44:21+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T15:44:21+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T15:44:21+08:00" level=info msg="Database connection closed."
+time="2025-04-02T15:44:21+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T15:44:21+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T15:45:37+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T15:45:37+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T15:45:37+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T15:48:47+08:00" level=info msg="Received get wall request" request_id=30bfec21-c3dc-4600-ae70-cdcc74efd1e4 route="/api/v1/walls/:id"
+time="2025-04-02T15:48:47+08:00" level=info msg="Wall retrieved successfully" request_id=30bfec21-c3dc-4600-ae70-cdcc74efd1e4 route="/api/v1/walls/:id"
+time="2025-04-02T16:37:53+08:00" level=info msg="Received get wall request" request_id=4c038d8b-7c9d-4f6e-a379-423d6b5282fc route="/api/v1/walls/:id"
+time="2025-04-02T16:37:53+08:00" level=info msg="Wall retrieved successfully" request_id=4c038d8b-7c9d-4f6e-a379-423d6b5282fc route="/api/v1/walls/:id"
+time="2025-04-02T16:38:43+08:00" level=info msg="Received get wall request" request_id=2d70b5b7-2d1f-4e4a-9839-9398d7898e6e route="/api/v1/walls/:id"
+time="2025-04-02T16:38:43+08:00" level=info msg="Wall retrieved successfully" request_id=2d70b5b7-2d1f-4e4a-9839-9398d7898e6e route="/api/v1/walls/:id"
+time="2025-04-02T16:38:51+08:00" level=info msg="Received get wall request" request_id=6b4b3a46-b219-4843-93dc-1db42df9fac1 route="/api/v1/walls/:id"
+time="2025-04-02T16:38:51+08:00" level=info msg="Wall retrieved successfully" request_id=6b4b3a46-b219-4843-93dc-1db42df9fac1 route="/api/v1/walls/:id"
+time="2025-04-02T16:39:32+08:00" level=info msg="Received get wall request" request_id=44cc2561-d49a-4601-8584-b8ada0d186bb route="/api/v1/walls/:id"
+time="2025-04-02T16:39:32+08:00" level=info msg="Wall retrieved successfully" request_id=44cc2561-d49a-4601-8584-b8ada0d186bb route="/api/v1/walls/:id"
+time="2025-04-02T16:43:16+08:00" level=info msg="Received get wall request" request_id=e7b24802-beb9-4bf6-b8d6-476173abc338 route="/api/v1/walls/:id"
+time="2025-04-02T16:43:16+08:00" level=info msg="Wall retrieved successfully" request_id=e7b24802-beb9-4bf6-b8d6-476173abc338 route="/api/v1/walls/:id"
+time="2025-04-02T16:43:21+08:00" level=info msg="Received get wall request" request_id=eb8b76e8-db50-41ba-b994-8a82b3f1b53c route="/api/v1/walls/:id"
+time="2025-04-02T16:43:21+08:00" level=info msg="Wall retrieved successfully" request_id=eb8b76e8-db50-41ba-b994-8a82b3f1b53c route="/api/v1/walls/:id"
+time="2025-04-02T16:43:28+08:00" level=info msg="Received get wall request" request_id=cba3e97f-5893-4d05-9a18-adcffb38da5f route="/api/v1/walls/:id"
+time="2025-04-02T16:43:28+08:00" level=info msg="Wall retrieved successfully" request_id=cba3e97f-5893-4d05-9a18-adcffb38da5f route="/api/v1/walls/:id"
+time="2025-04-02T16:45:35+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T16:45:35+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T16:45:35+08:00" level=info msg="Database connection closed."
+time="2025-04-02T16:45:35+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T16:45:35+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T16:45:40+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T16:45:40+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T16:45:40+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T16:49:02+08:00" level=info msg="Received create post request" request_id=2d3168c0-58d1-4996-91e7-9356ff2c36c2 route=/api/v1/posts
+time="2025-04-02T16:51:44+08:00" level=info msg="Received get wall request" request_id=4f97ac41-e5e2-42a9-b3f2-439670490d24 route="/api/v1/walls/:id"
+time="2025-04-02T16:51:44+08:00" level=info msg="Wall retrieved successfully" request_id=4f97ac41-e5e2-42a9-b3f2-439670490d24 route="/api/v1/walls/:id"
+time="2025-04-02T16:51:51+08:00" level=info msg="Received create post request" request_id=721700dd-3970-4ed8-b124-ad2977a30d42 route=/api/v1/posts
+time="2025-04-02T16:53:11+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T16:53:11+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T16:53:11+08:00" level=info msg="Database connection closed."
+time="2025-04-02T16:53:11+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T16:53:11+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T16:53:17+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T16:53:17+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T16:53:17+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T16:53:36+08:00" level=info msg="Received create post request" request_id=87643288-9196-4cea-8efd-9bba88485b86 route=/api/v1/posts
+time="2025-04-02T16:54:50+08:00" level=info msg="Received get wall request" request_id=2b4c2d34-3ad9-4a79-8fd2-41c81ec50240 route="/api/v1/walls/:id"
+time="2025-04-02T16:54:50+08:00" level=info msg="Wall retrieved successfully" request_id=2b4c2d34-3ad9-4a79-8fd2-41c81ec50240 route="/api/v1/walls/:id"
+time="2025-04-02T16:55:12+08:00" level=info msg="Received get wall request" request_id=3c9a23d7-56fd-4f7f-adef-0c9fa42c7d9a route="/api/v1/walls/:id"
+time="2025-04-02T16:55:12+08:00" level=info msg="Wall retrieved successfully" request_id=3c9a23d7-56fd-4f7f-adef-0c9fa42c7d9a route="/api/v1/walls/:id"
+time="2025-04-02T16:55:27+08:00" level=info msg="Received get wall request" request_id=6b9e3556-fcbc-42e6-8e65-93adffa246fa route="/api/v1/walls/:id"
+time="2025-04-02T16:55:27+08:00" level=info msg="Wall retrieved successfully" request_id=6b9e3556-fcbc-42e6-8e65-93adffa246fa route="/api/v1/walls/:id"
+time="2025-04-02T16:55:53+08:00" level=info msg="Received get wall request" request_id=dfbe36b4-8ee7-4a17-9d4b-0191855f90b7 route="/api/v1/walls/:id"
+time="2025-04-02T16:55:53+08:00" level=info msg="Wall retrieved successfully" request_id=dfbe36b4-8ee7-4a17-9d4b-0191855f90b7 route="/api/v1/walls/:id"
+time="2025-04-02T16:57:03+08:00" level=info msg="Received create post request" request_id=cc5dd1b3-8c41-48ca-b11d-268abe5245e4 route=/api/v1/posts
+time="2025-04-02T16:57:03+08:00" level=info msg="Post created successfully" request_id=cc5dd1b3-8c41-48ca-b11d-268abe5245e4 route=/api/v1/posts
+time="2025-04-02T16:58:42+08:00" level=info msg="Received get wall request" request_id=f18d3f29-cb44-425e-a017-c9bef49a1362 route="/api/v1/walls/:id"
+time="2025-04-02T16:58:42+08:00" level=info msg="Wall retrieved successfully" request_id=f18d3f29-cb44-425e-a017-c9bef49a1362 route="/api/v1/walls/:id"
+time="2025-04-02T16:58:48+08:00" level=info msg="Received get wall request" request_id=865da17d-58be-46e6-a3c1-e07f6c59d008 route="/api/v1/walls/:id"
+time="2025-04-02T16:58:48+08:00" level=info msg="Wall retrieved successfully" request_id=865da17d-58be-46e6-a3c1-e07f6c59d008 route="/api/v1/walls/:id"
+time="2025-04-02T16:59:16+08:00" level=info msg="Received get own wall request" request_id=0a9cf8b9-6e2d-40b5-a735-5c3cf2b64431 route=/api/v2/walls
+time="2025-04-02T16:59:16+08:00" level=info msg="Walls listed successfully" request_id=0a9cf8b9-6e2d-40b5-a735-5c3cf2b64431 route=/api/v2/walls
+time="2025-04-02T16:59:16+08:00" level=info msg="Received get own wall request" request_id=64cd1126-76f7-46c2-8ed8-231aa5a1d10f route=/api/v2/walls
+time="2025-04-02T16:59:16+08:00" level=info msg="Walls listed successfully" request_id=64cd1126-76f7-46c2-8ed8-231aa5a1d10f route=/api/v2/walls
+time="2025-04-02T16:59:20+08:00" level=info msg="Received get wall request" request_id=3aa5427c-882c-4199-834b-db3b57d9e119 route="/api/v1/walls/:id"
+time="2025-04-02T16:59:20+08:00" level=info msg="Wall retrieved successfully" request_id=3aa5427c-882c-4199-834b-db3b57d9e119 route="/api/v1/walls/:id"
+time="2025-04-02T16:59:20+08:00" level=info msg="Received get wall request" request_id=2816f0aa-31c4-4cb3-b479-cbe702ca9f2f route="/api/v1/walls/:id"
+time="2025-04-02T16:59:20+08:00" level=info msg="Wall retrieved successfully" request_id=2816f0aa-31c4-4cb3-b479-cbe702ca9f2f route="/api/v1/walls/:id"
+time="2025-04-02T17:02:00+08:00" level=info msg="Received create post request" request_id=e1712c53-6abb-4d3d-953f-7aed9772da2b route=/api/v1/posts
+time="2025-04-02T17:02:00+08:00" level=info msg="Post created successfully" request_id=e1712c53-6abb-4d3d-953f-7aed9772da2b route=/api/v1/posts
+time="2025-04-02T18:15:35+08:00" level=info msg="Received shutdown signal, shutting down gracefully..."
+time="2025-04-02T18:15:35+08:00" level=info msg="Attempting graceful shutdown..."
+time="2025-04-02T18:15:35+08:00" level=info msg="Database connection closed."
+time="2025-04-02T18:15:35+08:00" level=info msg="Server shut down successfully."
+time="2025-04-02T18:15:35+08:00" level=info msg="Server shut down successfully"
+time="2025-04-02T18:15:46+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T18:16:01+08:00" level=info msg="Logger initialized successfully"
+time="2025-04-02T18:16:01+08:00" level=info msg="Starting server in devlocal environment on 0.0.0.0:8080"
+time="2025-04-02T18:16:01+08:00" level=info msg="Server listening on 0.0.0.0:8080"
+time="2025-04-02T18:17:36+08:00" level=info msg="Received create post request" request_id=48427fdd-bd3a-4719-9412-e94b163cc8b4 route=/api/v1/posts
+time="2025-04-02T18:17:36+08:00" level=info msg="Post created successfully" request_id=48427fdd-bd3a-4719-9412-e94b163cc8b4 route=/api/v1/posts
+time="2025-04-02T18:18:37+08:00" level=info msg="Received get wall request" request_id=66fd4c2d-619e-48ab-8ab7-dc99f09cea53 route="/api/v1/walls/:id"
+time="2025-04-02T18:18:37+08:00" level=info msg="Wall retrieved successfully" request_id=66fd4c2d-619e-48ab-8ab7-dc99f09cea53 route="/api/v1/walls/:id"
+time="2025-04-02T18:21:48+08:00" level=info msg="Received get wall request" request_id=9bc9129b-decc-42c7-8caa-4c0ec9e41ba5 route="/api/v1/walls/:id"
+time="2025-04-02T18:21:48+08:00" level=info msg="Wall retrieved successfully" request_id=9bc9129b-decc-42c7-8caa-4c0ec9e41ba5 route="/api/v1/walls/:id"
+time="2025-04-02T18:21:58+08:00" level=info msg="Received get own wall request" request_id=58cc9b81-6fd6-4930-b245-5caebee6f149 route=/api/v2/walls
+time="2025-04-02T18:21:58+08:00" level=info msg="Walls listed successfully" request_id=58cc9b81-6fd6-4930-b245-5caebee6f149 route=/api/v2/walls
+time="2025-04-02T18:21:58+08:00" level=info msg="Received get own wall request" request_id=5fd79183-b65a-4f96-bda8-d73724a83807 route=/api/v2/walls
+time="2025-04-02T18:21:58+08:00" level=info msg="Walls listed successfully" request_id=5fd79183-b65a-4f96-bda8-d73724a83807 route=/api/v2/walls
+time="2025-04-02T18:22:08+08:00" level=info msg="Received search users request" request_id=08761cbe-e8d7-4b59-aa5c-f2bc7d3a6c2e route=/api/v1/users/search
+time="2025-04-02T18:22:08+08:00" level=info msg="User search returned results successfully" request_id=08761cbe-e8d7-4b59-aa5c-f2bc7d3a6c2e route=/api/v1/users/search
+time="2025-04-02T18:22:10+08:00" level=info msg="Received get user request" request_id=7274d2e1-cdbd-4251-bf96-b92f3e59acdb route="/api/v1/users/:id"
+time="2025-04-02T18:22:10+08:00" level=info msg="User retrieved successfully" request_id=7274d2e1-cdbd-4251-bf96-b92f3e59acdb route="/api/v1/users/:id"
+time="2025-04-02T18:22:10+08:00" level=info msg="Received get user request" request_id=0b54bef4-8363-4904-bbbc-637eb13e6d6e route="/api/v1/users/:id"
+time="2025-04-02T18:22:10+08:00" level=info msg="User retrieved successfully" request_id=0b54bef4-8363-4904-bbbc-637eb13e6d6e route="/api/v1/users/:id"
+time="2025-04-02T18:22:10+08:00" level=info msg="Received list walls by user request" request_id=c76c08aa-7b3c-4d62-adc6-b97693cf1af1 route="/api/v1/users/:id/walls"
+time="2025-04-02T18:22:10+08:00" level=info msg="Walls by user listed successfully" request_id=c76c08aa-7b3c-4d62-adc6-b97693cf1af1 route="/api/v1/users/:id/walls"
+time="2025-04-02T18:22:10+08:00" level=info msg="Received list walls by user request" request_id=ef5c1be9-f7c2-41ca-83ab-d9411e8ceb73 route="/api/v1/users/:id/walls"
+time="2025-04-02T18:22:10+08:00" level=info msg="Walls by user listed successfully" request_id=ef5c1be9-f7c2-41ca-83ab-d9411e8ceb73 route="/api/v1/users/:id/walls"
+time="2025-04-02T18:22:13+08:00" level=info msg="Received get own wall request" request_id=762dc7db-74dc-4679-8133-f739f863e50c route=/api/v2/walls
+time="2025-04-02T18:22:13+08:00" level=info msg="Walls listed successfully" request_id=762dc7db-74dc-4679-8133-f739f863e50c route=/api/v2/walls
+time="2025-04-02T18:22:13+08:00" level=info msg="Received get own wall request" request_id=333b157c-0535-436d-b8bf-d4b99584198a route=/api/v2/walls
+time="2025-04-02T18:22:13+08:00" level=info msg="Walls listed successfully" request_id=333b157c-0535-436d-b8bf-d4b99584198a route=/api/v2/walls
+time="2025-04-02T18:23:16+08:00" level=info msg="Received get wall request" request_id=db5af6e8-836e-43f1-9ebd-bc7975a22c9f route="/api/v1/walls/:id"
+time="2025-04-02T18:23:16+08:00" level=info msg="Wall retrieved successfully" request_id=db5af6e8-836e-43f1-9ebd-bc7975a22c9f route="/api/v1/walls/:id"
+time="2025-04-02T18:23:16+08:00" level=info msg="Received get wall request" request_id=3e153af3-3868-4a10-8aaf-1e9bca5c9fdd route="/api/v1/walls/:id"
+time="2025-04-02T18:23:16+08:00" level=info msg="Wall retrieved successfully" request_id=3e153af3-3868-4a10-8aaf-1e9bca5c9fdd route="/api/v1/walls/:id"
+time="2025-04-02T18:23:19+08:00" level=info msg="Received get wall request" request_id=914f9b87-023d-41bd-87e7-d79419990a8f route="/api/v1/walls/:id"
+time="2025-04-02T18:23:19+08:00" level=info msg="Wall retrieved successfully" request_id=914f9b87-023d-41bd-87e7-d79419990a8f route="/api/v1/walls/:id"
+time="2025-04-02T18:25:04+08:00" level=info msg="Received get own wall request" request_id=81a39197-a1de-4452-9040-556cc6edc77d route=/api/v2/walls
+time="2025-04-02T18:25:04+08:00" level=info msg="Walls listed successfully" request_id=81a39197-a1de-4452-9040-556cc6edc77d route=/api/v2/walls
+time="2025-04-02T18:25:04+08:00" level=info msg="Received get own wall request" request_id=9f2548cd-71c6-4e4d-8ec1-d7af94496225 route=/api/v2/walls
+time="2025-04-02T18:25:04+08:00" level=info msg="Walls listed successfully" request_id=9f2548cd-71c6-4e4d-8ec1-d7af94496225 route=/api/v2/walls
+time="2025-04-02T18:25:10+08:00" level=info msg="Received search users request" request_id=f12c2834-a969-4a0b-8de9-4e7b99082e78 route=/api/v1/users/search
+time="2025-04-02T18:25:10+08:00" level=info msg="User search returned results successfully" request_id=f12c2834-a969-4a0b-8de9-4e7b99082e78 route=/api/v1/users/search
+time="2025-04-02T18:25:11+08:00" level=info msg="Received get user request" request_id=8f159e28-293f-4f70-9e4f-809c23c99ea7 route="/api/v1/users/:id"
+time="2025-04-02T18:25:11+08:00" level=info msg="User retrieved successfully" request_id=8f159e28-293f-4f70-9e4f-809c23c99ea7 route="/api/v1/users/:id"
+time="2025-04-02T18:25:11+08:00" level=info msg="Received get user request" request_id=0bd256a2-6885-47cf-ba3d-36a138f127fe route="/api/v1/users/:id"
+time="2025-04-02T18:25:11+08:00" level=info msg="User retrieved successfully" request_id=0bd256a2-6885-47cf-ba3d-36a138f127fe route="/api/v1/users/:id"
+time="2025-04-02T18:25:11+08:00" level=info msg="Received list walls by user request" request_id=af7bbd94-801f-4a8b-b996-96af796f08cc route="/api/v1/users/:id/walls"
+time="2025-04-02T18:25:11+08:00" level=info msg="Walls by user listed successfully" request_id=af7bbd94-801f-4a8b-b996-96af796f08cc route="/api/v1/users/:id/walls"
+time="2025-04-02T18:25:11+08:00" level=info msg="Received list walls by user request" request_id=f49c26a2-10d5-40d5-9fb9-93162468d648 route="/api/v1/users/:id/walls"
+time="2025-04-02T18:25:11+08:00" level=info msg="Walls by user listed successfully" request_id=f49c26a2-10d5-40d5-9fb9-93162468d648 route="/api/v1/users/:id/walls"
+time="2025-04-02T18:25:13+08:00" level=info msg="Received get wall request" request_id=928638cf-8f4d-4c34-8f12-d6ad2a998d2e route="/api/v1/walls/:id"
+time="2025-04-02T18:25:13+08:00" level=info msg="Wall retrieved successfully" request_id=928638cf-8f4d-4c34-8f12-d6ad2a998d2e route="/api/v1/walls/:id"
+time="2025-04-02T18:25:13+08:00" level=info msg="Received get wall request" request_id=1a5967aa-c17a-4a2f-9b8c-adbc5ab8b9fd route="/api/v1/walls/:id"
+time="2025-04-02T18:25:13+08:00" level=info msg="Wall retrieved successfully" request_id=1a5967aa-c17a-4a2f-9b8c-adbc5ab8b9fd route="/api/v1/walls/:id"
+time="2025-04-02T18:25:29+08:00" level=info msg="Received search users request" request_id=21eb6694-0d16-4852-ae55-546fc7060715 route=/api/v1/users/search
+time="2025-04-02T18:25:29+08:00" level=info msg="User search returned results successfully" request_id=21eb6694-0d16-4852-ae55-546fc7060715 route=/api/v1/users/search
+time="2025-04-02T18:28:34+08:00" level=info msg="Received get own wall request" request_id=91731477-0cb2-41f1-a795-d458fabec982 route=/api/v2/walls
+time="2025-04-02T18:28:34+08:00" level=info msg="Walls listed successfully" request_id=91731477-0cb2-41f1-a795-d458fabec982 route=/api/v2/walls
+time="2025-04-02T18:28:34+08:00" level=info msg="Received get own wall request" request_id=74a426f8-a06e-4743-a4a6-e6bc52fa76b5 route=/api/v2/walls
+time="2025-04-02T18:28:34+08:00" level=info msg="Walls listed successfully" request_id=74a426f8-a06e-4743-a4a6-e6bc52fa76b5 route=/api/v2/walls

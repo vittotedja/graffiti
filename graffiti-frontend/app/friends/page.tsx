@@ -1,16 +1,16 @@
 "use client";
 import Link from "next/link";
-import {ChevronLeft, Search, User, Clock, UserRoundPlus} from "lucide-react";
+import {ChevronLeft, User, Clock, UserRoundPlus} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {Input} from "@/components/ui/input";
 import {MobileNav} from "@/components/mobile-nav";
 import {useUser} from "@/hooks/useUser";
 import PendingFriendsList from "./pending-friendlist";
 import RequestedFriendsList from "./sent-friendlist";
 import FriendsList from "./friend-list";
+import SearchFriends from "./search-friends";
 
 export default function FriendsPage() {
 	const {user, loading} = useUser();
@@ -32,16 +32,8 @@ export default function FriendsPage() {
 						Friends
 					</h1>
 				</header>
-
 				{/* Search */}
-				<div className="relative mb-6">
-					<Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-					<Input
-						placeholder="Search or Add new friends..."
-						className="pl-9 bg-black/5 border-2 border-primary/20"
-					/>
-				</div>
-
+				<SearchFriends />
 				{/* Friends List */}
 				<Card className="border-2 border-primary/20 bg-black/5 backdrop-blur-sm">
 					<Tabs defaultValue="all" className="w-full">

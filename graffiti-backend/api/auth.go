@@ -124,13 +124,16 @@ func (s *Server) Me(ctx *gin.Context) {
 	}
 
 	resp := getUserResponse{
-		ID:           user.ID.String(),
-		Username:     user.Username,
-		Fullname:     user.Fullname.String,
-		Email:        user.Email,
-		HasOnboarded: user.HasOnboarded.Bool,
-		CreatedAt:    user.CreatedAt.Time.Format(time.RFC3339),
-		UpdatedAt:    user.UpdatedAt.Time.Format(time.RFC3339),
+		ID:              user.ID.String(),
+		Username:        user.Username,
+		Fullname:        user.Fullname.String,
+		Email:           user.Email,
+		HasOnboarded:    user.HasOnboarded.Bool,
+		CreatedAt:       user.CreatedAt.Time.Format(time.RFC3339),
+		UpdatedAt:       user.UpdatedAt.Time.Format(time.RFC3339),
+		Bio:             user.Bio.String,
+		ProfilePicture:  user.ProfilePicture.String,
+		BackgroundImage: user.BackgroundImage.String,
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{

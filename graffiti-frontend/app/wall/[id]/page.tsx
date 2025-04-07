@@ -10,6 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {useUser} from "@/hooks/useUser";
 import {PostGrid} from "@/components/post-grid";
 import {EnhancedPostModal} from "@/components/enhanced-post-modal";
 import {useParams} from "next/navigation";
@@ -17,28 +18,26 @@ import {Switch} from "@/components/ui/switch";
 import {fetchWithAuth} from "@/lib/auth";
 import {Wall} from "@/types/wall";
 import {Post} from "@/types/post";
+import {toast} from "sonner";
 
 type SortOption = "latest" | "oldest" | "popular";
-type FilterOption = "all" | "photos" | "embed";
+type FilterOption = "all" | "media" | "embed_link";
 
 export default function WallPage() {
 	const params = useParams();
+	const {user} = useUser();
 	const [id, setId] = useState<string | null>(null);
 	const [wallData, setWallData] = useState<Wall>();
 
 	const fetchWallData = async (id: string) => {
 		try {
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v1/walls/" + id,
-				{
-					method: "GET",
-				}
-			);
+			const response = await fetchWithAuth("/api/v1/walls/" + id, {
+				method: "GET",
+			});
 			if (!response.ok) {
 				throw new Error("Failed to fetch wall data");
 			}
 			const data = await response.json();
-			// console.log(data);
 			setWallData(data);
 		} catch (error) {
 			console.error("Error fetching wall data:", error);
@@ -47,19 +46,37 @@ export default function WallPage() {
 
 	const fetchPostData = async (id: string) => {
 		try {
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v2/walls/" + id + "/posts",
-				{
-					method: "GET",
-				}
-			);
+			const response = await fetchWithAuth("/api/v2/walls/" + id + "/posts", {
+				method: "GET",
+			});
 			if (!response.ok) {
 				throw new Error("Failed to fetch post data");
 			}
 			const data = await response.json();
+			console.log(data);
+			// Check if the response is an array of posts
 			setPosts(data);
 		} catch (error) {
 			console.error("Error fetching wall data:", error);
+		}
+	};
+
+	const changePrivacy = async () => {
+		if (!id) return;
+
+		const endpoint = wallData?.is_public
+			? "/api/v1/walls/" + id + "/privatize"
+			: "/api/v1/walls/" + id + "/publicize";
+		try {
+			const response = await fetchWithAuth(endpoint, {
+				method: "PUT",
+			});
+			if (!response.ok) {
+				throw new Error("Failed to update wall privacy");
+			}
+			toast.success("Wall privacy updated successfully!");
+		} catch (error) {
+			console.error("Error updating wall privacy:", error);
 		}
 	};
 
@@ -101,13 +118,17 @@ export default function WallPage() {
 	// Filter posts based on selected option
 	const filteredPosts = sortedPosts.filter((post) => {
 		switch (filterBy) {
-			case "photos":
-				return post.media_url && !post.media_url.includes("video");
+			case "media":
+				return post.post_type === "media";
+			case "embed_link":
+				return post.post_type === "embed_link";
 			case "all":
 			default:
 				return true;
 		}
 	});
+
+	const isWallOwner = user?.id === wallData?.user_id;
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -154,44 +175,46 @@ export default function WallPage() {
 								All Posts
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => setFilterBy("photos")}>
-								Photos Only
+							<DropdownMenuItem onClick={() => setFilterBy("media")}>
+								Media Only
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setFilterBy("embed")}>
+							<DropdownMenuItem onClick={() => setFilterBy("embed_link")}>
 								Embed Link Only
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-					<div className="flex items-center gap-2">
-						<Switch
-							className="cursor-pointer"
-							checked={!wallData?.is_public}
-							// TODO: Fix this to toggle the wall privacy
-							onCheckedChange={() =>
-								setWallData((prev) => {
-									if (prev) {
-										return {...prev, is_public: !prev.is_public};
-									}
-									return prev;
-								})
-							}
-						/>
-						{wallData?.is_public ? (
-							<div className="flex gap-2 items-center">
-								<Globe className="h-4 w-4 text-primary" />
-								Public
-							</div>
-						) : (
-							<div className="flex gap-2 items-center">
-								<Lock className="h-4 w-4 text-primary" />
-								Private
-							</div>
-						)}
-					</div>
+					{isWallOwner && (
+						<div className="flex items-center gap-2">
+							<Switch
+								className="cursor-pointer"
+								checked={!wallData?.is_public}
+								onCheckedChange={() => {
+									changePrivacy();
+									setWallData((prev) => {
+										if (prev) {
+											return {...prev, is_public: !prev.is_public};
+										}
+										return prev;
+									});
+								}}
+							/>
+							{wallData?.is_public ? (
+								<div className="flex gap-2 items-center">
+									<Globe className="h-4 w-4 text-primary" />
+									Public
+								</div>
+							) : (
+								<div className="flex gap-2 items-center">
+									<Lock className="h-4 w-4 text-primary" />
+									Private
+								</div>
+							)}
+						</div>
+					)}
 				</div>
 
 				{/* Posts Grid */}
-				<PostGrid posts={filteredPosts} />
+				<PostGrid posts={filteredPosts} isWallOwner={isWallOwner} />
 
 				{/* Floating Add Post Button */}
 				<Button

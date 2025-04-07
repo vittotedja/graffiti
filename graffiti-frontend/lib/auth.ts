@@ -1,5 +1,7 @@
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
-	const res = await fetch(url, {
+	const res = await fetch(apiUrl + url, {
 		...options,
 		credentials: "include", // include cookies (JWT)
 	});

@@ -12,9 +12,10 @@ INSERT INTO walls(
     user_id,
     title,
     description,
-    is_public
+    is_public,
+    background_image
 ) VALUES (
-    $1, $2, $3, $4
+    $1, $2, $3, $4, $5
 ) RETURNING *;
 
 -- name: GetWall :one
@@ -33,8 +34,10 @@ ORDER BY id;
 -- name: UpdateWall :one
 UPDATE walls
 SET 
-    description = COALESCE($2, description),
-    background_image = COALESCE($3, background_image)
+    title = COALESCE($2, title),
+    description = COALESCE($3, description),
+    background_image = COALESCE($4, background_image),
+    is_public = COALESCE($5, is_public)
 WHERE id = $1
 RETURNING *;
 
@@ -64,5 +67,11 @@ RETURNING *;
 -- name: PrivatizeWall :one
 UPDATE walls
     set is_public = false
+WHERE id = $1
+RETURNING *;
+
+-- name: PinUnpinWall :one
+UPDATE walls
+    set is_pinned = not is_pinned
 WHERE id = $1
 RETURNING *;

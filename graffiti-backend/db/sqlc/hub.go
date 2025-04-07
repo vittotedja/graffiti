@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgconn"
 
@@ -87,6 +88,72 @@ func (hub *Hub) CreateFriendRequestTx(ctx context.Context, fromUser, toUser pgty
 	})
 
 	return friendship, err
+}
+
+func (hub *Hub) CreateLikeTx(ctx context.Context, postID, userID pgtype.UUID) error {
+	err := hub.execTx(ctx, func(q *Queries) error {
+		// Create the like
+		arg := CreateLikeParams{
+			PostID: postID,
+			UserID: userID,
+		}
+		_, err := q.CreateLike(ctx, arg)
+		if err != nil {
+			return err
+		}
+
+		// Increment the likes count for the post
+		_, err = q.AddLikesCount(ctx, postID)
+
+		return err
+	})
+
+	return err
+}
+
+func (hub *Hub) CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgtype.UUID) (liked bool, err error) {
+	err = hub.execTx(ctx, func(q *Queries) error {
+		// Check if like already exists
+		_, err := q.GetLike(ctx, GetLikeParams{
+			PostID: postID,
+			UserID: userID,
+		})
+
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				// LIKE does NOT exist → need to CREATE like
+				if _, err := q.CreateLike(ctx, CreateLikeParams{
+					PostID: postID,
+					UserID: userID,
+				}); err != nil {
+					return err
+				}
+				if _, err := q.AddLikesCount(ctx, postID); err != nil {
+					return err
+				}
+				liked = true
+				return nil
+			}
+			// Other DB error
+			return err
+		}
+
+		// LIKE exists → need to DELETE like
+		if err := q.DeleteLike(ctx, DeleteLikeParams{
+			PostID: postID,
+			UserID: userID,
+		}); err != nil {
+			return err
+		}
+		if _, err := q.RemoveLikesCount(ctx, postID); err != nil {
+			return err
+		}
+		liked = false
+
+		return nil
+	})
+
+	return liked, err
 }
 
 func (hub *Hub) AcceptFriendRequestTx(ctx context.Context, friendshipID pgtype.UUID) error {

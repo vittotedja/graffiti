@@ -103,14 +103,20 @@ func (s *Server) Shutdown() error {
 
 func (s *Server) registerRoutes() {
 
+	frontendURL := s.config.FrontendURL
 	// Apply CORS middleware
 	s.router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // frontend URL
+		AllowOrigins:     []string{frontendURL}, // frontend URL
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
+	// ALB Health check endpoint
+	s.router.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Healthy")
+	})
 
 	s.router.POST("/api/v1/auth/register", s.Register)
 	s.router.POST("/api/v1/auth/login", s.Login)
@@ -124,11 +130,33 @@ func (s *Server) registerRoutes() {
 		// Protected Walls Endpoint
 		protected.GET("/v2/walls", s.getOwnWall)
 		protected.GET("/v1/users/:id/walls", s.listWallsByUser)
-		protected.POST("/v2/walls", s.createNewWall)       //no test yet
-		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
-	}
+		protected.POST("/v2/walls", s.createNewWall)              //no test yet
+		protected.PUT("/v1/walls/:id", s.updateWall)              // working
+		protected.PUT("/v1/walls/:id/publicize", s.publicizeWall) // working
+		protected.PUT("/v1/walls/:id/privatize", s.privatizeWall) // working
+		protected.PUT("/v1/walls/:id/pin", s.pinWall)             // working
 
-	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
+		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
+		protected.DELETE("/v1/friendships", s.deleteFriendship)
+		// search
+		protected.POST("/v1/users/search", s.searchUsers) //no test
+		protected.POST("/v2/users", s.updateUserNew)      // no test
+
+		//uploads
+		protected.POST("/v1/presign", s.presignHandler)
+
+		//friends
+		protected.POST("/v1/friend-requests", s.createFriendRequest) // working
+		protected.POST("/v1/friendships", s.listFriendshipByUserPairs)
+
+		//posts
+		protected.GET("/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
+		protected.DELETE("/v1/posts/:id", s.deletePost)                           // working
+
+		//likes
+		protected.POST("/v1/likes", s.updateLike)
+		protected.GET("/v1/likes/:post_id", s.getLike)
+	}
 
 	s.router.GET("/api/v2/users/:id/friend-requests/pending", s.getReceivedPendingFriendRequests) // user_id; working
 	s.router.GET("/api/v2/users/:id/friend-requests/sent", s.getSentPendingFriendRequests)        // user_id; working
@@ -144,11 +172,9 @@ func (s *Server) registerRoutes() {
 
 	// Set up routes for the wall API
 	s.router.POST("/api/v1/walls", s.createWall)
-	s.router.GET("/api/v1/walls/:id", s.getWall)                 // working
-	s.router.GET("/api/v1/walls", s.listWalls)                   // working
-	s.router.PUT("/api/v1/walls/:id", s.updateWall)              // working
-	s.router.PUT("/api/v1/walls/:id/publicize", s.publicizeWall) // working
-	s.router.PUT("/api/v1/walls/:id/privatize", s.privatizeWall) // working
+	s.router.GET("/api/v1/walls/:id", s.getWall) // working
+	s.router.GET("/api/v1/walls", s.listWalls)   // working
+
 	s.router.PUT("/api/v1/walls/:id/archive", s.archiveWall)
 	s.router.PUT("/api/v1/walls/:id/unarchive", s.unarchiveWall)
 	s.router.DELETE("/api/v1/walls/:id", s.deleteWall) // working
@@ -163,11 +189,9 @@ func (s *Server) registerRoutes() {
 	s.router.PUT("/api/v1/posts/:id", s.updatePost)                                  // working
 	s.router.PUT("/api/v1/posts/:id/highlight", s.highlightPost)                     // working
 	s.router.PUT("/api/v1/posts/:id/unhighlight", s.unhighlightPost)                 // working
-	s.router.DELETE("/api/v1/posts/:id", s.deletePost)                               // working
 
 	// Updated Friendship API routes
 	// Friend Requests
-	s.router.POST("/api/v1/friend-requests", s.createFriendRequest)       // working
 	s.router.PUT("/api/v1/friend-requests/accept", s.acceptFriendRequest) // working
 	s.router.POST("/api/v1/friends/mutual/count", s.getNumberOfMutualFriends)
 	s.router.POST("/api/v1/friends/discover", s.discoverFriendsByMutuals)
@@ -187,11 +211,8 @@ func (s *Server) registerRoutes() {
 	s.router.GET("/api/v1/users/:id/accepted-friends/count", s.getNumberOfFriends)                      // working
 	s.router.GET("/api/v1/users/:id/friend-requests/pending/count", s.getNumberOfPendingFriendRequests) // working
 	// router for listFriendshipByUserPairs
-	// s.router.GET("/api/v1/friendships", s.listFriendshipByUserPairs)
 
 	// Set up routes for the like API
-	s.router.POST("/api/v1/likes", s.createLike)
-	s.router.GET("/api/v1/likes/:id", s.getLike)
 	s.router.GET("/api/v1/likes", s.listLikes)
 	s.router.GET("/api/v1/posts/:id/likes", s.listLikesByPost)
 	s.router.GET("/api/v1/users/:id/likes", s.listLikesByUser)

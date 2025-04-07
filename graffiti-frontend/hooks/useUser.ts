@@ -2,15 +2,21 @@
 import {fetchWithAuth} from "@/lib/auth";
 import {User} from "@/types/user";
 import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 
 export function useUser(redirectIfNull = false) {
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
 	const router = useRouter();
+	const pathname = usePathname();
 
 	useEffect(() => {
-		fetchWithAuth("http://localhost:8080/api/v1/auth/me", {
+		if (pathname === "/login") {
+			setLoading(false);
+			return;
+		}
+
+		fetchWithAuth("/api/v1/auth/me", {
 			method: "POST",
 		})
 			.then((res) => {
@@ -19,15 +25,16 @@ export function useUser(redirectIfNull = false) {
 			})
 			.then((data) => {
 				setUser(data.user);
+				console.log(data.user);
 			})
 			.catch(() => {
 				setUser(null);
-				if (redirectIfNull) {
+				if (redirectIfNull && pathname !== "/login") {
 					router.push("/login");
 				}
 			})
 			.finally(() => setLoading(false));
-	}, [redirectIfNull, router]);
+	}, [redirectIfNull, router, pathname]);
 
 	return {user, loading};
 }

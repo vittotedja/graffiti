@@ -13,12 +13,9 @@ export default function PendingFriendsList() {
 
 	const fetchPendingFriends = async () => {
 		try {
-			const response = await fetchWithAuth(
-				`http://localhost:8080/api/v1/friends?type=requested`,
-				{
-					method: "GET",
-				}
-			);
+			const response = await fetchWithAuth(`/api/v1/friends?type=requested`, {
+				method: "GET",
+			});
 			if (!response.ok) {
 				throw new Error("Failed to fetch pending friends");
 			}
@@ -36,15 +33,12 @@ export default function PendingFriendsList() {
 	const acceptFriends = async (friendship_id: string) => {
 		if (!friendship_id) toast.error("no friends selected");
 		try {
-			const response = await fetchWithAuth(
-				`http://localhost:8080/api/v1/friend-requests/accept`,
-				{
-					method: "PUT",
-					body: JSON.stringify({
-						friendship_id: friendship_id,
-					}),
-				}
-			);
+			const response = await fetchWithAuth(`/api/v1/friend-requests/accept`, {
+				method: "PUT",
+				body: JSON.stringify({
+					friendship_id: friendship_id,
+				}),
+			});
 			if (!response.ok) {
 				throw new Error("Failed to accept friends");
 			}
