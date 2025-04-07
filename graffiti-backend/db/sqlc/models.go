@@ -151,4 +151,5 @@ type Wall struct {
 	PopularityScore pgtype.Float8
 	CreatedAt       pgtype.Timestamp
 	UpdatedAt       pgtype.Timestamp
+	IsPinned        pgtype.Bool
 }

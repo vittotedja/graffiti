@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -10,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/cloudfront"
+	"github.com/aws/aws-sdk-go-v2/service/cloudfront/types"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -24,6 +27,7 @@ type PresignRequest struct {
 }
 
 func (s *Server) presignHandler(ctx *gin.Context) {
+
 	var req PresignRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
@@ -116,6 +120,27 @@ func (s *Server) generatePresignedURL(key, contentType string) (string, error) {
 		return "", fmt.Errorf("failed to presign: %w", err)
 	}
 
+	go func() {
+		cfClient := cloudfront.NewFromConfig(cfg)
+		callerReference := fmt.Sprintf("invalidate-%d", time.Now().UnixNano())
+
+		_, err := cfClient.CreateInvalidation(context.TODO(), &cloudfront.CreateInvalidationInput{
+			DistributionId: aws.String(s.config.CloudfrontDistributionID),
+			InvalidationBatch: &types.InvalidationBatch{
+				CallerReference: aws.String(callerReference),
+				Paths: &types.Paths{
+					Quantity: aws.Int32(1),
+					Items:    []string{"/" + key},
+				},
+			},
+		})
+		if err != nil {
+			fmt.Println("Failed to invalidate CloudFront:", err)
+		}
+
+		log.Println("Invalidation request sent to CloudFront")
+	}()
+
 	return presignResult.URL, nil
 }
 
@@ -139,4 +164,45 @@ func (s *Server) getAWSRegion() string {
 		return "us-east-1" // Default region
 	}
 	return awsRegion
+}
+
+func (s *Server) DeleteFile(ctx context.Context, key string) error {
+	cfg, err := s.getAWSConfig()
+	if err != nil {
+		return fmt.Errorf("failed to get AWS config: %w", err)
+	}
+
+	s3Client := s3.NewFromConfig(cfg)
+
+	_, err = s3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(s.config.AWSS3Bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete object from S3: %w", err)
+	}
+
+	// Optionally, you might also want to invalidate CloudFront cache
+	go func() {
+		cfClient := cloudfront.NewFromConfig(cfg)
+		callerReference := fmt.Sprintf("invalidate-delete-%d", time.Now().UnixNano())
+
+		_, err := cfClient.CreateInvalidation(context.TODO(), &cloudfront.CreateInvalidationInput{
+			DistributionId: aws.String(s.config.CloudfrontDistributionID),
+			InvalidationBatch: &types.InvalidationBatch{
+				CallerReference: aws.String(callerReference),
+				Paths: &types.Paths{
+					Quantity: aws.Int32(1),
+					Items:    []string{"/" + key},
+				},
+			},
+		})
+		if err != nil {
+			fmt.Println("Failed to invalidate CloudFront after delete:", err)
+		} else {
+			log.Println("Invalidation request sent to CloudFront after delete")
+		}
+	}()
+
+	return nil
 }

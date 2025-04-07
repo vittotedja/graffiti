@@ -8,7 +8,7 @@ INSERT INTO likes(
 
 -- name: GetLike :one
 SELECT * FROM likes
-WHERE id = $1 LIMIT 1;
+WHERE post_id = $1 AND user_id = $2 LIMIT 1;
 
 -- name: ListLikes :many
 SELECT * FROM likes

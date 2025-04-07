@@ -94,7 +94,7 @@ export default function HomePage() {
 							<div className="flex gap-2 md:gap-3">
 								<Button
 									variant="outline"
-									className="bg-black/50 text-white border-white/20 hover:bg-black/70 text-xs md:text-sm h-8 md:h-9"
+									className="bg-black/50 text-white border-white/20 hover:bg-black/70 hover:text-blue-500  text-xs md:text-sm h-8 md:h-9"
 									onClick={() => setEditProfileModalOpen(true)}
 								>
 									<Pencil />

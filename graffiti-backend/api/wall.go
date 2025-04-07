@@ -38,13 +38,16 @@ type wallResponse struct {
 	IsArchived      bool      `json:"is_archived"`
 	IsDeleted       bool      `json:"is_deleted"`
 	PopularityScore float64   `json:"popularity_score"`
+	IsPinned        bool      `json:"is_pinned"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 type updateWallRequest struct {
+	Title           string  `json:"title"`
 	Description     *string `json:"description"`
 	BackgroundImage *string `json:"background_image"`
+	IsPublic        *bool   `json:"is_public"`
 }
 
 // Convert DB wall to API response
@@ -58,6 +61,7 @@ func newWallResponse(wall db.Wall) wallResponse {
 		IsPublic:        wall.IsPublic.Bool,
 		IsArchived:      wall.IsArchived.Bool,
 		IsDeleted:       wall.IsDeleted.Bool,
+		IsPinned:        wall.IsPinned.Bool,
 		PopularityScore: wall.PopularityScore.Float64,
 		CreatedAt:       wall.CreatedAt.Time,
 		UpdatedAt:       wall.UpdatedAt.Time,
@@ -116,6 +120,10 @@ func (s *Server) createNewWall(ctx *gin.Context) {
 		Description: pgtype.Text{String: req.Description, Valid: req.Description != ""},
 		Title:       req.Title,
 		IsPublic:    pgtype.Bool{Bool: req.IsPublic, Valid: true},
+		BackgroundImage: pgtype.Text{
+			String: req.BackgroundImage,
+			Valid:  req.BackgroundImage != "",
+		},
 	}
 
 	wall, err := s.hub.CreateTestWall(ctx, arg)
@@ -287,6 +295,8 @@ func (s *Server) updateWall(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received update wall request")
 
+	currentUser := ctx.MustGet("currentUser").(db.User)
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -317,10 +327,22 @@ func (s *Server) updateWall(ctx *gin.Context) {
 		return
 	}
 
+	if currentWall.UserID != currentUser.ID {
+		log.Error("Unauthorized to update wall", errors.New("user not authorized to update this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to update this wall")))
+		return
+	}
+
 	arg := db.UpdateWallParams{
 		ID:              id,
+		Title:           currentWall.Title,
 		Description:     currentWall.Description,
 		BackgroundImage: currentWall.BackgroundImage,
+		IsPublic:        currentWall.IsPublic,
+	}
+
+	if req.Title != "" {
+		arg.Title = req.Title
 	}
 
 	if req.Description != nil && *req.Description != "" {
@@ -328,6 +350,10 @@ func (s *Server) updateWall(ctx *gin.Context) {
 	}
 	if req.BackgroundImage != nil {
 		arg.BackgroundImage = pgtype.Text{String: *req.BackgroundImage, Valid: true}
+	}
+
+	if req.IsPublic != nil {
+		arg.IsPublic = pgtype.Bool{Bool: *req.IsPublic, Valid: true}
 	}
 
 	wall, err := s.hub.UpdateWall(ctx, arg)
@@ -347,6 +373,13 @@ func (s *Server) publicizeWall(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received publicize wall request")
 
+	user, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -361,6 +394,19 @@ func (s *Server) publicizeWall(ctx *gin.Context) {
 	if err := id.Scan(uri.ID); err != nil {
 		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != user.ID {
+		log.Error("Unauthorized to publicize wall", errors.New("user not authorized to publicize this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to publicize this wall")))
 		return
 	}
 
@@ -381,6 +427,13 @@ func (s *Server) privatizeWall(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received privatize wall request")
 
+	user, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -395,6 +448,19 @@ func (s *Server) privatizeWall(ctx *gin.Context) {
 	if err := id.Scan(uri.ID); err != nil {
 		log.Error("Invalid ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != user.ID {
+		log.Error("Unauthorized to publicize wall", errors.New("user not authorized to publicize this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to publicize this wall")))
 		return
 	}
 
@@ -508,4 +574,57 @@ func (s *Server) deleteWall(ctx *gin.Context) {
 
 	log.Info("Wall deleted successfully")
 	ctx.JSON(http.StatusOK, gin.H{"message": "Wall deleted successfully"})
+}
+
+func (s *Server) pinWall(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received pin wall request")
+
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
+	var uri struct {
+		ID string `uri:"id" binding:"required,uuid"`
+	}
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		log.Error("Failed to bind URI", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var id pgtype.UUID
+	if err := id.Scan(uri.ID); err != nil {
+		log.Error("Invalid ID", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != currentUser.ID {
+		log.Error("Unauthorized to update wall", errors.New("user not authorized to update this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to update this wall")))
+		return
+	}
+
+	wall, err := s.hub.PinUnpinWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to update wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Wall updated successfully")
+	ctx.JSON(http.StatusOK, newWallResponse(wall))
+
 }

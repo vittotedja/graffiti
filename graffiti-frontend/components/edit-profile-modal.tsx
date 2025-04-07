@@ -16,7 +16,7 @@ import {toast} from "sonner";
 import {cn} from "@/lib/utils";
 import {getPresignedUrl, uploadToS3} from "@/lib/s3-uploader";
 import {fetchWithAuth} from "@/lib/auth";
-// import {fetchWithAuth} from "@/lib/auth";
+import Image from "next/image";
 
 interface EditProfileModalProps {
 	isOpen: boolean;
@@ -104,23 +104,21 @@ export function EditProfileModal({
 			}
 
 			// Update DB
-			const response = await fetchWithAuth(
-				"http://localhost:8080/api/v2/users",
-				{
-					method: "POST",
-					body: JSON.stringify({
-						username,
-						fullname,
-						profile_picture: avatarUrl,
-						background_image: backgroundUrl,
-						bio,
-					}),
-				}
-			);
+			const response = await fetchWithAuth("/api/v2/users", {
+				method: "POST",
+				body: JSON.stringify({
+					username,
+					fullname,
+					profile_picture: avatarUrl,
+					background_image: backgroundUrl,
+					bio,
+				}),
+			});
 			if (!response.ok) throw new Error("Profile failed to update");
 
 			toast("Profile updated", {
-				description: "Your profile has been updated successfully.",
+				description:
+					"Your profile has been updated successfully. Changes may take a few minutes to reflect.",
 			});
 
 			onClose();
@@ -163,18 +161,20 @@ export function EditProfileModal({
 					{/* Background Image Section */}
 					<div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted">
 						{backgroundPreview ? (
-							// eslint-disable-next-line @next/next/no-img-element
-							<img
+							<Image
 								src={backgroundPreview}
 								alt="Background preview"
 								className="w-full h-full object-cover"
+								width={"1000"}
+								height={"400"}
 							/>
 						) : user.background_image ? (
-							// eslint-disable-next-line @next/next/no-img-element
-							<img
+							<Image
 								src={user.background_image}
 								alt="Background"
 								className="w-full h-full object-cover"
+								width={"1000"}
+								height={"400"}
 							/>
 						) : (
 							<div className="absolute inset-0 flex items-center justify-center bg-muted">

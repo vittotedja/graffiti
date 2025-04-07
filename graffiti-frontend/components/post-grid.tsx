@@ -3,8 +3,8 @@
 import {useState, useEffect, useMemo} from "react";
 import Image from "next/image";
 import {formatDistanceToNow} from "date-fns";
-import {Heart, MoreVertical, Pencil, Trash} from "lucide-react";
-
+import {Heart, MoreVertical, Trash} from "lucide-react";
+import {useUser} from "@/hooks/useUser";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardFooter} from "@/components/ui/card";
@@ -17,16 +17,19 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import {fetchWithAuth} from "@/lib/auth";
 
 type PostCardType = {
 	post: Post;
+	isWallOwner: boolean;
 };
 
 interface PostGridProps {
 	posts: Post[];
+	isWallOwner: boolean;
 }
 
-export function PostGrid({posts}: PostGridProps) {
+export function PostGrid({posts, isWallOwner}: PostGridProps) {
 	if (!posts || posts.length === 0) {
 		return (
 			<div className="text-center text-muted-foreground">No posts found</div>
@@ -35,21 +38,62 @@ export function PostGrid({posts}: PostGridProps) {
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{posts.map((post) => (
-				<PostCard key={post.id} post={post} />
+				<PostCard key={post.id} post={post} isWallOwner={isWallOwner} />
 			))}
 		</div>
 	);
 }
 
-function PostCard({post}: PostCardType) {
+function PostCard({post, isWallOwner}: PostCardType) {
+	const {user} = useUser();
 	const [liked, setLiked] = useState(false);
 	const [likeCount, setLikeCount] = useState(post.likes_count);
 	const [tiktokHtml, setTiktokHtml] = useState(null);
 
-	const handleLike = () => {
-		setLikeCount((prev: number) => (liked ? prev - 1 : prev + 1));
-		setLiked((prev) => !prev);
+	const handleLike = async () => {
+		try {
+			const response = await fetchWithAuth(`/api/v1/likes`, {
+				method: "POST",
+				body: JSON.stringify({
+					post_id: post.id, // <-- adjust to match your backend expected JSON field
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to toggle like");
+			}
+
+			const data = await response.json();
+
+			if (data.message == "Post liked successfully") {
+				setLiked(true);
+				setLikeCount((prev) => prev + 1);
+			} else if (data.message == "Post unliked successfully") {
+				setLiked(false);
+				setLikeCount((prev) => Math.max(0, prev - 1));
+			}
+		} catch (error) {
+			console.error("Error toggling like:", error);
+		}
 	};
+
+	useEffect(() => {
+		if (!user) return;
+		const haveLikedPost = async () => {
+			try {
+				const response = await fetchWithAuth(`/api/v1/likes/${post.id}`, {
+					method: "GET",
+				});
+				if (response.ok) {
+					const data = await response.json();
+					setLiked(data.liked);
+				}
+			} catch (error) {
+				console.error("Error checking like status:", error);
+			}
+		};
+		haveLikedPost();
+	}, [post.id, user]);
 
 	// Compute embed data once from the media URL
 	const embedData = useMemo(
@@ -137,34 +181,46 @@ function PostCard({post}: PostCardType) {
 		}
 	};
 
+	const removePost = async () => {
+		try {
+			const response = await fetchWithAuth(`/api/v1/posts/${post.id}`, {
+				method: "DELETE",
+			});
+			if (response.ok) {
+				toast.success("Post removed successfully");
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error("Error removing post");
+		}
+	};
+
+	if (!user) return;
+
 	return (
 		<div className="relative">
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild className="relative">
-					<Button
-						variant="ghost"
-						size="icon"
-						className="h-8 w-8 absolute top-2 right-2 z-10 bg-gray-700"
-					>
-						<MoreVertical className="h-4 w-4" />
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent align="end">
-					{/* <DropdownMenuItem>
-						<Link href={`/profile/${user.id}`}>View Profile</Link>
-					</DropdownMenuItem> */}
-					{/* <DropdownMenuSeparator /> */}
-					<DropdownMenuItem>
-						<Pencil />
-						Edit Post
-					</DropdownMenuItem>
-					<DropdownMenuItem className="text-red-500">
-						<Trash className="text-red-500" />
-						Remove Post
-					</DropdownMenuItem>
-					{/* <DropdownMenuItem>Block</DropdownMenuItem> */}
-				</DropdownMenuContent>
-			</DropdownMenu>
+			{(isWallOwner || user.username === post.username) && (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild className="relative">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-8 w-8 absolute top-2 right-2 z-10 bg-gray-700"
+						>
+							<MoreVertical className="h-4 w-4" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuItem
+							className="text-red-500 cursor-pointer"
+							onClick={removePost}
+						>
+							<Trash className="text-red-500" />
+							Remove Post
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			)}
 			<Card className="overflow-hidden border border-border/40 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-colors shadow-cyan-200">
 				<CardContent className="p-0">
 					{post.post_type === "embed_link" && renderIframe()}
@@ -174,6 +230,7 @@ function PostCard({post}: PostCardType) {
 								src={post.media_url || "/placeholder.svg"}
 								alt="Post image"
 								fill
+								sizes="100%"
 								className="object-cover"
 							/>
 						</div>

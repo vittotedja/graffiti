@@ -1,62 +1,66 @@
 package api
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 )
 
 // Like handlers
-type createLikeRequest struct {
+type likeRequest struct {
 	PostID string `json:"post_id" binding:"required"`
-	UserID string `json:"user_id" binding:"required"`
 }
 
-func (s *Server) createLike(ctx *gin.Context) {
+func (s *Server) updateLike(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received create like request")
 
-	var req createLikeRequest
+	var req likeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	var postID, userID pgtype.UUID
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
+	var postID pgtype.UUID
 	if err := postID.Scan(req.PostID); err != nil {
 		log.Error("Invalid post_id", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	if err := userID.Scan(req.UserID); err != nil {
-		log.Error("Invalid user_id", err)
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
 
-	arg := db.CreateLikeParams{
-		PostID: postID,
-		UserID: userID,
-	}
-
-	like, err := s.hub.CreateLike(ctx, arg)
+	liked, err := s.hub.CreateOrDeleteLikeTx(ctx, postID, currentUser.ID)
 	if err != nil {
-		log.Error("Failed to create like", err)
+		log.Error("Failed to toggle like", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	log.Info("Like created successfully")
-	ctx.JSON(http.StatusOK, like)
+	action := "unliked"
+	if liked {
+		action = "liked"
+	}
+
+	log.Info("Post %s successfully", action)
+	ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Post %s successfully", action)})
 }
 
 type getLikeRequest struct {
-	ID string `uri:"id" binding:"required"`
+	PostID string `uri:"post_id" binding:"required"`
 }
 
 func (s *Server) getLike(ctx *gin.Context) {
@@ -71,22 +75,41 @@ func (s *Server) getLike(ctx *gin.Context) {
 		return
 	}
 
-	var id pgtype.UUID
-	if err := id.Scan(req.ID); err != nil {
-		log.Error("Invalid ID", err)
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
+	var postID pgtype.UUID
+	if err := postID.Scan(req.PostID); err != nil {
+		log.Error("Invalid post_id", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	like, err := s.hub.GetLike(ctx, id)
+	arg := db.GetLikeParams{
+		PostID: postID,
+		UserID: currentUser.ID,
+	}
+
+	_, err := s.hub.GetLike(ctx, arg)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			// No like found
+			ctx.JSON(http.StatusOK, gin.H{"liked": false})
+			return
+		}
+		// Other error (DB down, etc)
 		log.Error("Failed to get like", err)
-		ctx.JSON(http.StatusNotFound, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
 	log.Info("Like retrieved successfully")
-	ctx.JSON(http.StatusOK, like)
+	ctx.JSON(http.StatusOK, gin.H{"liked": true})
 }
 
 type deleteLikeRequest struct {

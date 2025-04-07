@@ -21,12 +21,9 @@ export default function FriendsList() {
 	useEffect(() => {
 		const fetchPendingFriends = async () => {
 			try {
-				const response = await fetchWithAuth(
-					`http://localhost:8080/api/v1/friends?type=friends`,
-					{
-						method: "GET",
-					}
-				);
+				const response = await fetchWithAuth(`/api/v1/friends?type=friends`, {
+					method: "GET",
+				});
 				if (!response.ok) {
 					throw new Error("Failed to fetch pending friends");
 				}
