@@ -96,7 +96,20 @@ func (s *Server) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("token", token, 3600*72, "", "", false, true)
+	secure := false
+	if s.config.IsProduction {
+		secure = true
+	}
+
+	ctx.SetCookie(
+		"token",
+		token,
+		3600*72,
+		"/",
+		"", // current domain
+		secure,
+		true,
+	)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "login successful",
