@@ -1,8 +1,10 @@
-# This workflow will build the server image and push to ecr
+# This workflow will build the server image, push to ecr, deploy to ecs
 name: Deploy to production
 
 on:
   push:
+    branches: [ "master" ]
+  pull_request:
     branches: [ "master" ]
 
 permissions:
@@ -32,12 +34,42 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
+    - name: Load secrets and save to .env
+      run: |
+        cd graffiti-backend
+        aws secretsmanager get-secret-value --secret-id prod/graffiti_secrets --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > .env
+
     - name: Build, tag, and push docker image to Amazon ECR
+      id: build-image
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: graffiti
-        IMAGE_TAG: ${{ github.sha }}
       run: |
         cd graffiti-backend
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker build -t $REGISTRY/$REPOSITORY:latest .
+        docker push $REGISTRY/$REPOSITORY:latest
+        echo "image=$REGISTRY/$REPOSITORY:latest" >> $GITHUB_OUTPUT
+    
+    - name: Replacing placeholder value in task definition json
+      env:
+        EXECUTION_ROLE_ARN: ${{ secrets.EXECUTION_ROLE_ARN }}
+      run: |
+        cd graffiti-backend
+        sed -e "s|\${EXECUTION_ROLE_ARN}|$EXECUTION_ROLE_ARN|g" task-definition-template.json > ecs-task-definition.json
+      
+
+    - name: Render Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: graffiti-backend/ecs-task-definition.json
+        container-name: graffiti-container
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy to Amazon ECS service
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: graffiti-ecs-service
+        cluster: graffiti-ecs-cluster
+        wait-for-service-stability: true
