@@ -58,7 +58,7 @@ export default function SearchFriends() {
 			/>
 			{searchTerm && (
 				<div className="w-full rounded-sm shadow-md flex flex-col divide-y">
-					{userList.length > 0 &&
+					{userList && userList.length > 0 ? (
 						userList.map((user: User) => (
 							<div
 								key={user.id}
@@ -108,7 +108,12 @@ export default function SearchFriends() {
 									</DropdownMenuContent>
 								</DropdownMenu>
 							</div>
-						))}
+						))
+					) : (
+						<div className="w-full flex items-center justify-center p-4 text-muted-foreground">
+							No results found.
+						</div>
+					)}
 				</div>
 			)}
 		</div>

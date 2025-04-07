@@ -278,7 +278,7 @@ func (q *Queries) ListPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Po
 const listPostsByWallWithAuthorsDetails = `-- name: ListPostsByWallWithAuthorsDetails :many
 SELECT p.id, p.wall_id, p.author, p.media_url, p.post_type, p.is_highlighted, p.likes_count, p.is_deleted, p.created_at, u.username, u.profile_picture, u.fullname FROM posts p
 JOIN users u ON p.author = u.id
-WHERE p.wall_id = $1
+WHERE p.wall_id = $1 and p.is_deleted = false
 ORDER BY p.created_at DESC
 `
 

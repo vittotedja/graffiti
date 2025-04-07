@@ -127,9 +127,11 @@ func (s *Server) registerRoutes() {
 		//friends
 		protected.POST("/v1/friend-requests", s.createFriendRequest) // working
 		protected.POST("/v1/friendships", s.listFriendshipByUserPairs)
-	}
 
-	s.router.GET("/api/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
+		//posts
+		protected.GET("/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
+		protected.DELETE("/v1/posts/:id", s.deletePost)                           // working
+	}
 
 	s.router.GET("/api/v2/users/:id/friend-requests/pending", s.getReceivedPendingFriendRequests) // user_id; working
 	s.router.GET("/api/v2/users/:id/friend-requests/sent", s.getSentPendingFriendRequests)        // user_id; working
@@ -162,7 +164,6 @@ func (s *Server) registerRoutes() {
 	s.router.PUT("/api/v1/posts/:id", s.updatePost)                                  // working
 	s.router.PUT("/api/v1/posts/:id/highlight", s.highlightPost)                     // working
 	s.router.PUT("/api/v1/posts/:id/unhighlight", s.unhighlightPost)                 // working
-	s.router.DELETE("/api/v1/posts/:id", s.deletePost)                               // working
 
 	// Updated Friendship API routes
 	// Friend Requests

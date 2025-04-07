@@ -24,7 +24,7 @@ ORDER BY id DESC;
 -- name: ListPostsByWallWithAuthorsDetails :many
 SELECT p.*, u.username, u.profile_picture, u.fullname FROM posts p
 JOIN users u ON p.author = u.id
-WHERE p.wall_id = $1
+WHERE p.wall_id = $1 and p.is_deleted = false
 ORDER BY p.created_at DESC;
 
 -- name: GetHighlightedPosts :many

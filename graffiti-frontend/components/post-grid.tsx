@@ -17,6 +17,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import {fetchWithAuth} from "@/lib/auth";
 
 type PostCardType = {
 	post: Post;
@@ -140,6 +141,20 @@ function PostCard({post, isWallOwner}: PostCardType) {
 		}
 	};
 
+	const removePost = async () => {
+		try {
+			const response = await fetchWithAuth(`/api/v1/posts/${post.id}`, {
+				method: "DELETE",
+			});
+			if (response.ok) {
+				toast.success("Post removed successfully");
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error("Error removing post");
+		}
+	};
+
 	if (!user) return;
 
 	return (
@@ -156,7 +171,10 @@ function PostCard({post, isWallOwner}: PostCardType) {
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuItem className="text-red-500">
+						<DropdownMenuItem
+							className="text-red-500 cursor-pointer"
+							onClick={removePost}
+						>
 							<Trash className="text-red-500" />
 							Remove Post
 						</DropdownMenuItem>
