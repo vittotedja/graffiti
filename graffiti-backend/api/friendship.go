@@ -12,11 +12,10 @@ import (
 // Friendship Request Structs
 
 type createFriendRequestRequest struct {
-	FromUserID string `json:"from_user_id" binding:"required"`
-	ToUserID   string `json:"to_user_id" binding:"required"`
+	ToUserID string `json:"to_user_id" binding:"required"`
 }
 
-type acceptFriendRequestRequest struct {
+type FriendshipIDRequest struct {
 	FriendshipID string `json:"friendship_id" binding:"required"`
 }
 
@@ -36,6 +35,10 @@ func (s *Server) createFriendRequest(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received create friend request")
 
+	user := ctx.MustGet("currentUser").(db.User)
+
+	fromUserID := user.ID
+
 	var req createFriendRequestRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
@@ -44,12 +47,7 @@ func (s *Server) createFriendRequest(ctx *gin.Context) {
 	}
 
 	// Validate user IDs
-	var fromUserID, toUserID pgtype.UUID
-	if err := fromUserID.Scan(req.FromUserID); err != nil {
-		log.Error("Invalid from_user_id", err)
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
+	var toUserID pgtype.UUID
 	if err := toUserID.Scan(req.ToUserID); err != nil {
 		log.Error("Invalid to_user_id", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -131,7 +129,7 @@ func (s *Server) acceptFriendRequest(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received accept friend request")
 
-	var req acceptFriendRequestRequest
+	var req FriendshipIDRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -406,16 +404,21 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 		return
 	}
 
+	user := ctx.MustGet("currentUser").(db.User)
+
+	fromUserID := user.ID
+
 	// Validate user IDs
-	var fromUserID, toUserID pgtype.UUID
-	if err := fromUserID.Scan(req.FromUserID); err != nil {
-		log.Error("Invalid from_user_id", err)
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
+	var toUserID pgtype.UUID
 	if err := toUserID.Scan(req.ToUserID); err != nil {
 		log.Error("Invalid to_user_id", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	if fromUserID == toUserID {
+		log.Errorf("User pairs could not be the same user for user %s", fromUserID)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "You are not able to befriend yourself"})
 		return
 	}
 
@@ -433,4 +436,41 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 
 	log.Info("Listed friendship by user pairs successfully")
 	ctx.JSON(http.StatusOK, friendship)
+}
+
+func (s *Server) deleteFriendship(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received delete friendship request")
+
+	_, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("User not found in context", nil)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		return
+	}
+
+	var req FriendshipIDRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Error("Failed to bind JSON", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var friendshipID pgtype.UUID
+	if err := friendshipID.Scan(req.FriendshipID); err != nil {
+		log.Error("Invalid FriendshipID", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	err := s.hub.DeleteFriendship(ctx, friendshipID)
+	if err != nil {
+		log.Error("Failed to delete friendship", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Friendship deleted successfully")
+	ctx.JSON(http.StatusOK, gin.H{"message": "Friendship deleted successfully"})
 }

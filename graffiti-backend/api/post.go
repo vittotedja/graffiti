@@ -1,13 +1,16 @@
 package api
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"time"
 
-	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
-
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/pingcap/log"
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+	"github.com/vittotedja/graffiti/graffiti-backend/util"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 )
 
@@ -229,6 +232,13 @@ func (s *Server) listPostsByWallWithAuthorsDetails(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindUri(&uri); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	_, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context")
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
 		return
 	}
 
@@ -461,6 +471,13 @@ func (s *Server) deletePost(ctx *gin.Context) {
 		return
 	}
 
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var id pgtype.UUID
 	if err := id.Scan(uri.ID); err != nil {
 		log.Error("Invalid ID", err)
@@ -468,10 +485,43 @@ func (s *Server) deletePost(ctx *gin.Context) {
 		return
 	}
 
+	post, err := s.hub.GetPost(ctx, id)
+	if err != nil {
+		log.Error("Failed to get post", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	wall, err := s.hub.GetWall(ctx, post.WallID)
+	if err != nil {
+		log.Error("Failed to get wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	if wall.UserID != currentUser.ID && post.Author != currentUser.ID {
+		log.Error("Unauthorized to delete post", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	if err := s.hub.DeletePost(ctx, id); err != nil {
 		log.Error("Failed to delete post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
+	}
+
+	if post.PostType.Valid && post.PostType.PostType == db.PostTypeMedia && post.MediaUrl.Valid {
+		// Delete media from S3
+		key := util.ExtractKeyFromMediaURL(post.MediaUrl.String)
+		go func(key string) {
+			// Use a background context so it won't get canceled when request is done
+			bgCtx := context.Background()
+
+			if err := s.DeleteFile(bgCtx, key); err != nil {
+				log.Error("Failed to delete media from S3", err)
+			}
+		}(key)
+
 	}
 
 	log.Info("Post deleted successfully")

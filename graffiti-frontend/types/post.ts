@@ -20,3 +20,5 @@ export type RequestPost = {
 	post_type: "media" | "embed_link";
 	// caption: string;
 };
+
+export type Platform = "youtube" | "tiktok" | "spotify" | "others";
