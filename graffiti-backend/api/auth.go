@@ -3,7 +3,6 @@ package api
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -104,20 +103,18 @@ func (s *Server) Login(ctx *gin.Context) {
 	if s.config.IsProduction {
 		secure = true
 		sameSite = http.SameSiteNoneMode
-
+		domain = ".graffiti-cs464.com"
 	}
-
-	log.Println("Domain for cookie:", domain)
 
 	ctx.SetSameSite(sameSite)
 	ctx.SetCookie(
 		"token",
 		token,
-		3600*72,
-		"/",
-		domain, // Now properly set for production
-		secure,
-		true,
+		3600*72, // maxAge
+		"/",     // path
+		domain,  // domain => .graffiti-cs464.com
+		secure,  // secure
+		true,    // httpOnly
 	)
 
 	ctx.JSON(http.StatusOK, gin.H{
