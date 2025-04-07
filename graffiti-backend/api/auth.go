@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -98,11 +99,39 @@ func (s *Server) Login(ctx *gin.Context) {
 
 	secure := false
 	sameSite := http.SameSiteDefaultMode
+	domain := ""
+
+	log.Println("Frontend URL:", s.config.FrontendURL)
+	log.Println("Is Production:", s.config.IsProduction)
 
 	if s.config.IsProduction {
 		secure = true
 		sameSite = http.SameSiteNoneMode
+		// Extract domain from frontend URL to ensure proper cookie sharing
+		// Assuming your FrontendURL is in the format https://yourdomain.com
+		// This helps with cross-site cookie sharing between FE and BE
+		frontendURL := s.config.FrontendURL
+		if frontendURL != "" {
+			domain = frontendURL
+			// Remove protocol (http:// or https://)
+			if i := len("https://"); len(domain) > i && domain[:i] == "https://" {
+				domain = domain[i:]
+			} else if i := len("http://"); len(domain) > i && domain[:i] == "http://" {
+				domain = domain[i:]
+			}
+			// Remove path and query params if any
+			if i := len(domain); i > 0 {
+				for j := 0; j < i; j++ {
+					if domain[j] == '/' || domain[j] == '?' {
+						domain = domain[:j]
+						break
+					}
+				}
+			}
+		}
 	}
+
+	log.Println("Domain for cookie:", domain)
 
 	ctx.SetSameSite(sameSite)
 	ctx.SetCookie(
@@ -110,7 +139,7 @@ func (s *Server) Login(ctx *gin.Context) {
 		token,
 		3600*72,
 		"/",
-		"", // or your domain if you want explicit
+		domain, // Now properly set for production
 		secure,
 		true,
 	)
