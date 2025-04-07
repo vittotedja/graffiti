@@ -50,10 +50,50 @@ function PostCard({post, isWallOwner}: PostCardType) {
 	const [likeCount, setLikeCount] = useState(post.likes_count);
 	const [tiktokHtml, setTiktokHtml] = useState(null);
 
-	const handleLike = () => {
-		setLikeCount((prev: number) => (liked ? prev - 1 : prev + 1));
-		setLiked((prev) => !prev);
+	const handleLike = async () => {
+		try {
+			const response = await fetchWithAuth(`/api/v1/likes`, {
+				method: "POST",
+				body: JSON.stringify({
+					post_id: post.id, // <-- adjust to match your backend expected JSON field
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to toggle like");
+			}
+
+			const data = await response.json();
+
+			if (data.message == "Post liked successfully") {
+				setLiked(true);
+				setLikeCount((prev) => prev + 1);
+			} else if (data.message == "Post unliked successfully") {
+				setLiked(false);
+				setLikeCount((prev) => Math.max(0, prev - 1));
+			}
+		} catch (error) {
+			console.error("Error toggling like:", error);
+		}
 	};
+
+	useEffect(() => {
+		if (!user) return;
+		const haveLikedPost = async () => {
+			try {
+				const response = await fetchWithAuth(`/api/v1/likes/${post.id}`, {
+					method: "GET",
+				});
+				if (response.ok) {
+					const data = await response.json();
+					setLiked(data.liked);
+				}
+			} catch (error) {
+				console.error("Error checking like status:", error);
+			}
+		};
+		haveLikedPost();
+	}, [post.id, user]);
 
 	// Compute embed data once from the media URL
 	const embedData = useMemo(

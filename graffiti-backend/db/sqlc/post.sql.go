@@ -330,6 +330,30 @@ func (q *Queries) ListPostsByWallWithAuthorsDetails(ctx context.Context, wallID 
 	return items, nil
 }
 
+const removeLikesCount = `-- name: RemoveLikesCount :one
+UPDATE posts
+  set likes_count = likes_count - 1
+WHERE id = $1
+RETURNING id, wall_id, author, media_url, post_type, is_highlighted, likes_count, is_deleted, created_at
+`
+
+func (q *Queries) RemoveLikesCount(ctx context.Context, id pgtype.UUID) (Post, error) {
+	row := q.db.QueryRow(ctx, removeLikesCount, id)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.WallID,
+		&i.Author,
+		&i.MediaUrl,
+		&i.PostType,
+		&i.IsHighlighted,
+		&i.LikesCount,
+		&i.IsDeleted,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const unhighlightPost = `-- name: UnhighlightPost :one
 UPDATE posts
   set is_highlighted = false

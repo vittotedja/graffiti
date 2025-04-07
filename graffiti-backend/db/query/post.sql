@@ -63,6 +63,13 @@ UPDATE posts
 WHERE id = $1
 RETURNING *;
 
+-- name: RemoveLikesCount :one
+UPDATE posts
+  set likes_count = likes_count - 1
+WHERE id = $1
+RETURNING *;
+
+
 -- name: DeletePost :exec
 UPDATE posts
   set is_deleted = true
