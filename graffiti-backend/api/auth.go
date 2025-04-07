@@ -97,16 +97,20 @@ func (s *Server) Login(ctx *gin.Context) {
 	}
 
 	secure := false
+	sameSite := http.SameSiteDefaultMode
+
 	if s.config.IsProduction {
 		secure = true
+		sameSite = http.SameSiteNoneMode
 	}
 
+	ctx.SetSameSite(sameSite)
 	ctx.SetCookie(
 		"token",
 		token,
 		3600*72,
 		"/",
-		"", // current domain
+		"", // or your domain if you want explicit
 		secure,
 		true,
 	)
