@@ -18,6 +18,10 @@ type TokenBucketLimiter struct {
 }
 
 func NewTokenBucketLimiter(rdb *redis.Client, capacity int, refillRate float64, ttl time.Duration) *TokenBucketLimiter {
+	// Ping the Redis server to check if it's available
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
+		panic(fmt.Sprintf("Failed to connect to Redis: %v", err))
+	}
 	return &TokenBucketLimiter{
 		RedisClient: rdb,
 		Capacity:    capacity,
