@@ -38,7 +38,6 @@ export default function WallPage() {
 				throw new Error("Failed to fetch wall data");
 			}
 			const data = await response.json();
-			// console.log(data);
 			setWallData(data);
 		} catch (error) {
 			console.error("Error fetching wall data:", error);
@@ -76,8 +75,6 @@ export default function WallPage() {
 				throw new Error("Failed to update wall privacy");
 			}
 			toast.success("Wall privacy updated successfully!");
-			// const data = await response.json();
-			// setWallData(data);
 		} catch (error) {
 			console.error("Error updating wall privacy:", error);
 		}
@@ -130,6 +127,8 @@ export default function WallPage() {
 				return true;
 		}
 	});
+
+	const isWallOwner = user?.id === wallData?.user_id;
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -184,7 +183,7 @@ export default function WallPage() {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-					{user?.id === wallData?.user_id && (
+					{isWallOwner && (
 						<div className="flex items-center gap-2">
 							<Switch
 								className="cursor-pointer"
@@ -215,7 +214,7 @@ export default function WallPage() {
 				</div>
 
 				{/* Posts Grid */}
-				<PostGrid posts={filteredPosts} />
+				<PostGrid posts={filteredPosts} isWallOwner={isWallOwner} />
 
 				{/* Floating Add Post Button */}
 				<Button
