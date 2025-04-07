@@ -21,7 +21,7 @@ import {Post} from "@/types/post";
 import {toast} from "sonner";
 
 type SortOption = "latest" | "oldest" | "popular";
-type FilterOption = "all" | "photos" | "embed";
+type FilterOption = "all" | "media" | "embed_link";
 
 export default function WallPage() {
 	const params = useParams();
@@ -54,6 +54,8 @@ export default function WallPage() {
 				throw new Error("Failed to fetch post data");
 			}
 			const data = await response.json();
+			console.log(data);
+			// Check if the response is an array of posts
 			setPosts(data);
 		} catch (error) {
 			console.error("Error fetching wall data:", error);
@@ -119,8 +121,10 @@ export default function WallPage() {
 	// Filter posts based on selected option
 	const filteredPosts = sortedPosts.filter((post) => {
 		switch (filterBy) {
-			case "photos":
-				return post.media_url && !post.media_url.includes("video");
+			case "media":
+				return post.post_type === "media";
+			case "embed_link":
+				return post.post_type === "embed_link";
 			case "all":
 			default:
 				return true;
@@ -172,10 +176,10 @@ export default function WallPage() {
 								All Posts
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => setFilterBy("photos")}>
-								Photos Only
+							<DropdownMenuItem onClick={() => setFilterBy("media")}>
+								Media Only
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setFilterBy("embed")}>
+							<DropdownMenuItem onClick={() => setFilterBy("embed_link")}>
 								Embed Link Only
 							</DropdownMenuItem>
 						</DropdownMenuContent>

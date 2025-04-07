@@ -57,7 +57,7 @@ export default function SearchFriends() {
 				className="pl-9 bg-black/5 border-2 border-primary/20"
 			/>
 			{searchTerm && (
-				<div className="w-full rounded-sm shadow-md flex items-center justify-between hover:bg-accent/50 divide-y">
+				<div className="w-full rounded-sm shadow-md flex flex-col divide-y">
 					{userList.length > 0 &&
 						userList.map((user: User) => (
 							<div
