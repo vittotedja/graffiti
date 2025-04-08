@@ -29,7 +29,7 @@ type Server struct {
 
 // NewServer creates a new HTTP server and sets up all routes
 func NewServer(config util.Config) (*Server, error) {
-	tokenMaker, err := token.NewJWTMaker("veryverysecretkey")
+	tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
 	if err != nil {
 		log.Fatal("cannot create token maker", err)
 	}
@@ -100,7 +100,7 @@ func (s *Server) registerRoutes() {
 	// ALB Health check endpoint
 	s.router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Healthy")
-	})	
+	})
 
 	s.router.POST("/api/v1/auth/register", s.Register)
 	s.router.POST("/api/v1/auth/login", s.Login)
