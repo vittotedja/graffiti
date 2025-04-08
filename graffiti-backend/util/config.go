@@ -20,6 +20,8 @@ type Config struct {
 	CloudfrontDomain         string `mapstructure:"CLOUDFRONT_DOMAIN"`
 	CloudfrontDistributionID string `mapstructure:"CLOUDFRONT_DISTRIBUTION_ID"`
 	FrontendURL              string `mapstructure:"FRONTEND_URL"`
+	TokenSymmetricKey        string `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	IsProduction             bool   `mapstructure:"IS_PRODUCTION"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
