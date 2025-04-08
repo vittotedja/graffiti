@@ -94,7 +94,6 @@ export default function ProfilePage() {
 
 	const removeFriend = async () => {
 		if (!user) return;
-		console.log(friendshipID);
 		try {
 			const response = await fetchWithAuth("/api/v1/friendships", {
 				method: "DELETE",
@@ -145,7 +144,8 @@ export default function ProfilePage() {
 							alt="Home Banner"
 							width={1200}
 							height={400}
-							className="w-full h-[250px] md:h-[350px] object-cover"
+							quality={100}
+							className="w-full object-cover"
 						/>
 
 						{/* Bottom section with avatar and buttons */}

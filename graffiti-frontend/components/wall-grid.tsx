@@ -42,10 +42,7 @@ export function WallGrid({userId}: WallGridProps) {
 			const response = await fetchWithAuth(`/api/v1/walls/${wallId}/pin`, {
 				method: "PUT",
 			});
-			if (!response) return;
-
-			const data = await response.json();
-			console.log("Pinned wall:", data);
+			if (!response.ok) return;
 			fetchWalls(); // Refresh the wall data after pinning
 		} catch (err) {
 			console.error("Failed to pin wall:", err);
@@ -58,13 +55,11 @@ export function WallGrid({userId}: WallGridProps) {
 				const response = await fetchWithAuth(`/api/v1/users/${userId}/walls`);
 				if (!response) return;
 				const data = await response.json();
-				console.log("Fetched friend wall data:", data);
 				setWalls(data);
 			} else {
 				const response = await fetchWithAuth("/api/v2/walls");
 				if (!response) return;
 				const data = await response.json();
-				console.log("Fetched wall data:", data);
 				setWalls(data);
 			}
 		} catch (err) {
@@ -199,6 +194,7 @@ export function WallGrid({userId}: WallGridProps) {
 						isOpen={createWallModalOpen}
 						onClose={() => setCreateWallModalOpen(false)}
 						sentWallData={sentWallData}
+						onSuccess={fetchWalls}
 					/>
 				</>
 			)}

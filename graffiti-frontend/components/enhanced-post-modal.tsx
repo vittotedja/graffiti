@@ -80,7 +80,6 @@ export function EnhancedPostModal({
 			offscreenCtx.drawImage(drawCanvasRef.current, 0, 0);
 			const dataUrl = offscreenCanvas.toDataURL("image/png");
 			setCompositeDataUrl(dataUrl);
-			console.log("Composite data URL generated:", dataUrl);
 		}
 	}, []);
 

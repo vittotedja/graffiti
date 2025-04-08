@@ -1,6 +1,6 @@
 "use client";
 import {useEffect, useState} from "react";
-import {Plus, Filter, ArrowUpDown, Lock, Globe} from "lucide-react";
+import {Plus, Filter, ArrowUpDown, Lock, Globe, Pencil} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
 import {
@@ -19,6 +19,7 @@ import {fetchWithAuth} from "@/lib/auth";
 import {Wall} from "@/types/wall";
 import {Post} from "@/types/post";
 import {toast} from "sonner";
+import {CreateWallModal} from "@/components/create-wall-modal";
 
 type SortOption = "latest" | "oldest" | "popular";
 type FilterOption = "all" | "media" | "embed_link";
@@ -53,7 +54,6 @@ export default function WallPage() {
 				throw new Error("Failed to fetch post data");
 			}
 			const data = await response.json();
-			console.log(data);
 			// Check if the response is an array of posts
 			setPosts(data);
 		} catch (error) {
@@ -89,6 +89,7 @@ export default function WallPage() {
 	}, [params]);
 
 	const [createPostModalOpen, setCreatePostModalOpen] = useState(false);
+	const [editWallModalOpen, setEditWallModalOpen] = useState(false);
 	const [sortBy, setSortBy] = useState<SortOption>("latest");
 	const [filterBy, setFilterBy] = useState<FilterOption>("all");
 	const [posts, setPosts] = useState<Post[]>([]);
@@ -129,15 +130,28 @@ export default function WallPage() {
 	});
 
 	const isWallOwner = user?.id === wallData?.user_id;
+	if (!user) return;
 
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8">
 				{/* Wall Title */}
 				<div className="mb-8">
-					<h1 className="text-5xl font-bold font-graffiti">
-						{wallData?.title}
-					</h1>
+					<div className="flex gap-2">
+						<h1 className="text-5xl font-bold font-graffiti">
+							{wallData?.title}
+						</h1>
+						<div className="relative">
+							<Button
+								variant={"outline"}
+								className="h-8 w-8 p-0 rounded-full absolute top-7 right-[-30px] bg-background/70"
+								onClick={() => setEditWallModalOpen(true)}
+							>
+								<Pencil />
+							</Button>
+						</div>
+					</div>
+
 					<p className="text-muted-foreground mt-2">{posts.length} post(s)</p>
 				</div>
 
@@ -232,6 +246,13 @@ export default function WallPage() {
 						onClose={() => setCreatePostModalOpen(false)}
 						wallId={id}
 						onPostCreated={handlePostCreated}
+					/>
+				)}
+				{editWallModalOpen && (
+					<CreateWallModal
+						isOpen={editWallModalOpen}
+						onClose={() => setEditWallModalOpen(false)}
+						sentWallData={wallData}
 					/>
 				)}
 			</div>

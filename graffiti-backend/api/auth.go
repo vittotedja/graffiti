@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -44,6 +45,8 @@ func (s *Server) Register(ctx *gin.Context) {
 		ctx.JSON(500, errorResponse(err))
 		return
 	}
+
+	req.Username = strings.ReplaceAll(req.Username, " ", "")
 
 	arg := db.CreateUserParams{
 		Username:       req.Username,

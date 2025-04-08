@@ -5,7 +5,6 @@ import {ChevronLeft, User, Clock, UserRoundPlus} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {MobileNav} from "@/components/mobile-nav";
 import {useUser} from "@/hooks/useUser";
 import PendingFriendsList from "./pending-friendlist";
 import RequestedFriendsList from "./sent-friendlist";
@@ -68,9 +67,6 @@ export default function FriendsPage() {
 					</Tabs>
 				</Card>
 			</div>
-
-			{/* Mobile Navigation */}
-			<MobileNav />
 		</div>
 	);
 }

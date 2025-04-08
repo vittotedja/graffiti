@@ -7,7 +7,6 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
 	});
 
 	if (res.status === 401) {
-		console.log("hello");
 		if (typeof window !== "undefined") {
 			window.location.href = "/login";
 		}

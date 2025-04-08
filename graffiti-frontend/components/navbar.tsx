@@ -3,10 +3,10 @@
 import {useState, useEffect} from "react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {Bell, Search, Menu, X, Home, Users, Compass} from "lucide-react";
+import {Bell, Menu, Home, Users, Compass} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
+// import {Input} from "@/components/ui/input";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ThemeToggle} from "@/components/theme-toggle";
 import {
@@ -33,7 +33,7 @@ export function Navbar() {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [hasNotifications, setHasNotifications] = useState(true);
 	const [isScrolled, setIsScrolled] = useState(false);
-	const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+	// const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
 	// Check if the current path matches the link
 	const isActive = (path: string) => {
@@ -159,17 +159,15 @@ export function Navbar() {
 
 					{/* Search, Notifications, and Profile */}
 					<div className="flex items-center gap-2">
-						{/* Desktop Search */}
-						<div className="hidden md:flex relative w-64">
+						{/* <div className="hidden md:flex relative w-64">
 							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
 							<Input
 								placeholder="Search walls, friends..."
 								className="pl-8 bg-background"
 							/>
-						</div>
+						</div> */}
 
-						{/* Mobile Search Toggle */}
-						<Button
+						{/* <Button
 							variant="ghost"
 							size="icon"
 							className="md:hidden"
@@ -181,7 +179,7 @@ export function Navbar() {
 							) : (
 								<Search className="h-5 w-5" />
 							)}
-						</Button>
+						</Button> */}
 
 						{/* Notifications */}
 						<Link href="/notifications">
@@ -213,16 +211,9 @@ export function Navbar() {
 									aria-label="Profile"
 								>
 									<Avatar className="h-8 w-8">
-										<AvatarImage
-											src={
-												user.profile_picture ||
-												"/placeholder.svg?height=32&width=32"
-											}
-											alt="User"
-										/>
+										<AvatarImage src={user.profile_picture} alt="User" />
 										<AvatarFallback>
 											{formatFullName(user.fullname)}
-											{/* VT */}
 										</AvatarFallback>
 									</Avatar>
 								</Button>
@@ -231,9 +222,6 @@ export function Navbar() {
 								<DropdownMenuItem asChild>
 									<Link href="/">Profile</Link>
 								</DropdownMenuItem>
-								{/* <DropdownMenuItem asChild>
-									<Link href="/settings">Settings</Link>
-								</DropdownMenuItem> */}
 								<DropdownMenuSeparator />
 								<DropdownMenuItem>Sign out</DropdownMenuItem>
 							</DropdownMenuContent>
@@ -242,7 +230,7 @@ export function Navbar() {
 				</div>
 
 				{/* Mobile Search Bar (Expandable) */}
-				{isMobileSearchOpen && (
+				{/* {isMobileSearchOpen && (
 					<div className="pb-3 md:hidden">
 						<div className="relative">
 							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -253,7 +241,7 @@ export function Navbar() {
 							/>
 						</div>
 					</div>
-				)}
+				)} */}
 			</div>
 		</header>
 	);

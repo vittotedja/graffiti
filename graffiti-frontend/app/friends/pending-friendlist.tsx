@@ -5,6 +5,7 @@ import {fetchWithAuth} from "@/lib/auth";
 import {formatFullName} from "@/lib/formatter";
 import {Friendship} from "@/types/friends";
 import {UserPlus} from "lucide-react";
+import Link from "next/link";
 import {useEffect, useState} from "react";
 import {toast} from "sonner";
 
@@ -63,7 +64,10 @@ export default function PendingFriendsList() {
 						key={friend.UserID}
 						className="flex items-center justify-between p-4 hover:bg-accent/50"
 					>
-						<div className="flex items-center gap-3">
+						<Link
+							href={`/profile/${friend.UserID}`}
+							className="flex items-center gap-3 hover:underline cursor-pointer"
+						>
 							<Avatar>
 								<AvatarImage
 									src={friend.ProfilePicture}
@@ -79,7 +83,7 @@ export default function PendingFriendsList() {
 									@{friend.Username}
 								</div>
 							</div>
-						</div>
+						</Link>
 
 						<Button
 							size="sm"

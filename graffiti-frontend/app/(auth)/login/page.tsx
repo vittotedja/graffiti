@@ -14,9 +14,11 @@ import {
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
+import {Eye, EyeClosed} from "lucide-react";
 
 export default function Login() {
 	const router = useRouter();
+	const [tabValue, setTabValue] = useState("login");
 	const [isLoading, setIsLoading] = useState(false);
 	const [registerData, setRegisterData] = useState({
 		username: "",
@@ -29,6 +31,11 @@ export default function Login() {
 		email: "",
 		password: "",
 	});
+
+	const [loginPasswordSeen, setLoginPasswordSeen] = useState(true);
+	const [registerPasswordSeen, setRegisterPasswordSeen] = useState(true);
+	const [confirmRegisterPasswordSeen, setConfirmRegisterPasswordSeen] =
+		useState(true);
 
 	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -103,12 +110,18 @@ export default function Login() {
 			return;
 		}
 
+		if (username.length < 3) {
+			alert("Username must be at least 3 characters");
+			return;
+		}
+
+		if (/\s/.test(username)) {
+			alert("Username must not contain spaces");
+			return;
+		}
+
 		try {
 			setIsLoading(true);
-			console.log(
-				"Sending:",
-				JSON.stringify({username, fullname, email, password})
-			);
 			const res = await fetch(
 				`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`,
 				{
@@ -132,6 +145,7 @@ export default function Login() {
 			});
 		} finally {
 			setIsLoading(false);
+			setTabValue("login");
 			setRegisterData({
 				username: "",
 				fullname: "",
@@ -164,7 +178,12 @@ export default function Login() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<Tabs defaultValue="login" className="w-full">
+						<Tabs
+							defaultValue="login"
+							value={tabValue}
+							onValueChange={(value) => setTabValue(value)}
+							className="w-full"
+						>
 							<TabsList className="grid w-full grid-cols-2 mb-4 bg-gray-100 rounded-md">
 								<TabsTrigger value="login" className="cursor-pointer">
 									Login
@@ -189,18 +208,30 @@ export default function Login() {
 												});
 											}}
 										/>
-										<Input
-											type="password"
-											placeholder="Password"
-											required
-											value={loginData.password}
-											onChange={(e) => {
-												setLoginData({
-													...loginData,
-													password: e.target.value,
-												});
-											}}
-										/>
+										<div className="flex gap-2 items-center">
+											<Input
+												type={loginPasswordSeen ? "password" : "text"}
+												placeholder="Password"
+												required
+												value={loginData.password}
+												onChange={(e) => {
+													setLoginData({
+														...loginData,
+														password: e.target.value,
+													});
+												}}
+											/>
+											<Button
+												variant={"ghost"}
+												onClick={(e) => {
+													e.preventDefault();
+													setLoginPasswordSeen(!loginPasswordSeen);
+												}}
+											>
+												{loginPasswordSeen ? <Eye /> : <EyeClosed />}
+											</Button>
+										</div>
+
 										<Button
 											variant={"special"}
 											className="w-full"
@@ -252,30 +283,54 @@ export default function Login() {
 												})
 											}
 										/>
-										<Input
-											type="password"
-											placeholder="Password"
-											required
-											value={registerData.password}
-											onChange={(e) => {
-												setRegisterData({
-													...registerData,
-													password: e.target.value,
-												});
-											}}
-										/>
-										<Input
-											type="password"
-											placeholder="Confirm Password"
-											required
-											value={registerData.confirmPassword}
-											onChange={(e) => {
-												setRegisterData({
-													...registerData,
-													confirmPassword: e.target.value,
-												});
-											}}
-										/>
+										<div className="flex gap-2 items-center">
+											<Input
+												type={registerPasswordSeen ? "password" : "text"}
+												placeholder="Password"
+												required
+												value={registerData.password}
+												onChange={(e) => {
+													setRegisterData({
+														...registerData,
+														password: e.target.value,
+													});
+												}}
+											/>
+											<Button
+												variant={"ghost"}
+												onClick={(e) => {
+													e.preventDefault();
+													setRegisterPasswordSeen(!registerPasswordSeen);
+												}}
+											>
+												{registerPasswordSeen ? <Eye /> : <EyeClosed />}
+											</Button>
+										</div>
+										<div className="flex gap-2 items-center">
+											<Input
+												type={confirmRegisterPasswordSeen ? "password" : "text"}
+												placeholder="Confirm Password"
+												required
+												value={registerData.confirmPassword}
+												onChange={(e) => {
+													setRegisterData({
+														...registerData,
+														confirmPassword: e.target.value,
+													});
+												}}
+											/>
+											<Button
+												variant={"ghost"}
+												onClick={(e) => {
+													e.preventDefault();
+													setConfirmRegisterPasswordSeen(
+														!confirmRegisterPasswordSeen
+													);
+												}}
+											>
+												{confirmRegisterPasswordSeen ? <Eye /> : <EyeClosed />}
+											</Button>
+										</div>
 										<Button
 											className="w-full "
 											variant={"special"}

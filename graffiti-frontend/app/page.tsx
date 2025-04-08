@@ -58,7 +58,8 @@ export default function HomePage() {
 							alt="Home Banner"
 							width={1200}
 							height={400}
-							className="w-full h-[250px] md:h-[350px] object-cover"
+							quality={100}
+							className="w-full object-cover"
 						/>
 
 						{/* Bottom section with avatar and buttons */}
@@ -191,7 +192,6 @@ export default function HomePage() {
 				isOpen={editProfileModalOpen}
 				onClose={() => setEditProfileModalOpen(false)}
 				user={user}
-				onSave={() => console.log("hello")}
 			/>
 		</div>
 	);
