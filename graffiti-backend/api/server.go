@@ -104,7 +104,7 @@ func (s *Server) registerRoutes() {
 
 	s.router.POST("/api/v1/auth/register", s.Register)
 	s.router.POST("/api/v1/auth/login", s.Login)
-	// s.router.POST("/api/v1/auth/logout", s.Logout)
+	s.router.POST("/api/v1/auth/logout", s.Logout)
 
 	protected := s.router.Group("/api")
 	protected.Use(s.AuthMiddleware())

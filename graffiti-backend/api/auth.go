@@ -162,3 +162,30 @@ func (s *Server) Me(ctx *gin.Context) {
 		"user": resp,
 	})
 }
+
+func (s *Server) Logout(ctx *gin.Context) {
+	secure := false
+	sameSite := http.SameSiteDefaultMode
+	domain := ""
+
+	if s.config.IsProduction {
+		secure = true
+		sameSite = http.SameSiteNoneMode
+		domain = ".graffiti-cs464.com"
+	}
+
+	ctx.SetSameSite(sameSite)
+	ctx.SetCookie(
+		"token",
+		"",     // empty value
+		-1,     // negative maxAge to expire immediately
+		"/",    // path
+		domain, // domain
+		secure, // secure
+		true,   // httpOnly
+	)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "logout successful",
+	})
+}

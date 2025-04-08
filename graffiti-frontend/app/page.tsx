@@ -19,6 +19,7 @@ export default function HomePage() {
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
 	const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
 	const [fabOpen, setFabOpen] = useState(false);
+	const [wallGridKey, setWallGridKey] = useState(Date.now());
 
 	// Optional ripple effect when FAB is clicked
 	useEffect(() => {
@@ -105,7 +106,7 @@ export default function HomePage() {
 						</div>
 					</div>
 					{/* Walls */}
-					<WallGrid />
+					<WallGrid key={wallGridKey} />
 				</main>
 			</div>
 			<div
@@ -186,6 +187,10 @@ export default function HomePage() {
 			<CreateWallModal
 				isOpen={createWallModalOpen}
 				onClose={() => setCreateWallModalOpen(false)}
+				onSuccess={() => {
+					// Force refresh the WallGrid component by updating its key
+					setWallGridKey(Date.now());
+				}}
 			/>
 			{/* Edit Profile Modal */}
 			<EditProfileModal

@@ -134,12 +134,12 @@ export default function Login() {
 			);
 
 			const data = await res.json();
-
 			if (!res.ok) {
 				throw new Error(data.message || "Registration failed");
 			}
 			toast.success("Registration successful!");
 		} catch (err) {
+			console.error(err);
 			toast.warning("Something wrong happened", {
 				description: (err as Error).message,
 			});
@@ -153,6 +153,16 @@ export default function Login() {
 				password: "",
 				confirmPassword: "",
 			});
+		}
+	};
+
+	const handleKeyPress = (e: React.KeyboardEvent<HTMLFormElement>) => {
+		if (e.key === "Enter") {
+			if (tabValue === "login") {
+				handleLogin(e as unknown as React.FormEvent);
+			} else {
+				handleRegister(e as unknown as React.FormEvent);
+			}
 		}
 	};
 
@@ -194,7 +204,11 @@ export default function Login() {
 							</TabsList>
 
 							<TabsContent value="login">
-								<form onSubmit={handleLogin} className="text-black">
+								<form
+									onSubmit={handleLogin}
+									onKeyDown={handleKeyPress}
+									className="text-black"
+								>
 									<div className="space-y-4">
 										<Input
 											type="email"
@@ -245,7 +259,11 @@ export default function Login() {
 							</TabsContent>
 
 							<TabsContent value="register">
-								<form onSubmit={handleRegister} className="text-black">
+								<form
+									onSubmit={handleRegister}
+									onKeyDown={handleKeyPress}
+									className="text-black"
+								>
 									<div className="space-y-4">
 										<Input
 											type="email"

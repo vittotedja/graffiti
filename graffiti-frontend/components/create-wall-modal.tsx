@@ -53,13 +53,18 @@ export function CreateWallModal({
 				description: sentWallData.description,
 				is_public: sentWallData.is_public,
 			});
-		} else
+		} else {
 			setWallData({
 				title: "",
 				description: "",
 				is_public: true,
 			});
-	}, [sentWallData]);
+		}
+		// Reset these values when the modal is opened/closed or when data changes
+		setWallImage(null);
+		setWallPreview(null);
+		setIsWallRemoved(false);
+	}, [sentWallData, isOpen]);
 
 	const wallDataRef = useRef<HTMLInputElement>(null);
 
@@ -68,6 +73,8 @@ export function CreateWallModal({
 			const file = e.target.files[0];
 			setWallImage(file);
 			setWallPreview(URL.createObjectURL(file));
+			// Reset the isWallRemoved flag when a new image is selected
+			setIsWallRemoved(false);
 		}
 	};
 

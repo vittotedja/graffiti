@@ -50,6 +50,23 @@ export function Navbar() {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
+	const logout = async () => {
+		const res = await fetch(
+			`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/logout`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (res.ok) {
+			window.location.href = "/login";
+		} else {
+			console.error("Logout failed");
+		}
+	};
+
 	if (pathname.includes("/login")) return null;
 	if (loading) return null;
 	if (!user) return null;
@@ -159,28 +176,6 @@ export function Navbar() {
 
 					{/* Search, Notifications, and Profile */}
 					<div className="flex items-center gap-2">
-						{/* <div className="hidden md:flex relative w-64">
-							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-							<Input
-								placeholder="Search walls, friends..."
-								className="pl-8 bg-background"
-							/>
-						</div> */}
-
-						{/* <Button
-							variant="ghost"
-							size="icon"
-							className="md:hidden"
-							onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-							aria-label="Search"
-						>
-							{isMobileSearchOpen ? (
-								<X className="h-5 w-5" />
-							) : (
-								<Search className="h-5 w-5" />
-							)}
-						</Button> */}
-
 						{/* Notifications */}
 						<Link href="/notifications">
 							<Button
@@ -223,25 +218,11 @@ export function Navbar() {
 									<Link href="/">Profile</Link>
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem>Sign out</DropdownMenuItem>
+								<DropdownMenuItem onClick={logout}>Sign out</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>
 				</div>
-
-				{/* Mobile Search Bar (Expandable) */}
-				{/* {isMobileSearchOpen && (
-					<div className="pb-3 md:hidden">
-						<div className="relative">
-							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-							<Input
-								placeholder="Search walls, friends..."
-								className="pl-8 bg-background w-full"
-								autoFocus
-							/>
-						</div>
-					</div>
-				)} */}
 			</div>
 		</header>
 	);
