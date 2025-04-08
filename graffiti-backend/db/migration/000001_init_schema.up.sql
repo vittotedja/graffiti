@@ -66,21 +66,6 @@ CREATE TABLE
     CONSTRAINT "friendships_to_user_fk" FOREIGN KEY ("to_user") REFERENCES "users" ("id") ON DELETE CASCADE,
     CONSTRAINT "unique_friendship" UNIQUE ("from_user", "to_user")
   );
-
--- Materialized view for accepted (mutual) friendships
-CREATE MATERIALIZED VIEW accepted_friendships_mv AS
-SELECT DISTINCT
-    from_user AS user_id,
-    to_user AS friend_id
-FROM friendships
-WHERE status = 'friends'
-UNION
-SELECT DISTINCT
-    to_user AS user_id,
-    from_user AS friend_id
-FROM friendships
-WHERE status = 'friends';
-
 CREATE INDEX ON "users" ("username");
 
 CREATE INDEX ON "walls" ("user_id");
@@ -104,9 +89,3 @@ CREATE INDEX idx_users_username_trgm ON users USING gin (username gin_trgm_ops);
 CREATE INDEX idx_users_fullname_trgm ON users USING gin (fullname gin_trgm_ops);
 
 ALTER DATABASE graffiti SET pg_trgm.similarity_threshold = 0;
-
--- Indexes for materialized view
-CREATE INDEX idx_accepted_friendships_user_id ON accepted_friendships_mv (user_id);
-CREATE INDEX idx_accepted_friendships_friend_id ON accepted_friendships_mv (friend_id);
-CREATE UNIQUE INDEX idx_accepted_friendships_mv_unique ON accepted_friendships_mv (user_id, friend_id);
-
