@@ -96,7 +96,26 @@ func (s *Server) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("token", token, 3600*72, "", "", false, true)
+	secure := false
+	sameSite := http.SameSiteDefaultMode
+	domain := ""
+
+	if s.config.IsProduction {
+		secure = true
+		sameSite = http.SameSiteNoneMode
+		domain = ".graffiti-cs464.com"
+	}
+
+	ctx.SetSameSite(sameSite)
+	ctx.SetCookie(
+		"token",
+		token,
+		3600*72, // maxAge
+		"/",     // path
+		domain,  // domain => .graffiti-cs464.com
+		secure,  // secure
+		true,    // httpOnly
+	)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "login successful",
