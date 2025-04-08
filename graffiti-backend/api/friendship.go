@@ -427,7 +427,7 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 		ToUser:   toUserID,
 	}
 
-	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	friendship, err := s.hub.ListFriendshipByUserPairs(ctx, params)
 	if err != nil {
 		log.Error("Failed to list friendship by user pairs", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))

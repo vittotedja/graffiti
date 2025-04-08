@@ -10,7 +10,7 @@ import (
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 )
 
-var testHub *Hub
+var testHub Hub
 
 func TestMain(m *testing.M) {
 	config, err := util.LoadConfig("../..")

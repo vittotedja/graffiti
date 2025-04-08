@@ -256,7 +256,7 @@ func (s *Server) listWallsByUser(ctx *gin.Context) {
 		ToUser:   userID,
 	}
 
-	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	friendship, err := s.hub.ListFriendshipByUserPairs(ctx, params)
 
 	isFriend := true
 	if err != nil {

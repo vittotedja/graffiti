@@ -19,7 +19,7 @@ import (
 
 // Server serves HTTP requests
 type Server struct {
-	hub        *db.Hub
+	hub        db.Hub
 	db         *pgxpool.Pool
 	config     util.Config
 	router     *gin.Engine // helps us send each API request to the correct handler for processing
