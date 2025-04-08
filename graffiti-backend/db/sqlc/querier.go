@@ -32,6 +32,7 @@ type Querier interface {
 	GetHighlightedPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Post, error)
 	GetLike(ctx context.Context, arg GetLikeParams) (Like, error)
 	GetNumberOfFriends(ctx context.Context, fromUser pgtype.UUID) (int64, error)
+	GetNumberOfLikesByPost(ctx context.Context, postID pgtype.UUID) (int64, error)
 	GetNumberOfPendingFriendRequests(ctx context.Context, toUser pgtype.UUID) (int64, error)
 	GetPost(ctx context.Context, id pgtype.UUID) (Post, error)
 	GetUser(ctx context.Context, id pgtype.UUID) (User, error)
@@ -70,7 +71,6 @@ type Querier interface {
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserNew(ctx context.Context, arg UpdateUserNewParams) (User, error)
 	UpdateWall(ctx context.Context, arg UpdateWallParams) (Wall, error)
-	getNumberOfLikesByPost(ctx context.Context, postID pgtype.UUID) (int64, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -431,6 +431,21 @@ func (mr *MockHubMockRecorder) GetNumberOfFriends(arg0, arg1 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNumberOfFriends", reflect.TypeOf((*MockHub)(nil).GetNumberOfFriends), arg0, arg1)
 }
 
+// GetNumberOfLikesByPost mocks base method.
+func (m *MockHub) GetNumberOfLikesByPost(arg0 context.Context, arg1 pgtype.UUID) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNumberOfLikesByPost", arg0, arg1)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNumberOfLikesByPost indicates an expected call of GetNumberOfLikesByPost.
+func (mr *MockHubMockRecorder) GetNumberOfLikesByPost(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNumberOfLikesByPost", reflect.TypeOf((*MockHub)(nil).GetNumberOfLikesByPost), arg0, arg1)
+}
+
 // GetNumberOfPendingFriendRequests mocks base method.
 func (m *MockHub) GetNumberOfPendingFriendRequests(arg0 context.Context, arg1 pgtype.UUID) (int64, error) {
 	m.ctrl.T.Helper()
@@ -1071,19 +1086,4 @@ func (m *MockHub) UpdateWall(arg0 context.Context, arg1 db.UpdateWallParams) (db
 func (mr *MockHubMockRecorder) UpdateWall(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateWall", reflect.TypeOf((*MockHub)(nil).UpdateWall), arg0, arg1)
-}
-
-// getNumberOfLikesByPost mocks base method.
-func (m *MockHub) getNumberOfLikesByPost(arg0 context.Context, arg1 pgtype.UUID) (int64, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "getNumberOfLikesByPost", arg0, arg1)
-	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// getNumberOfLikesByPost indicates an expected call of getNumberOfLikesByPost.
-func (mr *MockHubMockRecorder) getNumberOfLikesByPost(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "getNumberOfLikesByPost", reflect.TypeOf((*MockHub)(nil).getNumberOfLikesByPost), arg0, arg1)
 }

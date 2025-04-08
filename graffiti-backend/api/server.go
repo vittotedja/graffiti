@@ -35,7 +35,7 @@ func NewServer(config util.Config) (*Server, error) {
 	}
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
 	server.router.Use(logger.Middleware())
-	server.registerRoutes()
+	server.registerRoutes("server")
 
 	return server, nil
 }
@@ -85,17 +85,27 @@ func (s *Server) Shutdown() error {
 	return nil
 }
 
-func (s *Server) registerRoutes() {
+func (s *Server) registerRoutes(env string) {
 
 	frontendURL := s.config.FrontendURL
 	// Apply CORS middleware
-	s.router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{frontendURL}, // frontend URL
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	if (env == "unit-test") {
+		s.router.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"*"}, 
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+		}))
+	} else {
+		s.router.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{frontendURL}, // frontend URL
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
+	}
 
 	// ALB Health check endpoint
 	s.router.GET("/", func(c *gin.Context) {

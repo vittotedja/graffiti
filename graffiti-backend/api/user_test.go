@@ -1,147 +1,208 @@
 package api
 
 import (
+	"bytes"
+	"database/sql"
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 	mockdb "github.com/vittotedja/graffiti/graffiti-backend/db/mock"
+	"github.com/vittotedja/graffiti/graffiti-backend/token"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 )
 
 func TestGetUserAPI(t *testing.T) {
-	
-	user := randomUser()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	hub := mockdb.NewMockStore(ctrl)
-}
-
-func TestGetUserAPI(t *testing.T) {
-	user, _ := randomUser(t)
+	user := randomUser(t)
   
 	testCases := []struct {
 	  name          string
-	  accountID     int64
+	  userID     	pgtype.UUID
+	  body			gin.H
 	  setupAuth     func(t *testing.T, request *http.Request, tokenMaker token.Maker)
-	  buildStubs    func(store *mockdb.MockStore)
-	  checkResponse func(t *testing.T, recoder *httptest.ResponseRecorder)
+	  buildStubs    func(store *mockdb.MockHub)
+	  checkResponse func(recoder *httptest.ResponseRecorder)
 	}{
 	  {
 		name:      "OK",
-		accountID: account.ID,
+		userID: user.ID,
 		setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-		  addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, user.Role, time.Minute)
+		  addTokenAsCookie(t, request, tokenMaker, user.Username, time.Minute)
 		},
-		buildStubs: func(store *mockdb.MockStore) {
+		buildStubs: func(store *mockdb.MockHub) {
 		  store.EXPECT().
-			GetAccount(gomock.Any(), gomock.Eq(account.ID)).
+			GetUser(gomock.Any(), gomock.Eq(user.ID)).
 			Times(1).
-			Return(account, nil)
+			Return(user, nil)
 		},
-		checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+		checkResponse: func(recorder *httptest.ResponseRecorder) {
 		  require.Equal(t, http.StatusOK, recorder.Code)
-		  requireBodyMatchAccount(t, recorder.Body, account)
+		  requireBodyMatchUser(t, recorder.Body, user)
 		},
 	  },
 	  {
 		name:      "UnauthorizedUser",
-		accountID: account.ID,
+		userID: user.ID,
 		setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-		  addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "unauthorized_user", util.DepositorRole, time.Minute)
+			addTokenAsCookie(t, request, tokenMaker, "unauthorizedUser", time.Minute)
 		},
-		buildStubs: func(store *mockdb.MockStore) {
+		buildStubs: func(store *mockdb.MockHub) {
 		  store.EXPECT().
-			GetAccount(gomock.Any(), gomock.Eq(account.ID)).
+			GetUser(gomock.Any(), gomock.Eq(user.ID)).
 			Times(1).
-			Return(account, nil)
+			Return(user, nil)
 		},
-		checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+		checkResponse: func(recorder *httptest.ResponseRecorder) {
 		  require.Equal(t, http.StatusUnauthorized, recorder.Code)
 		},
 	  },
 	  {
 		name:      "NoAuthorization",
-		accountID: account.ID,
+		userID: user.ID,
 		setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
 		},
-		buildStubs: func(store *mockdb.MockStore) {
+		buildStubs: func(store *mockdb.MockHub) {
 		  store.EXPECT().
-			GetAccount(gomock.Any(), gomock.Any()).
+			GetUser(gomock.Any(), gomock.Any()).
 			Times(0)
 		},
-		checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+		checkResponse: func(recorder *httptest.ResponseRecorder) {
 		  require.Equal(t, http.StatusUnauthorized, recorder.Code)
 		},
 	  },
 	  {
 		name:      "NotFound",
-		accountID: account.ID,
+		userID: user.ID,
 		setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-		  addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, user.Role, time.Minute)
+			addTokenAsCookie(t, request, tokenMaker, user.Username, time.Minute)
 		},
   
-		buildStubs: func(store *mockdb.MockStore) {
+		buildStubs: func(store *mockdb.MockHub) {
 		  store.EXPECT().
-			GetAccount(gomock.Any(), gomock.Eq(account.ID)).
+			GetUser(gomock.Any(), gomock.Eq(user.ID)).
 			Times(1).
-			Return(db.Account{}, db.ErrRecordNotFound)
+			Return(db.User{}, db.ErrRecordNotFound)
 		},
-		checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+		checkResponse: func(recorder *httptest.ResponseRecorder) {
 		  require.Equal(t, http.StatusNotFound, recorder.Code)
 		},
 	  },
 	  {
 		name:      "InternalError",
-		accountID: account.ID,
+		userID: user.ID,
 		setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-		  addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, user.Role, time.Minute)
+			addTokenAsCookie(t, request, tokenMaker, user.Username, time.Minute)
 		},
-		buildStubs: func(store *mockdb.MockStore) {
+		buildStubs: func(store *mockdb.MockHub) {
 		  store.EXPECT().
-			GetAccount(gomock.Any(), gomock.Eq(account.ID)).
+			GetUser(gomock.Any(), gomock.Eq(user.ID)).
 			Times(1).
-			Return(db.Account{}, sql.ErrConnDone)
+			Return(db.User{}, sql.ErrConnDone)
 		},
-		checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+		checkResponse: func(recorder *httptest.ResponseRecorder) {
 		  require.Equal(t, http.StatusInternalServerError, recorder.Code)
 		},
 	  },
 	  {
 		name:      "InvalidID",
-		accountID: 0,
+		userID: func() pgtype.UUID {
+			id := pgtype.UUID{}
+			id.Scan(uuid.MustParse("00000000-0000-0000-0000-000000000000")) // Zero UUID
+			return id
+		}(),
 		setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-		  addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, user.Role, time.Minute)
+			addTokenAsCookie(t, request, tokenMaker, user.Username, time.Minute)
 		},
-		buildStubs: func(store *mockdb.MockStore) {
+		buildStubs: func(store *mockdb.MockHub) {
 		  store.EXPECT().
-			GetAccount(gomock.Any(), gomock.Any()).
+			GetUser(gomock.Any(), gomock.Any()).
 			Times(0)
 		},
-		checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+		checkResponse: func(recorder *httptest.ResponseRecorder) {
 		  require.Equal(t, http.StatusBadRequest, recorder.Code)
 		},
 	  },
 	}
-  
 
-func randomUser() db.User {
-	return db.User{
-		ID:              uuid.New(),
-		Username:        util.RandomUsername(),
-		Fullname:        util.RandomFullname(),
-		Email:           util.RandomEmail(),
-		HashedPassword:  util.HashPassword(util.RandomString(10)),
-		ProfilePicture:  util.RandomProfilePictureURL(),
-		Bio:             util.RandomBio(),
-		HasOnboarded:    false,
-		BackgroundImage: util.RandomProfilePictureURL(),
-		OnboardingAt:    nil,
-		CreatedAt:       time.now(),
-		UpdatedAt:       nil
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			server := newTestServer(t)
+			recorder := httptest.NewRecorder()
+
+			// Marshal body data to JSON
+			data, err := json.Marshal(tc.body)
+			require.NoError(t, err)
+
+			url := "/users/login" //????
+			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+			require.NoError(t, err)
+
+			server.router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
 	}
+} 
+
+func randomUser(t *testing.T) db.User {
+	id := pgtype.UUID{}
+	id.Scan(uuid.New())
+	
+	fullname := pgtype.Text{}
+	fullname.Scan(util.RandomFullname())
+	
+	profilePicture := pgtype.Text{}
+	profilePicture.Scan(util.RandomProfilePictureURL())
+	
+	bio := pgtype.Text{}
+	bio.Scan(util.RandomBio())
+	
+	hasOnboarded := pgtype.Bool{}
+	hasOnboarded.Scan(false)
+	
+	backgroundImage := pgtype.Text{}
+	backgroundImage.Scan(util.RandomProfilePictureURL())
+	
+	createdAt := pgtype.Timestamp{}
+	createdAt.Scan(time.Now())
+	
+	return db.User{
+		ID:              id,
+		Username:        util.RandomUsername(),
+		Fullname:        fullname,
+		Email:           util.RandomEmail(),
+		HashedPassword:  "",
+		ProfilePicture:  profilePicture,
+		Bio:             bio,
+		HasOnboarded:    hasOnboarded,
+		BackgroundImage: backgroundImage,
+		OnboardingAt:    pgtype.Timestamp{}, // Empty timestamp
+		CreatedAt:       createdAt,
+		UpdatedAt:       pgtype.Timestamp{}, // Empty timestamp
+	}
+}
+
+func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
+	data, err := io.ReadAll(body)
+	require.NoError(t, err)
+
+	var gotUser db.User
+	err = json.Unmarshal(data, &gotUser)
+
+	require.NoError(t, err)
+	require.Equal(t, user.Username, gotUser.Username)
+	require.Equal(t, user.Fullname, gotUser.Fullname)
+	require.Equal(t, user.Email, gotUser.Email)
+	require.Empty(t, gotUser.HashedPassword)
 }

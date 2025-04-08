@@ -33,19 +33,7 @@ func main() {
 		logger.Fatal("cannot load config: %v", err)
 	}
 
-	// switch config.Env {
-	// case "devlocal":
-	//     dbSource = config.DBSourceLocal
-	// case "devdocker":
-	//     dbSource = config.DBSourceDocker
-	// case "production":
-	//     dbSource = "postgresql://<RDS_USER>:<RDS_PASSWORD>@<RDS_ENDPOINT>:5432/graffiti?sslmode=require"
-	// default:
-	//     fmt.Println("Unknown environment, using default database source")
-	//     dbSource = config.DBSourceLocal
-	// }
-
-	server := api.NewServer(config)
+	server, _ := api.NewServer(config)
 
 	go func() {
 		logger.Info("Starting server in %s environment on %s", config.Env, config.ServerAddress)
