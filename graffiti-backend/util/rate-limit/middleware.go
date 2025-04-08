@@ -11,17 +11,13 @@ import (
 )
 
 type TokenBucketLimiter struct {
-	RedisClient *redis.Client
+	RedisClient redis.UniversalClient
 	Capacity    int
 	RefillRate  float64
 	Window      time.Duration
 }
 
-func NewTokenBucketLimiter(rdb *redis.Client, capacity int, refillRate float64, ttl time.Duration) *TokenBucketLimiter {
-	// Ping the Redis server to check if it's available
-	if err := rdb.Ping(context.Background()).Err(); err != nil {
-		panic(fmt.Sprintf("Failed to connect to Redis: %v", err))
-	}
+func NewTokenBucketLimiter(rdb redis.UniversalClient, capacity int, refillRate float64, ttl time.Duration) *TokenBucketLimiter {
 	return &TokenBucketLimiter{
 		RedisClient: rdb,
 		Capacity:    capacity,
@@ -29,6 +25,7 @@ func NewTokenBucketLimiter(rdb *redis.Client, capacity int, refillRate float64, 
 		Window:      ttl,
 	}
 }
+
 func (tb *TokenBucketLimiter) Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var identifier string

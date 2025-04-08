@@ -25,7 +25,7 @@ import (
 type Server struct {
 	hub        *db.Hub
 	db         *pgxpool.Pool
-	redis      *redis.Client
+	redis      redis.UniversalClient
 	config     util.Config
 	router     *gin.Engine // helps us send each API request to the correct handler for processing
 	tokenMaker token.Maker
