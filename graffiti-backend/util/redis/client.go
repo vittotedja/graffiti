@@ -22,7 +22,7 @@ func NewRedisClient(cfg util.Config) redis.UniversalClient {
 	}
 
 	client := redis.NewClusterClient(opts)
-	err := client.Ping(context.Background())
+	err := client.Ping(context.Background()).Err()
 	if err != nil {
 		log.Fatalf("failed to connect to redis: %v at this address: %s", err, cfg.RedisHost)
 	}
