@@ -28,7 +28,7 @@ type Server struct {
 }
 
 // NewServer creates a new HTTP server and sets up all routes
-func NewServer(config util.Config) *Server {
+func NewServer(config util.Config) (*Server, error) {
 	tokenMaker, err := token.NewJWTMaker("veryverysecretkey")
 	if err != nil {
 		log.Fatal("cannot create token maker", err)
@@ -37,7 +37,7 @@ func NewServer(config util.Config) *Server {
 	server.router.Use(logger.Middleware())
 	server.registerRoutes()
 
-	return server
+	return server, nil
 }
 
 // Start runs the HTTP server on a specific address
