@@ -73,8 +73,9 @@ func main() {
 				Bio:             pgtype.Text{String: util.RandomBio(), Valid: true},
 				BackgroundImage: pgtype.Text{Valid: false},
 			}
-			_, _ = hub.UpdateProfile(ctx, profileArg)
-
+			if _, err := hub.UpdateProfile(ctx, profileArg); err != nil {
+				log.Printf("user %d profile update error: %v", i+1, err)
+			}
 			if (i+1)%1000 == 0 {
 				log.Printf("%d users processed", i+1)
 			}
