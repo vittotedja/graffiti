@@ -17,7 +17,7 @@ import {useUser} from "@/hooks/useUser";
 import UploadTab from "./upload-tab";
 import DrawTab from "./draw-tab";
 import DetailsTab from "./details-tab";
-import {canvasToBlob, getPresignedUrl, uploadToS3} from "@/lib/s3-uploader";
+import {getPresignedUrl, uploadToS3} from "@/lib/s3-uploader";
 import {RequestPost, Platform} from "@/types/post";
 
 interface EnhancedPostModalProps {
@@ -36,6 +36,9 @@ export function EnhancedPostModal({
 	const {user} = useUser();
 	const [activeTab, setActiveTab] = useState("upload");
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const [originalImage, setOriginalImage] = useState<HTMLImageElement | null>(
+		null
+	);
 	const [caption, setCaption] = useState("");
 	const [mediaUrl, setMediaUrl] = useState("");
 	const [tiktokHtml, setTiktokHtml] = useState<string | null>(null);
@@ -68,7 +71,7 @@ export function EnhancedPostModal({
 		"#ffffff",
 	];
 
-	// Generate composite image
+	// Generate composite image for preview - moderate quality for UI display
 	const generateComposite = useCallback(() => {
 		if (!bgCanvasRef.current || !drawCanvasRef.current) return;
 		const offscreenCanvas = document.createElement("canvas");
@@ -76,9 +79,15 @@ export function EnhancedPostModal({
 		offscreenCanvas.height = bgCanvasRef.current.height;
 		const offscreenCtx = offscreenCanvas.getContext("2d");
 		if (offscreenCtx) {
+			// Enable image smoothing for better preview quality
+			offscreenCtx.imageSmoothingEnabled = true;
+
+			// Draw the background and drawing layers
 			offscreenCtx.drawImage(bgCanvasRef.current, 0, 0);
 			offscreenCtx.drawImage(drawCanvasRef.current, 0, 0);
-			const dataUrl = offscreenCanvas.toDataURL("image/png");
+
+			// Generate data URL at moderate quality (better for preview performance)
+			const dataUrl = offscreenCanvas.toDataURL("image/jpeg", 0.85);
 			setCompositeDataUrl(dataUrl);
 		}
 	}, []);
@@ -116,15 +125,28 @@ export function EnhancedPostModal({
 				const img = new Image();
 				img.crossOrigin = "anonymous";
 				img.onload = () => {
+					// Store the original image for high-quality export later
+					setOriginalImage(img);
+
+					// Calculate dimensions for the editing canvas (keep reasonable size for editing)
 					let width = img.width;
 					let height = img.height;
+
+					// Use the original MAX_WIDTH/MAX_HEIGHT for editing UX
 					const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height, 1);
 					width = width * scale;
 					height = height * scale;
+
+					// Set canvas dimensions to a reasonable size for editing
 					bgCanvas.width = width;
 					bgCanvas.height = height;
 					drawCanvas.width = width;
 					drawCanvas.height = height;
+
+					// Enable image rendering optimized for editing
+					bgContext.imageSmoothingEnabled = true;
+
+					// Draw the image to the background canvas
 					bgContext.drawImage(img, 0, 0, width, height);
 					drawContext.clearRect(0, 0, width, height);
 					const initialState = drawContext.getImageData(0, 0, width, height);
@@ -140,12 +162,15 @@ export function EnhancedPostModal({
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
+			// Store as a data URL for canvas display
 			const reader = new FileReader();
 			reader.onload = (event) => {
 				setSelectedImage(event.target?.result as string);
 				setActiveTab("draw");
 			};
 			reader.readAsDataURL(file);
+
+			// Note: Original image is stored when image loads in the useEffect
 		}
 	};
 
@@ -357,27 +382,94 @@ export function EnhancedPostModal({
 		}
 	};
 
-	// S3 Upload function
+	// S3 Upload function with balanced quality/UX approach
 	const handleUploadToS3 = async () => {
 		if (!bgCanvasRef.current || !drawCanvasRef.current) return;
-		const offscreenCanvas = document.createElement("canvas");
-		offscreenCanvas.width = bgCanvasRef.current.width;
-		offscreenCanvas.height = bgCanvasRef.current.height;
-		const offscreenCtx = offscreenCanvas.getContext("2d");
-		if (offscreenCtx) {
-			offscreenCtx.drawImage(bgCanvasRef.current, 0, 0);
-			offscreenCtx.drawImage(drawCanvasRef.current, 0, 0);
-			try {
-				const blob = await canvasToBlob(offscreenCanvas);
-				const filename = `image-${Date.now()}.png`;
-				const presignedUrlData = await getPresignedUrl(filename, blob);
+
+		try {
+			// Create a high-quality canvas for the final upload
+			const highQualityCanvas = document.createElement("canvas");
+			const highQualityCtx = highQualityCanvas.getContext("2d");
+
+			if (highQualityCtx) {
+				// Determine the best dimensions for the final image
+				let finalWidth, finalHeight;
+
+				if (originalImage) {
+					// If we have the original image, use its dimensions with reasonable limits
+					const MAX_HQ_DIMENSION = 1200; // High quality but not excessive
+					const originalWidth = originalImage.naturalWidth;
+					const originalHeight = originalImage.naturalHeight;
+
+					// Scale down if needed, but maintain quality
+					const qualityScale = Math.min(
+						MAX_HQ_DIMENSION / originalWidth,
+						MAX_HQ_DIMENSION / originalHeight,
+						1
+					);
+
+					finalWidth = Math.round(originalWidth * qualityScale);
+					finalHeight = Math.round(originalHeight * qualityScale);
+
+					// Set canvas size to the high-quality dimensions
+					highQualityCanvas.width = finalWidth;
+					highQualityCanvas.height = finalHeight;
+
+					// Set high-quality rendering options
+					highQualityCtx.imageSmoothingEnabled = true;
+					highQualityCtx.imageSmoothingQuality = "high";
+
+					// Draw the original image at high quality
+					highQualityCtx.drawImage(
+						originalImage,
+						0,
+						0,
+						finalWidth,
+						finalHeight
+					);
+
+					// Scale drawing canvas to match the high-quality dimensions
+					const drawingScale = finalWidth / bgCanvasRef.current.width;
+
+					// Apply the drawing layer scaled to match the high-quality canvas
+					highQualityCtx.save();
+					highQualityCtx.scale(drawingScale, drawingScale);
+					highQualityCtx.drawImage(drawCanvasRef.current, 0, 0);
+					highQualityCtx.restore();
+				} else {
+					// Fallback to the editing canvas if original isn't available
+					// Still try to improve quality from the editing canvas
+					highQualityCanvas.width = bgCanvasRef.current.width;
+					highQualityCanvas.height = bgCanvasRef.current.height;
+
+					highQualityCtx.imageSmoothingEnabled = true;
+					highQualityCtx.imageSmoothingQuality = "high";
+
+					highQualityCtx.drawImage(bgCanvasRef.current, 0, 0);
+					highQualityCtx.drawImage(drawCanvasRef.current, 0, 0);
+				}
+
+				// Create a high-quality blob from the canvas
+				const blob = await new Promise<Blob>((resolve, reject) => {
+					highQualityCanvas.toBlob(
+						(blob) => {
+							if (blob) resolve(blob);
+							else reject(new Error("Failed to generate image from canvas."));
+						},
+						"image/jpeg",
+						0.92 // Good quality without excessive file size
+					);
+				});
+
+				const filename = `image-${Date.now()}.jpg`;
+				const presignedUrlData = await getPresignedUrl(filename, blob, "posts");
 				await uploadToS3(presignedUrlData.presignedUrl, blob);
 				toast.success("Image uploaded successfully!");
 				return presignedUrlData.publicUrl;
-			} catch (error) {
-				toast.error("Image upload failed.");
-				console.error("S3 Upload Error:", error);
 			}
+		} catch (error) {
+			toast.error("Image upload failed.");
+			console.error("S3 Upload Error:", error);
 		}
 	};
 
@@ -422,6 +514,7 @@ export function EnhancedPostModal({
 			setTimeout(() => {
 				onPostCreated();
 				setSelectedImage(null);
+				setOriginalImage(null);
 				setCaption("");
 				setActiveTab("upload");
 				setMediaUrl("");
@@ -448,6 +541,7 @@ export function EnhancedPostModal({
 
 	const handleClose = () => {
 		setSelectedImage(null);
+		setOriginalImage(null);
 		setCaption("");
 		setActiveTab("upload");
 		onClose();
