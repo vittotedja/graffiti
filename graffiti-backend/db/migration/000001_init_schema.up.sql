@@ -75,7 +75,7 @@ CREATE INDEX ON "likes" ("post_id");
 
 CREATE INDEX ON "likes" ("user_id");
 
-CREATE INDEX ON "likes" ("post_id", ;l"user_id");
+CREATE INDEX ON "likes" ("post_id", "user_id");
 
 CREATE INDEX ON "friendships" ("from_user");
 
