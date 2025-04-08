@@ -66,6 +66,7 @@ CREATE TABLE
     CONSTRAINT "friendships_to_user_fk" FOREIGN KEY ("to_user") REFERENCES "users" ("id") ON DELETE CASCADE,
     CONSTRAINT "unique_friendship" UNIQUE ("from_user", "to_user")
   );
+
 CREATE INDEX ON "users" ("username");
 
 CREATE INDEX ON "walls" ("user_id");
@@ -74,7 +75,7 @@ CREATE INDEX ON "likes" ("post_id");
 
 CREATE INDEX ON "likes" ("user_id");
 
-CREATE INDEX ON "likes" ("post_id", "user_id");
+CREATE INDEX ON "likes" ("post_id", ;l"user_id");
 
 CREATE INDEX ON "friendships" ("from_user");
 
