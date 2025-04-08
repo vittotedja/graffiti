@@ -5,10 +5,13 @@ import (
 )
 
 type Config struct {
-	Env                      string `mapstructure:"ENV"`
-	DBDriver                 string `mapstructure:"DB_DRIVER"`
-	DBSource                 string `mapstructure:"DB_SOURCE"`
-	ServerAddress            string `mapstructure:"SERVER_ADDRESS"`
+	Env           string `mapstructure:"ENV"`
+	DBDriver      string `mapstructure:"DB_DRIVER"`
+	DBSource      string `mapstructure:"DB_SOURCE"`
+	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
+	RedisHost     string `mapstructure:"REDIS_HOST"`
+	RedisAuth     string `mapstructure:"REDIS_AUTH"`
+	RedisTLS      bool   `mapstructure:"REDIS_TLS"`
 	AWSRegion                string `mapstructure:"AWS_REGION"`
 	AWSAccessKeyID           string `mapstructure:"AWS_ACCESS_KEY_ID"`
 	AWSSecretKey             string `mapstructure:"AWS_SECRET_ACCESS_KEY"`

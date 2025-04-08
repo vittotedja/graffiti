@@ -19,6 +19,10 @@ DROP INDEX IF EXISTS walls_user_id_idx;
 
 DROP INDEX IF EXISTS users_username_idx;
 
+DROP INDEX IF EXISTS idx_users_username_trgm;
+
+DROP INDEX IF EXISTS idx_users_fullname_trgm;
+
 -- Drop tables
 DROP TABLE IF EXISTS friendships;
 

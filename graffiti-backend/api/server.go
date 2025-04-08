@@ -1,6 +1,9 @@
 package api
 
 import (
+	"github.com/redis/go-redis/v9"
+	cron "github.com/vittotedja/graffiti/graffiti-backend/util/cron"
+	ratelimiter "github.com/vittotedja/graffiti/graffiti-backend/util/rate-limit"
 	"log"
 	"time"
 
@@ -15,12 +18,14 @@ import (
 	"github.com/vittotedja/graffiti/graffiti-backend/token"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
+	cache "github.com/vittotedja/graffiti/graffiti-backend/util/redis"
 )
 
 // Server serves HTTP requests
 type Server struct {
 	hub        *db.Hub
 	db         *pgxpool.Pool
+	redis      *redis.Client
 	config     util.Config
 	router     *gin.Engine // helps us send each API request to the correct handler for processing
 	tokenMaker token.Maker
@@ -33,8 +38,17 @@ func NewServer(config util.Config) *Server {
 	if err != nil {
 		log.Fatal("cannot create token maker", err)
 	}
-	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
+	redisClient := cache.NewRedisClient(config)
+	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker, redis: redisClient}
 	server.router.Use(logger.Middleware())
+
+	limiter := ratelimiter.NewTokenBucketLimiter(
+		redisClient,
+		5,    // Capacity = 5 tokens
+		60.0, // Refill rate = 60 tokens per second
+		2*time.Minute,
+	)
+	server.router.Use(limiter.Middleware())
 	server.registerRoutes()
 
 	return server
@@ -59,6 +73,8 @@ func (s *Server) Start() error {
 		Addr:    s.config.ServerAddress,
 		Handler: s.router,
 	}
+
+	cron.ScheduleMaterializedViewRefresh(s.db)
 
 	logger.Global().Info("Server listening on %s", s.config.ServerAddress)
 	return s.httpServer.ListenAndServe()
@@ -177,6 +193,9 @@ func (s *Server) registerRoutes() {
 	// Updated Friendship API routes
 	// Friend Requests
 	s.router.PUT("/api/v1/friend-requests/accept", s.acceptFriendRequest) // working
+	s.router.POST("/api/v1/friends/mutual/count", s.getNumberOfMutualFriends)
+	s.router.POST("/api/v1/friends/discover", s.discoverFriendsByMutuals)
+	s.router.POST("/api/v1/friends/mutual", s.getMutualFriends)
 
 	// User Blocking
 	s.router.PUT("/api/v1/users/block", s.blockUser)
