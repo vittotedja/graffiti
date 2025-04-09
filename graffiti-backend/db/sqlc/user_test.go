@@ -294,3 +294,140 @@ func TestSearchUsersTrigram(t *testing.T) {
 	}
 	require.True(t, found, "Target user not found in trigram search results")
 }
+
+func TestGetNumberOfMutualFriends(t *testing.T) {
+	ctx := context.Background()
+
+	// Create 3 users
+	userA := createRandomUser(t)
+	userB := createRandomUser(t)
+	mutual := createRandomUser(t)
+
+	// Create friendships to form a mutual connection
+	_, err := testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userA.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userB.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	// Refresh materialized view
+	err = testHub.RefreshMaterializedViews(ctx)
+	require.NoError(t, err)
+
+	// Call query
+	count, err := testHub.GetNumberOfMutualFriends(ctx, GetNumberOfMutualFriendsParams{
+		UserID:   userA.ID,
+		UserID_2: userB.ID,
+	})
+	require.NoError(t, err)
+	require.Equal(t, int64(1), count)
+}
+
+func TestDiscoverFriendsByMutuals(t *testing.T) {
+	ctx := context.Background()
+
+	// User A is the main user
+	userA := createRandomUser(t)
+	mutual := createRandomUser(t)
+	suggested := createRandomUser(t)
+
+	// A <-> Mutual
+	_, err := testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userA.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	// Suggested <-> Mutual
+	_, err = testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: suggested.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	// Refresh MV
+	err = testHub.RefreshMaterializedViews(ctx)
+	require.NoError(t, err)
+
+	// Discover friends
+	discoveries, err := testHub.DiscoverFriendsByMutuals(ctx, userA.ID)
+	require.NoError(t, err)
+
+	// Check if suggested user appears
+	var found bool
+	for _, u := range discoveries {
+		if u.ID == suggested.ID {
+			found = true
+			require.Equal(t, int64(1), u.MutualFriendCount)
+			break
+		}
+	}
+	require.True(t, found, "Suggested user not found in discover results")
+}
+
+func TestGetMutualFriends(t *testing.T) {
+	ctx := context.Background()
+
+	// Create 3 users
+	userA := createRandomUser(t)
+	userB := createRandomUser(t)
+	mutual := createRandomUser(t)
+
+	// Create friendships to form mutual connections
+	_, err := testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userA.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userB.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	// Refresh materialized view
+	err = testHub.RefreshMaterializedViews(ctx)
+	require.NoError(t, err)
+
+	// Call query to get mutual friends
+	results, err := testHub.ListMutualFriends(ctx, ListMutualFriendsParams{
+		UserID:   userA.ID,
+		UserID_2: userB.ID,
+	})
+	require.NoError(t, err)
+
+	// Expect exactly 1 mutual friend with matching ID
+	require.Len(t, results, 1)
+	require.Equal(t, mutual.ID, results[0].ID)
+}
