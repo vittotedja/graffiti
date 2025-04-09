@@ -109,6 +109,7 @@ func (s *Server) registerRoutes() {
 	protected := s.router.Group("/api")
 	protected.Use(s.AuthMiddleware())
 	{
+		// auth
 		protected.POST("/v1/auth/me", s.Me)
 
 		// Protected Walls Endpoint
@@ -119,9 +120,8 @@ func (s *Server) registerRoutes() {
 		protected.PUT("/v1/walls/:id/publicize", s.publicizeWall) // working
 		protected.PUT("/v1/walls/:id/privatize", s.privatizeWall) // working
 		protected.PUT("/v1/walls/:id/pin", s.pinWall)             // working
+		protected.DELETE("/v1/walls/:id", s.deleteWall)           // working
 
-		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
-		protected.DELETE("/v1/friendships", s.deleteFriendship)
 		// search
 		protected.POST("/v1/users/search", s.searchUsers) //no test
 		protected.POST("/v2/users", s.updateUserNew)      // no test
@@ -132,13 +132,15 @@ func (s *Server) registerRoutes() {
 		//friends
 		protected.POST("/v1/friend-requests", s.createFriendRequest) // working
 		protected.POST("/v1/friendships", s.listFriendshipByUserPairs)
+		protected.GET("/v1/friends", s.getFriendsByStatus) //status = friends, requested, sent
+		protected.DELETE("/v1/friendships", s.deleteFriendship)
 
 		//posts
 		protected.GET("/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
 		protected.DELETE("/v1/posts/:id", s.deletePost)                           // working
 
 		//likes
-		protected.POST("/v1/likes", s.updateLike)
+		protected.POST("/v1/likes", s.updateLike) // add and delete likes in 1 endpoint
 		protected.GET("/v1/likes/:post_id", s.getLike)
 	}
 
@@ -161,7 +163,6 @@ func (s *Server) registerRoutes() {
 
 	s.router.PUT("/api/v1/walls/:id/archive", s.archiveWall)
 	s.router.PUT("/api/v1/walls/:id/unarchive", s.unarchiveWall)
-	s.router.DELETE("/api/v1/walls/:id", s.deleteWall) // working
 
 	// Set up routes for the post API
 	s.router.POST("/api/v1/posts", s.createPost)                                     // working

@@ -182,7 +182,9 @@ func (q *Queries) ListWalls(ctx context.Context) ([]Wall, error) {
 const listWallsByUser = `-- name: ListWallsByUser :many
 SELECT id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at, is_pinned FROM walls
 WHERE user_id = $1
-ORDER BY id
+AND is_deleted = false
+AND is_archived = false
+ORDER BY created_at DESC
 `
 
 func (q *Queries) ListWallsByUser(ctx context.Context, userID pgtype.UUID) ([]Wall, error) {

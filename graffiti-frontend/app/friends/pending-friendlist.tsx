@@ -4,7 +4,7 @@ import {Button} from "@/components/ui/button";
 import {fetchWithAuth} from "@/lib/auth";
 import {formatFullName} from "@/lib/formatter";
 import {Friendship} from "@/types/friends";
-import {UserPlus} from "lucide-react";
+import {Ban, Check} from "lucide-react";
 import Link from "next/link";
 import {useEffect, useState} from "react";
 import {toast} from "sonner";
@@ -84,16 +84,27 @@ export default function PendingFriendsList() {
 								</div>
 							</div>
 						</Link>
-
-						<Button
-							size="sm"
-							onClick={() => {
-								acceptFriends(friend.ID);
-							}}
-						>
-							<UserPlus className="h-4 w-4 mr-2" />
-							Accept
-						</Button>
+						<div className="flex items-center gap-2">
+							<Button
+								size="sm"
+								onClick={() => {
+									acceptFriends(friend.ID);
+								}}
+							>
+								<Check className="h-4 w-4 mr-2" />
+								Accept
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => {
+									acceptFriends(friend.ID);
+								}}
+							>
+								<Ban className="h-4 w-4 mr-2" />
+								Reject
+							</Button>
+						</div>
 					</div>
 				))}
 		</div>

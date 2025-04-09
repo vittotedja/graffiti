@@ -29,7 +29,9 @@ ORDER BY id DESC;
 -- name: ListWallsByUser :many
 SELECT * FROM walls
 WHERE user_id = $1
-ORDER BY id;
+AND is_deleted = false
+AND is_archived = false
+ORDER BY created_at DESC;
 
 -- name: UpdateWall :one
 UPDATE walls
