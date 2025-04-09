@@ -1,4 +1,4 @@
-import {useState, useRef} from "react";
+import {useState, useRef, useCallback} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {
 	Dialog,
@@ -10,13 +10,15 @@ import {
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
-import {Camera, ImageIcon, Loader2, X} from "lucide-react";
+import {Camera, Check, CropIcon, ImageIcon, Loader2, X} from "lucide-react";
 import {formatFullName} from "@/lib/formatter";
 import {toast} from "sonner";
 import {cn} from "@/lib/utils";
 import {getPresignedUrl, uploadToS3} from "@/lib/s3-uploader";
 import {fetchWithAuth} from "@/lib/auth";
 import Image from "next/image";
+import ReactCrop, {type Crop, type PixelCrop} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 interface EditProfileModalProps {
 	isOpen: boolean;
@@ -29,14 +31,11 @@ interface EditProfileModalProps {
 		background_image?: string;
 		id: string;
 	};
-	onSave: (userData: {
-		fullname: string;
-		username: string;
-		bio: string;
-		avatar?: File;
-		backgroundImage?: File;
-	}) => void;
 }
+
+// Constants for aspect ratios
+const AVATAR_ASPECT_RATIO = 1; // 1:1 square
+const BACKGROUND_ASPECT_RATIO = 3; // 3:1 banner (typical cover photo ratio)
 
 export function EditProfileModal({
 	isOpen,
@@ -52,26 +51,158 @@ export function EditProfileModal({
 	const [backgroundPreview, setBackgroundPreview] = useState<string | null>(
 		null
 	);
+	const [isAvatarRemoved, setIsAvatarRemoved] = useState(false);
+	const [isBackgroundRemoved, setIsBackgroundRemoved] = useState(false);
 	const [loading, setLoading] = useState(false);
 
+	const [avatarCrop, setAvatarCrop] = useState<Crop>({
+		unit: "%",
+		width: 100,
+		height: 100,
+		x: 0,
+		y: 0,
+		// aspect: AVATAR_ASPECT_RATIO,
+	});
+	const [backgroundCrop, setBackgroundCrop] = useState<Crop>({
+		unit: "%",
+		width: 100,
+		height: 33.33,
+		x: 0,
+		y: 0,
+		// aspect: BACKGROUND_ASPECT_RATIO,
+	});
+
+	const [isCroppingAvatar, setIsCroppingAvatar] = useState(false);
+	const [isCroppingBackground, setIsCroppingBackground] = useState(false);
+
+	const avatarImgRef = useRef<HTMLImageElement>(null);
+	const backgroundImgRef = useRef<HTMLImageElement>(null);
 	const avatarInputRef = useRef<HTMLInputElement>(null);
 	const backgroundInputRef = useRef<HTMLInputElement>(null);
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files[0]) {
 			const file = e.target.files[0];
-			setAvatarFile(file);
-			setAvatarPreview(URL.createObjectURL(file));
+			const previewUrl = URL.createObjectURL(file);
+			setAvatarPreview(previewUrl);
+			setIsAvatarRemoved(false);
+			setIsCroppingAvatar(true);
 		}
 	};
 
 	const handleBackgroundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files[0]) {
 			const file = e.target.files[0];
-			setBackgroundFile(file);
-			setBackgroundPreview(URL.createObjectURL(file));
+			const previewUrl = URL.createObjectURL(file);
+			setBackgroundPreview(previewUrl);
+			setIsBackgroundRemoved(false);
+			setIsCroppingBackground(true);
 		}
 	};
+
+	const cropImage = useCallback(
+		async (
+			image: HTMLImageElement | null,
+			crop: PixelCrop,
+			fileName: string
+		): Promise<File | null> => {
+			if (!image) return null;
+
+			// Get the device pixel ratio
+			// const pixelRatio = window.devicePixelRatio || 1;
+
+			// Calculate the canvas size based on the original image dimensions
+			// This preserves the full resolution of the cropped region
+			const scaleX = image.naturalWidth / image.width;
+			const scaleY = image.naturalHeight / image.height;
+
+			const canvas = document.createElement("canvas");
+			// Use the full resolution dimensions of the cropped area
+			canvas.width = crop.width * scaleX;
+			canvas.height = crop.height * scaleY;
+
+			const ctx = canvas.getContext("2d");
+			if (!ctx) return null;
+
+			// Set canvas properties for better quality
+			ctx.imageSmoothingEnabled = true;
+			ctx.imageSmoothingQuality = "high";
+
+			// Draw the cropped portion of the image at full resolution
+			ctx.drawImage(
+				image,
+				crop.x * scaleX,
+				crop.y * scaleY,
+				crop.width * scaleX,
+				crop.height * scaleY,
+				0,
+				0,
+				canvas.width,
+				canvas.height
+			);
+
+			// Create a high-quality image file from the canvas
+			return new Promise((resolve) => {
+				canvas.toBlob(
+					(blob) => {
+						if (!blob) {
+							resolve(null);
+							return;
+						}
+						const file = new File([blob], fileName, {type: "image/jpeg"});
+						resolve(file);
+					},
+					"image/jpeg", // JPEG often works better for photos
+					0.95 // High quality but with minimal compression
+				);
+			});
+		},
+		[]
+	);
+
+	const completeAvatarCrop = useCallback(async () => {
+		if (!avatarImgRef.current) return;
+
+		try {
+			const croppedFile = await cropImage(
+				avatarImgRef.current,
+				avatarCrop as PixelCrop,
+				`avatar-${Date.now()}.png`
+			);
+
+			if (croppedFile) {
+				setAvatarFile(croppedFile);
+				setAvatarPreview(URL.createObjectURL(croppedFile));
+			}
+
+			setIsCroppingAvatar(false);
+		} catch (error) {
+			console.error("Error cropping avatar:", error);
+			toast.error("Failed to crop image");
+		}
+	}, [avatarCrop, cropImage]);
+
+	const completeBackgroundCrop = useCallback(async () => {
+		if (!backgroundImgRef.current) return;
+
+		try {
+			const croppedFile = await cropImage(
+				backgroundImgRef.current,
+				backgroundCrop as PixelCrop,
+				`background-${Date.now()}.png`
+			);
+
+			if (croppedFile) {
+				setBackgroundFile(croppedFile);
+				setBackgroundPreview(URL.createObjectURL(croppedFile));
+			}
+
+			setIsCroppingBackground(false);
+		} catch (error) {
+			console.error("Error cropping background:", error);
+			toast.error("Failed to crop image");
+		}
+	}, [backgroundCrop, cropImage]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -81,7 +212,9 @@ export function EditProfileModal({
 			let avatarUrl = user.profile_picture;
 			let backgroundUrl = user.background_image;
 
-			if (avatarFile) {
+			if (isAvatarRemoved) {
+				avatarUrl = "";
+			} else if (avatarFile) {
 				const presignedUrlAvatarData = await getPresignedUrl(
 					`${user.id}.png`,
 					avatarFile,
@@ -90,7 +223,11 @@ export function EditProfileModal({
 				await uploadToS3(presignedUrlAvatarData.presignedUrl, avatarFile);
 				avatarUrl = presignedUrlAvatarData.publicUrl;
 			}
-			if (backgroundFile) {
+
+			// Handle background changes
+			if (isBackgroundRemoved) {
+				backgroundUrl = "";
+			} else if (backgroundFile) {
 				const presignedUrlBackgroundData = await getPresignedUrl(
 					`${user.id}.png`,
 					backgroundFile,
@@ -104,6 +241,7 @@ export function EditProfileModal({
 			}
 
 			// Update DB
+
 			const response = await fetchWithAuth("/api/v2/users", {
 				method: "POST",
 				body: JSON.stringify({
@@ -140,6 +278,23 @@ export function EditProfileModal({
 		setBackgroundPreview(null);
 	};
 
+	const showBackgroundImage = () => {
+		if (isBackgroundRemoved) return false;
+		if (backgroundPreview) return true;
+		return !!user.background_image;
+	};
+
+	const getBackgroundImageSource = () => {
+		if (backgroundPreview) return backgroundPreview;
+		return user.background_image;
+	};
+
+	const getAvatarImageSource = () => {
+		if (isAvatarRemoved) return "/placeholder.svg?height=96&width=96";
+		if (avatarPreview) return avatarPreview;
+		return user.profile_picture || "/placeholder.svg?height=96&width=96";
+	};
+
 	return (
 		<Dialog
 			open={isOpen}
@@ -160,21 +315,13 @@ export function EditProfileModal({
 				<form onSubmit={handleSubmit} className="space-y-6 py-4">
 					{/* Background Image Section */}
 					<div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted">
-						{backgroundPreview ? (
+						{showBackgroundImage() ? (
 							<Image
-								src={backgroundPreview}
-								alt="Background preview"
-								className="w-full h-full object-cover"
-								width={"1000"}
-								height={"400"}
-							/>
-						) : user.background_image ? (
-							<Image
-								src={user.background_image}
+								src={getBackgroundImageSource() || ""}
 								alt="Background"
 								className="w-full h-full object-cover"
-								width={"1000"}
-								height={"400"}
+								width={1000}
+								height={400}
 							/>
 						) : (
 							<div className="absolute inset-0 flex items-center justify-center bg-muted">
@@ -193,6 +340,18 @@ export function EditProfileModal({
 							Change Cover
 						</Button>
 
+						{backgroundPreview && !isBackgroundRemoved && (
+							<Button
+								type="button"
+								variant="secondary"
+								size="sm"
+								className="absolute bottom-3 right-[160px]"
+								onClick={() => setIsCroppingBackground(true)}
+							>
+								<CropIcon className="h-4 w-4" />
+							</Button>
+						)}
+
 						{(backgroundPreview || user.background_image) && (
 							<Button
 								type="button"
@@ -202,6 +361,7 @@ export function EditProfileModal({
 								onClick={() => {
 									setBackgroundFile(null);
 									setBackgroundPreview(null);
+									setIsBackgroundRemoved(true);
 								}}
 							>
 								<X className="h-4 w-4" />
@@ -217,18 +377,49 @@ export function EditProfileModal({
 						/>
 					</div>
 
+					{isCroppingBackground && (
+						<div className="fixed inset-0 bg-black/50 z-50 flex flex-col items-center justify-center p-4">
+							<div className="bg-background p-4 rounded-lg max-w-4xl w-full">
+								<h3 className="text-lg font-medium mb-2">Crop Cover Image</h3>
+								<ReactCrop
+									crop={backgroundCrop}
+									onChange={(c) => setBackgroundCrop(c)}
+									aspect={BACKGROUND_ASPECT_RATIO}
+									className="max-h-[400px] max-w-full mx-auto"
+								>
+									{/* eslint-disable-next-line @next/next/no-img-element */}
+									<img
+										ref={backgroundImgRef}
+										src={backgroundPreview || ""}
+										alt="Crop background"
+										className="max-h-[400px] max-w-full"
+									/>
+								</ReactCrop>
+								<div className="flex gap-2 mt-4 justify-end">
+									<Button
+										type="button"
+										onClick={completeBackgroundCrop}
+										className="bg-green-600 hover:bg-green-700"
+									>
+										<Check className="h-4 w-4 mr-1" /> Apply Crop
+									</Button>
+									<Button
+										type="button"
+										variant="destructive"
+										onClick={() => setIsCroppingBackground(false)}
+									>
+										<X className="h-4 w-4 mr-1" /> Cancel
+									</Button>
+								</div>
+							</div>
+						</div>
+					)}
+
 					{/* Avatar Section */}
 					<div className="flex items-center space-x-4">
 						<div className="relative">
 							<Avatar className="h-24 w-24 border-4 border-background">
-								<AvatarImage
-									src={
-										avatarPreview ||
-										user.profile_picture ||
-										"/placeholder.svg?height=96&width=96"
-									}
-									alt="User Avatar"
-								/>
+								<AvatarImage src={getAvatarImageSource()} alt="User Avatar" />
 								<AvatarFallback>{formatFullName(fullname)}</AvatarFallback>
 							</Avatar>
 
@@ -241,6 +432,35 @@ export function EditProfileModal({
 							>
 								<Camera className="h-4 w-4" />
 							</Button>
+
+							{avatarPreview && !isAvatarRemoved && (
+								<Button
+									type="button"
+									variant="secondary"
+									size="icon"
+									className="absolute bottom-0 left-0 h-8 w-8 rounded-full"
+									onClick={() => setIsCroppingAvatar(true)}
+								>
+									<CropIcon className="h-4 w-4" />
+								</Button>
+							)}
+
+							{(avatarPreview ||
+								(user.profile_picture && !isAvatarRemoved)) && (
+								<Button
+									type="button"
+									variant="destructive"
+									size="icon"
+									className="absolute top-0 right-0 h-6 w-6 rounded-full"
+									onClick={() => {
+										setAvatarFile(null);
+										setAvatarPreview(null);
+										setIsAvatarRemoved(true);
+									}}
+								>
+									<X className="h-3 w-3" />
+								</Button>
+							)}
 
 							<input
 								ref={avatarInputRef}
@@ -258,6 +478,47 @@ export function EditProfileModal({
 							</p>
 						</div>
 					</div>
+
+					{isCroppingAvatar && (
+						<div className="fixed inset-0 bg-black/50 z-50 flex flex-col items-center justify-center p-4">
+							<div className="bg-background p-4 rounded-lg max-w-md w-full">
+								<h3 className="text-lg font-medium mb-2">
+									Crop Profile Picture
+								</h3>
+								<ReactCrop
+									crop={avatarCrop}
+									onChange={(c) => setAvatarCrop(c)}
+									aspect={AVATAR_ASPECT_RATIO}
+									circularCrop
+									className="max-h-[300px] max-w-full mx-auto"
+								>
+									{/* eslint-disable-next-line @next/next/no-img-element */}
+									<img
+										ref={avatarImgRef}
+										src={avatarPreview || ""}
+										alt="Crop avatar"
+										className="max-h-[300px] max-w-full"
+									/>
+								</ReactCrop>
+								<div className="flex gap-2 mt-4 justify-end">
+									<Button
+										type="button"
+										onClick={completeAvatarCrop}
+										className="bg-green-600 hover:bg-green-700"
+									>
+										<Check className="h-4 w-4 mr-1" /> Apply Crop
+									</Button>
+									<Button
+										type="button"
+										variant="destructive"
+										onClick={() => setIsCroppingAvatar(false)}
+									>
+										<X className="h-4 w-4 mr-1" /> Cancel
+									</Button>
+								</div>
+							</div>
+						</div>
+					)}
 
 					{/* Personal Details */}
 					<div className="space-y-4">
@@ -290,9 +551,8 @@ export function EditProfileModal({
 								<Input
 									id="username"
 									value={username}
-									onChange={(e) => setUsername(e.target.value)}
+									readOnly
 									className="rounded-l-none"
-									required
 								/>
 							</div>
 						</div>

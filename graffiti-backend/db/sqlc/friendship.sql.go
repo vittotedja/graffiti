@@ -93,6 +93,60 @@ func (q *Queries) DeleteFriendship(ctx context.Context, id pgtype.UUID) error {
 	return err
 }
 
+const discoverFriendsByMutuals = `-- name: DiscoverFriendsByMutuals :many
+SELECT
+    u.id,
+    u.fullname,
+    u.username,
+    u.profile_picture,
+    COUNT(*) AS mutual_friend_count
+FROM accepted_friendships_mv af1
+    JOIN accepted_friendships_mv af2 ON af1.friend_id = af2.friend_id
+    JOIN users u ON u.id = af2.user_id
+WHERE af1.user_id = $1  -- current user
+AND af2.user_id != $1   -- exclude self
+AND af2.user_id NOT IN (
+  SELECT friend_id FROM accepted_friendships_mv WHERE user_id = $1
+) -- exclude existing friends
+GROUP BY u.id
+ORDER BY mutual_friend_count DESC
+LIMIT 10
+`
+
+type DiscoverFriendsByMutualsRow struct {
+	ID                pgtype.UUID
+	Fullname          pgtype.Text
+	Username          string
+	ProfilePicture    pgtype.Text
+	MutualFriendCount int64
+}
+
+func (q *Queries) DiscoverFriendsByMutuals(ctx context.Context, userID pgtype.UUID) ([]DiscoverFriendsByMutualsRow, error) {
+	rows, err := q.db.Query(ctx, discoverFriendsByMutuals, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []DiscoverFriendsByMutualsRow
+	for rows.Next() {
+		var i DiscoverFriendsByMutualsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Fullname,
+			&i.Username,
+			&i.ProfilePicture,
+			&i.MutualFriendCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getFriendship = `-- name: GetFriendship :one
 SELECT id, from_user, to_user, status, created_at, updated_at FROM friendships
 WHERE id = $1 LIMIT 1
@@ -119,6 +173,24 @@ WHERE ((from_user = $1) OR (to_user = $1)) AND status = 'friends'
 
 func (q *Queries) GetNumberOfFriends(ctx context.Context, fromUser pgtype.UUID) (int64, error) {
 	row := q.db.QueryRow(ctx, getNumberOfFriends, fromUser)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const getNumberOfMutualFriends = `-- name: GetNumberOfMutualFriends :one
+SELECT COUNT(*) FROM accepted_friendships_mv af1
+JOIN accepted_friendships_mv af2 ON af1.friend_id = af2.friend_id
+WHERE af1.user_id = $1 AND af2.user_id = $2
+`
+
+type GetNumberOfMutualFriendsParams struct {
+	UserID   pgtype.UUID
+	UserID_2 pgtype.UUID
+}
+
+func (q *Queries) GetNumberOfMutualFriends(ctx context.Context, arg GetNumberOfMutualFriendsParams) (int64, error) {
+	row := q.db.QueryRow(ctx, getNumberOfMutualFriends, arg.UserID, arg.UserID_2)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -312,6 +384,51 @@ func (q *Queries) ListFriendshipsByUserIdAndStatus(ctx context.Context, arg List
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMutualFriends = `-- name: ListMutualFriends :many
+SELECT u.id, u.fullname, u.username, u.profile_picture
+FROM users u
+         JOIN accepted_friendships_mv af1 ON af1.friend_id = u.id
+         JOIN accepted_friendships_mv af2 ON af2.friend_id = u.id
+WHERE af1.user_id = $1 AND af2.user_id = $2
+`
+
+type ListMutualFriendsParams struct {
+	UserID   pgtype.UUID
+	UserID_2 pgtype.UUID
+}
+
+type ListMutualFriendsRow struct {
+	ID             pgtype.UUID
+	Fullname       pgtype.Text
+	Username       string
+	ProfilePicture pgtype.Text
+}
+
+func (q *Queries) ListMutualFriends(ctx context.Context, arg ListMutualFriendsParams) ([]ListMutualFriendsRow, error) {
+	rows, err := q.db.Query(ctx, listMutualFriends, arg.UserID, arg.UserID_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListMutualFriendsRow
+	for rows.Next() {
+		var i ListMutualFriendsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Fullname,
+			&i.Username,
+			&i.ProfilePicture,
 		); err != nil {
 			return nil, err
 		}

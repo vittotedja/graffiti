@@ -27,6 +27,7 @@ import {CreateWallModal} from "@/components/create-wall-modal";
 import {fetchWithAuth} from "@/lib/auth";
 import {formatDate} from "@/lib/date-utils";
 import {Wall} from "@/types/wall";
+import {toast} from "sonner";
 
 type WallGridProps = {
 	userId?: string;
@@ -42,10 +43,7 @@ export function WallGrid({userId}: WallGridProps) {
 			const response = await fetchWithAuth(`/api/v1/walls/${wallId}/pin`, {
 				method: "PUT",
 			});
-			if (!response) return;
-
-			const data = await response.json();
-			console.log("Pinned wall:", data);
+			if (!response.ok) return;
 			fetchWalls(); // Refresh the wall data after pinning
 		} catch (err) {
 			console.error("Failed to pin wall:", err);
@@ -58,19 +56,45 @@ export function WallGrid({userId}: WallGridProps) {
 				const response = await fetchWithAuth(`/api/v1/users/${userId}/walls`);
 				if (!response) return;
 				const data = await response.json();
-				console.log("Fetched friend wall data:", data);
 				setWalls(data);
 			} else {
 				const response = await fetchWithAuth("/api/v2/walls");
 				if (!response) return;
 				const data = await response.json();
-				console.log("Fetched wall data:", data);
 				setWalls(data);
 			}
 		} catch (err) {
 			console.error("Failed to fetch wall data:", err);
 		}
 	}, [userId]); // <-- dependency
+
+	const removeWall = async (wallId: string) => {
+		try {
+			const response = await fetchWithAuth(`/api/v1/walls/${wallId}`, {
+				method: "DELETE",
+			});
+			if (!response.ok) return;
+			setWalls((prevWalls) => prevWalls.filter((wall) => wall.id !== wallId));
+			toast.success("Wall deleted successfully");
+		} catch (err) {
+			console.error("Failed to delete wall:", err);
+			toast.error("Failed to delete wall");
+		}
+	};
+
+	const archiveWall = async (wallId: string) => {
+		try {
+			const response = await fetchWithAuth(`/api/v1/walls/${wallId}/archive`, {
+				method: "PUT",
+			});
+			if (!response.ok) return;
+			setWalls((prevWalls) => prevWalls.filter((wall) => wall.id !== wallId));
+			toast.success("Wall archived successfully");
+		} catch (err) {
+			console.error("Failed to archive wall:", err);
+			toast.error("Failed to archive wall");
+		}
+	};
 
 	useEffect(() => {
 		fetchWalls();
@@ -137,11 +161,23 @@ export function WallGrid({userId}: WallGridProps) {
 														>
 															<Pin /> {wall.is_pinned ? "Unpin" : "Pin"} Wall
 														</DropdownMenuItem>
-														<DropdownMenuItem className="text-gray-400 cursor-pointer">
+														<DropdownMenuItem
+															className="text-gray-400 cursor-pointer"
+															onClick={(e) => {
+																e.preventDefault();
+																archiveWall(wall.id);
+															}}
+														>
 															<Archive /> Archive Wall
 														</DropdownMenuItem>
 														<DropdownMenuSeparator />
-														<DropdownMenuItem className="text-destructive cursor-pointer">
+														<DropdownMenuItem
+															className="text-destructive cursor-pointer"
+															onClick={(e) => {
+																e.preventDefault();
+																removeWall(wall.id);
+															}}
+														>
 															<Trash2 className="text-destructive" /> Delete
 															Wall
 														</DropdownMenuItem>
@@ -199,6 +235,7 @@ export function WallGrid({userId}: WallGridProps) {
 						isOpen={createWallModalOpen}
 						onClose={() => setCreateWallModalOpen(false)}
 						sentWallData={sentWallData}
+						onSuccess={fetchWalls}
 					/>
 				</>
 			)}

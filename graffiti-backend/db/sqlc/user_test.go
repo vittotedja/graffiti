@@ -94,7 +94,7 @@ func TestGetNonExistentUser(t *testing.T) {
 	require.Error(t, err, "Should return error for non-existent user")
 }
 
-func TestUpdateUserPartialFields(t *testing.T) {
+func TestUpdateUser(t *testing.T) {
 	testCases := []struct {
 		name           string
 		updateField    string
@@ -118,6 +118,26 @@ func TestUpdateUserPartialFields(t *testing.T) {
 			},
 			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
 				require.NotEqual(t, oldUser.Fullname.String, updatedUser.Fullname.String)
+				require.Equal(t, oldUser.Username, updatedUser.Username)
+				require.Equal(t, oldUser.Email, updatedUser.Email)
+				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
+			},
+		},
+		{
+			name:        "Update Username",
+			updateField: "username",
+			updateFunction: func(oldUser User) UpdateUserParams {
+				return UpdateUserParams{
+					ID: oldUser.ID,
+					Username: util.RandomUsername(),
+					Fullname: oldUser.Fullname,
+					Email: oldUser.Email,
+					HashedPassword: oldUser.HashedPassword,
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.NotEqual(t, oldUser.Username, updatedUser.Username)
+				require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
 				require.Equal(t, oldUser.Email, updatedUser.Email)
 				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
 			},
@@ -135,6 +155,7 @@ func TestUpdateUserPartialFields(t *testing.T) {
 				}
 			},
 			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.Equal(t, oldUser.Username, updatedUser.Username)
 				require.NotEqual(t, oldUser.Email, updatedUser.Email)
 				require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
 				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword)
@@ -156,17 +177,40 @@ func TestUpdateUserPartialFields(t *testing.T) {
 				}
 			},
 			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.Equal(t, oldUser.Username, updatedUser.Username)
 				require.NotEqual(t, oldUser.HashedPassword, updatedUser.HashedPassword)
 				require.Equal(t, oldUser.Fullname.String, updatedUser.Fullname.String)
 				require.Equal(t, oldUser.Email, updatedUser.Email)
+			},
+		},
+		{
+			name:        "Update All Fields",
+			updateField: "all fields",
+			updateFunction: func(oldUser User) UpdateUserParams {
+				return UpdateUserParams{
+					ID: oldUser.ID,
+					Username: util.RandomUsername(),
+					Fullname: pgtype.Text{
+						String: util.RandomFullname(),
+						Valid:  true,
+					},
+					Email:          util.RandomEmail(),
+					HashedPassword: oldUser.HashedPassword, // You can keep the password hash the same or update it here
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.NotEqual(t, oldUser.Username, updatedUser.Username)
+				require.NotEqual(t, oldUser.Fullname.String, updatedUser.Fullname.String)
+				require.NotEqual(t, oldUser.Email, updatedUser.Email)
+				require.Equal(t, oldUser.HashedPassword, updatedUser.HashedPassword) // Check if the password is not updated (if not changed)
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			// Create a random user for testing
 			oldUser := createRandomUser(t)
-
 			updateParams := tc.updateFunction(oldUser)
 			updatedUser, err := testHub.UpdateUser(context.Background(), updateParams)
 
@@ -188,6 +232,32 @@ func TestDeleteUser(t *testing.T) {
 	require.Error(t, err, "Should not be able to fetch deleted user")
 }
 
+func TestDeleteNonExistentUser(t *testing.T) {
+	// Create multiple users
+	users := make([]User, 5)
+	for i := 0; i < 5; i++ {
+		users[i] = createRandomUser(t)
+	}
+
+	// Get number of users
+	initialUsers, err := testHub.ListUsers(context.Background())
+	require.NoError(t, err, "Should fetch users successfully before deletion")
+
+	// Delete Non Existent User
+	nonExistentID := pgtype.UUID{
+		Bytes: [16]byte{},
+		Valid: true,
+	}
+
+	err = testHub.DeleteUser(context.Background(), nonExistentID)
+	require.NoError(t, err, "No user should be deleted and no error should be thrown")
+
+	// Get number of users and ensure no user was deleted
+	finalUsers, err := testHub.ListUsers(context.Background())
+	require.NoError(t, err, "Should fetch users successfully after deletion attempt")
+	require.Equal(t, len(initialUsers), len(finalUsers), "The number of users should remain the same after deleting a non-existent user")
+}
+
 func TestListUsers(t *testing.T) {
 	// Create multiple users
 	users := make([]User, 5)
@@ -200,6 +270,124 @@ func TestListUsers(t *testing.T) {
 	require.NoError(t, err, "Should list users successfully")
 	require.GreaterOrEqual(t, len(allUsers), 5, "Should have at least the created users")
 }
+
+func TestFinishOnboarding(t *testing.T) {
+	// Create a random user
+	user := createRandomUser(t)
+
+	// Call FinishOnboarding to set has_onboarded to true and update onboarding_at
+	err := testHub.FinishOnboarding(context.Background(), user.ID)
+	require.NoError(t, err, "Should finish onboarding without error")
+
+	// Fetch the user again from the database
+	updatedUser, err := testHub.GetUser(context.Background(), user.ID)
+	require.NoError(t, err, "Should fetch the user successfully after onboarding")
+
+	// Check that has_onboarded is true
+	require.True(t, updatedUser.HasOnboarded.Bool, "User should have completed onboarding")
+
+	// Check that onboarding_at is set (not zero)
+	require.NotZero(t, updatedUser.OnboardingAt.Time, "Onboarding timestamp should be set")
+}
+
+func TestUpdateProfile(t *testing.T) {
+	testCases := []struct {
+		name           string
+		updateFields   []string
+		updateFunction func(oldUser User) UpdateProfileParams
+		verifyUpdate   func(t *testing.T, oldUser, updatedUser User)
+	}{
+		// Update one field at a time
+		{
+			name:         "Update Profile Picture",
+			updateFields: []string{"profile_picture"},
+			updateFunction: func(oldUser User) UpdateProfileParams {
+				return UpdateProfileParams{
+					ID:             oldUser.ID,
+					ProfilePicture: pgtype.Text{String: util.RandomString(10), Valid: true},
+					Bio:            oldUser.Bio,
+					BackgroundImage: oldUser.BackgroundImage,
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.NotEqual(t, oldUser.ProfilePicture.String, updatedUser.ProfilePicture.String)
+				require.Equal(t, oldUser.Bio.String, updatedUser.Bio.String)
+				require.Equal(t, oldUser.BackgroundImage.String, updatedUser.BackgroundImage.String)
+			},
+		},
+		{
+			name:         "Update Bio",
+			updateFields: []string{"bio"},
+			updateFunction: func(oldUser User) UpdateProfileParams {
+				return UpdateProfileParams{
+					ID:             oldUser.ID,
+					ProfilePicture: oldUser.ProfilePicture,
+					Bio:            pgtype.Text{String: util.RandomString(10), Valid: true},
+					BackgroundImage: oldUser.BackgroundImage,
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.Equal(t, oldUser.ProfilePicture.String, updatedUser.ProfilePicture.String)
+				require.NotEqual(t, oldUser.Bio.String, updatedUser.Bio.String)
+				require.Equal(t, oldUser.BackgroundImage.String, updatedUser.BackgroundImage.String)
+			},
+		},
+		{
+			name:         "Update Background Image",
+			updateFields: []string{"background_image"},
+			updateFunction: func(oldUser User) UpdateProfileParams {
+				return UpdateProfileParams{
+					ID:             oldUser.ID,
+					ProfilePicture: oldUser.ProfilePicture,
+					Bio:            oldUser.Bio,
+					BackgroundImage: pgtype.Text{String: util.RandomString(10), Valid: true},
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.Equal(t, oldUser.ProfilePicture.String, updatedUser.ProfilePicture.String)
+				require.Equal(t, oldUser.Bio.String, updatedUser.Bio.String)
+				require.NotEqual(t, oldUser.BackgroundImage.String, updatedUser.BackgroundImage.String)
+			},
+		},
+
+		// Update all fields at once
+		{
+			name:         "Update All Profile Fields",
+			updateFields: []string{"profile_picture", "bio", "background_image"},
+			updateFunction: func(oldUser User) UpdateProfileParams {
+				return UpdateProfileParams{
+					ID:             oldUser.ID,
+					ProfilePicture: pgtype.Text{String: util.RandomString(10), Valid: true},
+					Bio:            pgtype.Text{String: util.RandomString(10), Valid: true},
+					BackgroundImage: pgtype.Text{String: util.RandomString(10), Valid: true},
+				}
+			},
+			verifyUpdate: func(t *testing.T, oldUser, updatedUser User) {
+				require.NotEqual(t, oldUser.ProfilePicture.String, updatedUser.ProfilePicture.String)
+				require.NotEqual(t, oldUser.Bio.String, updatedUser.Bio.String)
+				require.NotEqual(t, oldUser.BackgroundImage.String, updatedUser.BackgroundImage.String)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Create a random user for testing
+			oldUser := createRandomUser(t)
+
+			// Call the update function with the generated old user
+			updateParams := tc.updateFunction(oldUser)
+			updatedUser, err := testHub.UpdateProfile(context.Background(), updateParams)
+
+			// Ensure no error occurred
+			require.NoError(t, err, "Failed to update profile")
+
+			// Verify the updated user based on the test case's rules
+			tc.verifyUpdate(t, oldUser, updatedUser)
+		})
+	}
+}
+
 func TestSearchUsersILike(t *testing.T) {
 	ctx := context.Background()
 
@@ -293,4 +481,141 @@ func TestSearchUsersTrigram(t *testing.T) {
 		}
 	}
 	require.True(t, found, "Target user not found in trigram search results")
+}
+
+func TestGetNumberOfMutualFriends(t *testing.T) {
+	ctx := context.Background()
+
+	// Create 3 users
+	userA := createRandomUser(t)
+	userB := createRandomUser(t)
+	mutual := createRandomUser(t)
+
+	// Create friendships to form a mutual connection
+	_, err := testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userA.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userB.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	// Refresh materialized view
+	err = testHub.RefreshMaterializedViews(ctx)
+	require.NoError(t, err)
+
+	// Call query
+	count, err := testHub.GetNumberOfMutualFriends(ctx, GetNumberOfMutualFriendsParams{
+		UserID:   userA.ID,
+		UserID_2: userB.ID,
+	})
+	require.NoError(t, err)
+	require.Equal(t, int64(1), count)
+}
+
+func TestDiscoverFriendsByMutuals(t *testing.T) {
+	ctx := context.Background()
+
+	// User A is the main user
+	userA := createRandomUser(t)
+	mutual := createRandomUser(t)
+	suggested := createRandomUser(t)
+
+	// A <-> Mutual
+	_, err := testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userA.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	// Suggested <-> Mutual
+	_, err = testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: suggested.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	// Refresh MV
+	err = testHub.RefreshMaterializedViews(ctx)
+	require.NoError(t, err)
+
+	// Discover friends
+	discoveries, err := testHub.DiscoverFriendsByMutuals(ctx, userA.ID)
+	require.NoError(t, err)
+
+	// Check if suggested user appears
+	var found bool
+	for _, u := range discoveries {
+		if u.ID == suggested.ID {
+			found = true
+			require.Equal(t, int64(1), u.MutualFriendCount)
+			break
+		}
+	}
+	require.True(t, found, "Suggested user not found in discover results")
+}
+
+func TestGetMutualFriends(t *testing.T) {
+	ctx := context.Background()
+
+	// Create 3 users
+	userA := createRandomUser(t)
+	userB := createRandomUser(t)
+	mutual := createRandomUser(t)
+
+	// Create friendships to form mutual connections
+	_, err := testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userA.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = testHub.CreateFriendship(ctx, CreateFriendshipParams{
+		FromUser: userB.ID,
+		ToUser:   mutual.ID,
+		Status: NullStatus{
+			Status: "friends",
+			Valid:  true,
+		},
+	})
+	require.NoError(t, err)
+
+	// Refresh materialized view
+	err = testHub.RefreshMaterializedViews(ctx)
+	require.NoError(t, err)
+
+	// Call query to get mutual friends
+	results, err := testHub.ListMutualFriends(ctx, ListMutualFriendsParams{
+		UserID:   userA.ID,
+		UserID_2: userB.ID,
+	})
+	require.NoError(t, err)
+
+	// Expect exactly 1 mutual friend with matching ID
+	require.Len(t, results, 1)
+	require.Equal(t, mutual.ID, results[0].ID)
 }

@@ -13,12 +13,14 @@ import {cn} from "@/lib/utils";
 import {useUser} from "@/hooks/useUser";
 import {formatFullName} from "@/lib/formatter";
 import {EditProfileModal} from "@/components/edit-profile-modal";
+import Link from "next/link";
 
 export default function HomePage() {
 	const {user, loading} = useUser();
 	const [createWallModalOpen, setCreateWallModalOpen] = useState(false);
 	const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
 	const [fabOpen, setFabOpen] = useState(false);
+	const [wallGridKey, setWallGridKey] = useState(Date.now());
 
 	// Optional ripple effect when FAB is clicked
 	useEffect(() => {
@@ -58,7 +60,8 @@ export default function HomePage() {
 							alt="Home Banner"
 							width={1200}
 							height={400}
-							className="w-full h-[250px] md:h-[350px] object-cover"
+							quality={100}
+							className="w-full object-cover"
 						/>
 
 						{/* Bottom section with avatar and buttons */}
@@ -104,7 +107,7 @@ export default function HomePage() {
 						</div>
 					</div>
 					{/* Walls */}
-					<WallGrid />
+					<WallGrid key={wallGridKey} />
 				</main>
 			</div>
 			<div
@@ -175,9 +178,11 @@ export default function HomePage() {
 						<div className="bg-white text-xs font-medium text-black px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
 							View Archives
 						</div>
-						<Button className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-lg z-100 hover:scale-110">
-							<Archive className="h-5 w-5" />
-						</Button>
+						<Link href={"/archive"}>
+							<Button className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-lg z-100 hover:scale-110">
+								<Archive className="h-5 w-5" />
+							</Button>
+						</Link>
 					</div>
 				</div>
 			</div>
@@ -185,13 +190,16 @@ export default function HomePage() {
 			<CreateWallModal
 				isOpen={createWallModalOpen}
 				onClose={() => setCreateWallModalOpen(false)}
+				onSuccess={() => {
+					// Force refresh the WallGrid component by updating its key
+					setWallGridKey(Date.now());
+				}}
 			/>
 			{/* Edit Profile Modal */}
 			<EditProfileModal
 				isOpen={editProfileModalOpen}
 				onClose={() => setEditProfileModalOpen(false)}
 				user={user}
-				onSave={() => console.log("hello")}
 			/>
 		</div>
 	);

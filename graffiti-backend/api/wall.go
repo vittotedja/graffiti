@@ -1,27 +1,21 @@
 package api
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"net/http"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/pingcap/log"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+	"github.com/vittotedja/graffiti/graffiti-backend/util"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
-	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
 )
 
 // Wall request/response types
-type createWallRequest struct {
-	UserID          string `json:"user_id" binding:"required,uuid"`
-	Description     string `json:"description"`
-	BackgroundImage string `json:"background_image"`
-}
-
 type createTestWallRequest struct {
 	Title           string `json:"title"`
 	Description     string `json:"description"`
@@ -68,45 +62,12 @@ func newWallResponse(wall db.Wall) wallResponse {
 	}
 }
 
-// CreateWall handler
-func (s *Server) createWall(ctx *gin.Context) {
+// CreateNewWall handler
+func (s *Server) createNewWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received create wall request")
 
-	var req createWallRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		log.Error("Failed to bind JSON", err)
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	var userID pgtype.UUID
-	if err := userID.Scan(req.UserID); err != nil {
-		log.Error("Invalid user_id", err)
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	arg := db.CreateWallParams{
-		UserID:          userID,
-		Description:     pgtype.Text{String: req.Description, Valid: req.Description != ""},
-		BackgroundImage: pgtype.Text{String: req.BackgroundImage, Valid: req.BackgroundImage != ""},
-	}
-
-	wall, err := s.hub.CreateWall(ctx, arg)
-	if err != nil {
-		log.Error("Failed to create wall", err)
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	log.Info("Wall created successfully")
-	ctx.JSON(http.StatusCreated, newWallResponse(wall))
-}
-
-// CreateNewWall handler
-func (s *Server) createNewWall(ctx *gin.Context) {
 	var req createTestWallRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -128,7 +89,7 @@ func (s *Server) createNewWall(ctx *gin.Context) {
 
 	wall, err := s.hub.CreateTestWall(ctx, arg)
 	if err != nil {
-		log.Error("Failed to create wall", zap.Error(err))
+		log.Error("Failed to create wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -142,6 +103,13 @@ func (s *Server) getWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received get wall request")
+
+	_, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
 
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
@@ -481,6 +449,13 @@ func (s *Server) archiveWall(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received archive wall request")
 
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -498,7 +473,20 @@ func (s *Server) archiveWall(ctx *gin.Context) {
 		return
 	}
 
-	err := s.hub.ArchiveWall(ctx, id)
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != currentUser.ID {
+		log.Error("Unauthorized to delete wall", errors.New("user not authorized to delete this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to delete this wall")))
+		return
+	}
+
+	err = s.hub.ArchiveWall(ctx, id)
 	if err != nil {
 		log.Error("Failed to archive wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -515,6 +503,13 @@ func (s *Server) unarchiveWall(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received unarchive wall request")
 
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
 	}
@@ -532,7 +527,20 @@ func (s *Server) unarchiveWall(ctx *gin.Context) {
 		return
 	}
 
-	err := s.hub.UnarchiveWall(ctx, id)
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != currentUser.ID {
+		log.Error("Unauthorized to delete wall", errors.New("user not authorized to delete this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to delete this wall")))
+		return
+	}
+
+	err = s.hub.UnarchiveWall(ctx, id)
 	if err != nil {
 		log.Error("Failed to unarchive wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -543,11 +551,48 @@ func (s *Server) unarchiveWall(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Wall unarchived successfully"})
 }
 
+func (s *Server) getArchivedWalls(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received get archived walls request")
+
+	user, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
+	walls, err := s.hub.GetArchivedWalls(ctx, user.ID)
+
+	if err != nil {
+		log.Error("Failed to list archived walls", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	log.Info("Archived walls listed successfully")
+	responses := make([]wallResponse, 0, len(walls))
+	for _, wall := range walls {
+		responses = append(responses, newWallResponse(wall))
+	}
+
+	ctx.JSON(http.StatusOK, responses)
+}
+
 // DeleteWall handler
 func (s *Server) deleteWall(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
 	log := meta.GetLogger()
 	log.Info("Received delete wall request")
+
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
 
 	var uri struct {
 		ID string `uri:"id" binding:"required,uuid"`
@@ -566,11 +611,54 @@ func (s *Server) deleteWall(ctx *gin.Context) {
 		return
 	}
 
+	currentWall, err := s.hub.GetWall(ctx, id)
+	if err != nil {
+		log.Error("Failed to get current wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentWall.UserID != currentUser.ID {
+		log.Error("Unauthorized to delete wall", errors.New("user not authorized to delete this wall"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("user not authorized to delete this wall")))
+		return
+	}
+
 	if err := s.hub.DeleteWall(ctx, id); err != nil {
 		log.Error("Failed to delete wall", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
+	if currentWall.BackgroundImage.Valid {
+		key := util.ExtractKeyFromMediaURL(currentWall.BackgroundImage.String)
+		go func(key string) {
+			// Use a background context so it won't get canceled when request is done
+			bgCtx := context.Background()
+
+			if err := s.DeleteFile(bgCtx, key); err != nil {
+				log.Error("Failed to delete media from S3", err)
+			}
+		}(key)
+	}
+
+	go func(wallID pgtype.UUID) {
+		bgCtx := context.Background()
+
+		posts, err := s.hub.ListPostsByWall(bgCtx, wallID)
+		if err != nil {
+			log.Error("Failed to get posts by wall", err)
+			return
+		}
+
+		for _, post := range posts {
+			if err := s.hub.DeletePost(bgCtx, post.ID); err != nil {
+				log.Error("Failed to delete post", err)
+			}
+		}
+
+		log.Info("Posts deleted successfully")
+	}(id)
 
 	log.Info("Wall deleted successfully")
 	ctx.JSON(http.StatusOK, gin.H{"message": "Wall deleted successfully"})

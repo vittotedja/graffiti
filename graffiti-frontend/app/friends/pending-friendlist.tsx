@@ -4,7 +4,8 @@ import {Button} from "@/components/ui/button";
 import {fetchWithAuth} from "@/lib/auth";
 import {formatFullName} from "@/lib/formatter";
 import {Friendship} from "@/types/friends";
-import {UserPlus} from "lucide-react";
+import {Ban, Check} from "lucide-react";
+import Link from "next/link";
 import {useEffect, useState} from "react";
 import {toast} from "sonner";
 
@@ -52,6 +53,23 @@ export default function PendingFriendsList() {
 		}
 	};
 
+	const rejectFriendRequest = async (friendship_id: string) => {
+		try {
+			const response = await fetchWithAuth("/api/v1/friendships", {
+				method: "DELETE",
+				body: JSON.stringify({
+					friendship_id,
+				}),
+			});
+			if (!response.ok) throw new Error("Error rejecting friend request");
+			toast.success("Successfully rejected friend request!");
+			await fetchPendingFriends();
+		} catch (error) {
+			console.error(error);
+			toast.warning("Error rejecting friend request");
+		}
+	};
+
 	if (!pendingFriends || !pendingFriends.length)
 		return <div className="h-8 text-center">No pending friend requests</div>;
 
@@ -63,7 +81,10 @@ export default function PendingFriendsList() {
 						key={friend.UserID}
 						className="flex items-center justify-between p-4 hover:bg-accent/50"
 					>
-						<div className="flex items-center gap-3">
+						<Link
+							href={`/profile/${friend.UserID}`}
+							className="flex items-center gap-3 hover:underline cursor-pointer"
+						>
 							<Avatar>
 								<AvatarImage
 									src={friend.ProfilePicture}
@@ -79,17 +100,28 @@ export default function PendingFriendsList() {
 									@{friend.Username}
 								</div>
 							</div>
+						</Link>
+						<div className="flex items-center gap-2">
+							<Button
+								size="sm"
+								onClick={() => {
+									acceptFriends(friend.ID);
+								}}
+							>
+								<Check className="h-4 w-4 mr-2" />
+								Accept
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => {
+									rejectFriendRequest(friend.ID);
+								}}
+							>
+								<Ban className="h-4 w-4 mr-2" />
+								Reject
+							</Button>
 						</div>
-
-						<Button
-							size="sm"
-							onClick={() => {
-								acceptFriends(friend.ID);
-							}}
-						>
-							<UserPlus className="h-4 w-4 mr-2" />
-							Accept
-						</Button>
 					</div>
 				))}
 		</div>

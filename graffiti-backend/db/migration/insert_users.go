@@ -15,11 +15,17 @@ import (
 
 const totalUsers = 10000
 const maxConcurrency = 10
+const maxFriendsPerUser = 10 // Adjust as needed
 
 func main() {
 	ctx := context.Background()
 
-	conn, err := pgxpool.New(ctx, "postgresql://root:secret1234@localhost:5432/graffiti?sslmode=disable")
+	config, err := util.LoadConfig("../../.")
+	if err != nil {
+		log.Fatalf("failed to load config: %v", err)
+	}
+
+	conn, err := pgxpool.New(ctx, config.DBSource)
 	if err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
@@ -27,21 +33,23 @@ func main() {
 
 	hub := db.New(conn)
 
-	log.Println("🚀 Inserting + onboarding + updating profiles...")
+	log.Println("🚀 Inserting users and setting up profiles...")
 	start := time.Now()
 
 	semaphore := make(chan struct{}, maxConcurrency)
 	var wg sync.WaitGroup
-
 	rand.Seed(time.Now().UnixNano())
+
+	// Pre-allocate users for friendship processing
+	users := make([]db.User, totalUsers)
 
 	for i := 0; i < totalUsers; i++ {
 		wg.Add(1)
-		semaphore <- struct{}{} // acquire
+		semaphore <- struct{}{}
 
 		go func(i int) {
 			defer wg.Done()
-			defer func() { <-semaphore }() // release
+			defer func() { <-semaphore }()
 
 			arg := db.CreateUserParams{
 				Username:       util.RandomUsername(),
@@ -55,40 +63,19 @@ func main() {
 				log.Printf("user %d insert error: %v", i+1, err)
 				return
 			}
+			users[i] = user
 
-			// Mark as onboarded
-			if err := hub.FinishOnboarding(ctx, user.ID); err != nil {
-				log.Printf("user %d onboarding error: %v", i+1, err)
-				return
-			}
-
-			// Randomize bio and profile_picture (50% chance each)
-			var bio pgtype.Text
-			if rand.Intn(2) == 0 {
-				bio = pgtype.Text{String: util.RandomBio(), Valid: true}
-			} else {
-				bio = pgtype.Text{Valid: false}
-			}
-
-			var pfp pgtype.Text
-			if rand.Intn(2) == 0 {
-				pfp = pgtype.Text{String: util.RandomProfilePictureURL(), Valid: true}
-			} else {
-				pfp = pgtype.Text{Valid: false}
-			}
+			_ = hub.FinishOnboarding(ctx, user.ID)
 
 			profileArg := db.UpdateProfileParams{
 				ID:              user.ID,
-				ProfilePicture:  pfp,
-				Bio:             bio,
-				BackgroundImage: pgtype.Text{Valid: false}, // skip for now
+				ProfilePicture:  pgtype.Text{String: util.RandomProfilePictureURL(), Valid: true},
+				Bio:             pgtype.Text{String: util.RandomBio(), Valid: true},
+				BackgroundImage: pgtype.Text{Valid: false},
 			}
-
 			if _, err := hub.UpdateProfile(ctx, profileArg); err != nil {
 				log.Printf("user %d profile update error: %v", i+1, err)
-				return
 			}
-
 			if (i+1)%1000 == 0 {
 				log.Printf("%d users processed", i+1)
 			}
@@ -96,5 +83,55 @@ func main() {
 	}
 
 	wg.Wait()
-	log.Printf("Done seeding %d users in %v", totalUsers, time.Since(start))
+	log.Println("✅ Users seeded.")
+
+	log.Println("👥 Creating friendships...")
+
+	var friendshipWg sync.WaitGroup
+	friendshipSemaphore := make(chan struct{}, maxConcurrency)
+
+	for i := 0; i < totalUsers; i++ {
+		user := users[i]
+		friendCount := rand.Intn(maxFriendsPerUser) + 1
+
+		for j := 0; j < friendCount; j++ {
+			friendIndex := rand.Intn(totalUsers)
+			if friendIndex == i {
+				continue // avoid self friendship
+			}
+			friend := users[friendIndex]
+
+			friendshipWg.Add(1)
+			friendshipSemaphore <- struct{}{}
+
+			go func(fromUser, toUser pgtype.UUID) {
+				defer friendshipWg.Done()
+				defer func() { <-friendshipSemaphore }()
+
+				// Insert one-way friendship
+				_, err := hub.CreateFriendship(ctx, db.CreateFriendshipParams{
+					FromUser: fromUser,
+					ToUser:   toUser,
+					Status: db.NullStatus{
+						Status: "friends",
+						Valid:  true,
+					},
+				})
+				if err != nil {
+					log.Printf("friendship error (%s -> %s): %v", fromUser, toUser, err)
+				}
+			}(user.ID, friend.ID)
+		}
+	}
+
+	friendshipWg.Wait()
+
+	// Refresh materialized view
+	log.Println("🔄 Refreshing materialized view...")
+	_, err = conn.Exec(ctx, "REFRESH MATERIALIZED VIEW accepted_friendships_mv")
+	if err != nil {
+		log.Fatalf("error refreshing materialized view: %v", err)
+	}
+
+	log.Printf("✅ Done in %v", time.Since(start))
 }

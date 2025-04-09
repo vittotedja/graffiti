@@ -12,7 +12,6 @@ import {
 import {Button} from "@/components/ui/button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Card, CardContent} from "@/components/ui/card";
-import {MobileNav} from "@/components/mobile-nav";
 
 export default function NotificationsPage() {
 	// Mock data for notifications
@@ -176,9 +175,6 @@ export default function NotificationsPage() {
 					))}
 				</div>
 			</div>
-
-			{/* Mobile Navigation */}
-			<MobileNav />
 		</div>
 	);
 }

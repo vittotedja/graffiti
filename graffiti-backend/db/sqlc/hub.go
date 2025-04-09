@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -378,4 +379,13 @@ func (hub *SQLHub) IsUserBlockedTx(ctx context.Context, fromUser, toUser pgtype.
 	})
 
 	return isBlocked, err
+}
+
+func (h *Hub) Exec(ctx context.Context, sql string, args ...interface{}) (pgconn.CommandTag, error) {
+	return h.db.Exec(ctx, sql, args...)
+}
+
+func (h *Hub) RefreshMaterializedViews(ctx context.Context) error {
+	_, err := h.db.Exec(ctx, "REFRESH MATERIALIZED VIEW accepted_friendships_mv")
+	return err
 }

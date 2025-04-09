@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -44,6 +45,8 @@ func (s *Server) Register(ctx *gin.Context) {
 		ctx.JSON(500, errorResponse(err))
 		return
 	}
+
+	req.Username = strings.ReplaceAll(req.Username, " ", "")
 
 	arg := db.CreateUserParams{
 		Username:       req.Username,
@@ -157,5 +160,32 @@ func (s *Server) Me(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"user": resp,
+	})
+}
+
+func (s *Server) Logout(ctx *gin.Context) {
+	secure := false
+	sameSite := http.SameSiteDefaultMode
+	domain := ""
+
+	if s.config.IsProduction {
+		secure = true
+		sameSite = http.SameSiteNoneMode
+		domain = ".graffiti-cs464.com"
+	}
+
+	ctx.SetSameSite(sameSite)
+	ctx.SetCookie(
+		"token",
+		"",     // empty value
+		-1,     // negative maxAge to expire immediately
+		"/",    // path
+		domain, // domain
+		secure, // secure
+		true,   // httpOnly
+	)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "logout successful",
 	})
 }

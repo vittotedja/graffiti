@@ -27,12 +27,14 @@ interface CreateWallModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	sentWallData?: Wall | null;
+	onSuccess?: () => void;
 }
 
 export function CreateWallModal({
 	isOpen,
 	onClose,
 	sentWallData,
+	onSuccess,
 }: CreateWallModalProps) {
 	const [wallData, setWallData] = useState({
 		title: "",
@@ -42,6 +44,7 @@ export function CreateWallModal({
 	const [wallImage, setWallImage] = useState<File | null>(null);
 	const [wallPreview, setWallPreview] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
+	const [isWallRemoved, setIsWallRemoved] = useState(false);
 
 	useEffect(() => {
 		if (sentWallData) {
@@ -50,14 +53,18 @@ export function CreateWallModal({
 				description: sentWallData.description,
 				is_public: sentWallData.is_public,
 			});
-			console.log("Wall data received:", sentWallData);
-		} else
+		} else {
 			setWallData({
 				title: "",
 				description: "",
 				is_public: true,
 			});
-	}, [sentWallData]);
+		}
+		// Reset these values when the modal is opened/closed or when data changes
+		setWallImage(null);
+		setWallPreview(null);
+		setIsWallRemoved(false);
+	}, [sentWallData, isOpen]);
 
 	const wallDataRef = useRef<HTMLInputElement>(null);
 
@@ -66,6 +73,8 @@ export function CreateWallModal({
 			const file = e.target.files[0];
 			setWallImage(file);
 			setWallPreview(URL.createObjectURL(file));
+			// Reset the isWallRemoved flag when a new image is selected
+			setIsWallRemoved(false);
 		}
 	};
 
@@ -75,19 +84,22 @@ export function CreateWallModal({
 
 		try {
 			let wallImageUrl = "";
-
-			if (wallImage) {
+			if (isWallRemoved) {
+				wallImageUrl = "";
+			} else if (wallImage) {
 				const presignedUrlData = await getPresignedUrl(
 					`${wallData.title}-${Date.now()}.png`, // unique name
 					wallImage
 				);
 				await uploadToS3(presignedUrlData.presignedUrl, wallImage);
 				wallImageUrl = presignedUrlData.publicUrl;
+			} else if (sentWallData?.background_image && !wallImage && !isWallRemoved) {
+				// Keep the existing image URL if no new image is uploaded and image wasn't removed
+				wallImageUrl = sentWallData.background_image;
 			}
 
 			if (sentWallData) {
 				// Update existing wall
-				console.log("Updating wall with data:", sentWallData.id);
 				const response = await fetchWithAuth(
 					`/api/v1/walls/${sentWallData.id}`,
 					{
@@ -95,7 +107,7 @@ export function CreateWallModal({
 						headers: {"Content-Type": "application/json"},
 						body: JSON.stringify({
 							...wallData,
-							background_image: wallImageUrl || undefined,
+							background_image: wallImageUrl,
 						}),
 					}
 				);
@@ -111,7 +123,7 @@ export function CreateWallModal({
 					headers: {"Content-Type": "application/json"},
 					body: JSON.stringify({
 						...wallData,
-						background_image: wallImageUrl || undefined,
+						background_image: wallImageUrl,
 					}),
 				});
 
@@ -122,12 +134,27 @@ export function CreateWallModal({
 			}
 
 			onClose();
+
+			if (onSuccess) {
+				onSuccess();
+			}
 		} catch (error) {
 			console.error("Error creating wall:", error);
 			toast.error("Failed to create wall. Please try again later.");
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	const showWallImage = () => {
+		if (isWallRemoved) return false;
+		if (wallPreview) return true;
+		return !!sentWallData?.background_image;
+	};
+
+	const getWallImageSource = () => {
+		if (wallPreview) return wallPreview;
+		return sentWallData?.background_image;
 	};
 
 	return (
@@ -177,10 +204,10 @@ export function CreateWallModal({
 							<Label>Wall Banner</Label>
 							<div className="relative border-2 border-dashed border-primary/20 rounded-md p-6 text-center">
 								<div className="flex flex-col items-center gap-2">
-									{sentWallData?.background_image ? (
+									{showWallImage() ? (
 										<div className="relative w-full h-40">
 											<Image
-												src={sentWallData.background_image}
+												src={getWallImageSource() || ""}
 												alt="Wall preview"
 												className="w-full h-full object-cover rounded-md"
 												width={400}
@@ -195,29 +222,7 @@ export function CreateWallModal({
 												onClick={() => {
 													setWallImage(null);
 													setWallPreview(null);
-												}}
-											>
-												<X className="h-4 w-4" />
-											</Button>
-										</div>
-									) : wallPreview ? (
-										<div className="relative w-full h-40">
-											<Image
-												src={wallPreview}
-												alt="Wall preview"
-												className="w-full h-full object-cover rounded-md"
-												width={400}
-												height={200}
-											/>
-											{/* Remove button */}
-											<Button
-												type="button"
-												variant="destructive"
-												size="icon"
-												className="absolute top-2 right-2 h-8 w-8"
-												onClick={() => {
-													setWallImage(null);
-													setWallPreview(null);
+													setIsWallRemoved(true);
 												}}
 											>
 												<X className="h-4 w-4" />
@@ -227,7 +232,7 @@ export function CreateWallModal({
 										<>
 											<ImageIcon className="h-10 w-10 text-muted-foreground" />
 											<div className="text-sm text-muted-foreground">
-												Drag and drop an image or click to browse
+												Click to upload a wall image
 											</div>
 											<Button
 												type="button"

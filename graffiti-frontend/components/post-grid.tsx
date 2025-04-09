@@ -22,14 +22,16 @@ import {fetchWithAuth} from "@/lib/auth";
 type PostCardType = {
 	post: Post;
 	isWallOwner: boolean;
+	onPostRemoved?: () => void;
 };
 
 interface PostGridProps {
 	posts: Post[];
 	isWallOwner: boolean;
+	onPostRemoved?: () => void;
 }
 
-export function PostGrid({posts, isWallOwner}: PostGridProps) {
+export function PostGrid({posts, isWallOwner, onPostRemoved}: PostGridProps) {
 	if (!posts || posts.length === 0) {
 		return (
 			<div className="text-center text-muted-foreground">No posts found</div>
@@ -38,13 +40,13 @@ export function PostGrid({posts, isWallOwner}: PostGridProps) {
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{posts.map((post) => (
-				<PostCard key={post.id} post={post} isWallOwner={isWallOwner} />
+				<PostCard key={post.id} post={post} isWallOwner={isWallOwner} onPostRemoved={onPostRemoved} />
 			))}
 		</div>
 	);
 }
 
-function PostCard({post, isWallOwner}: PostCardType) {
+function PostCard({post, isWallOwner, onPostRemoved}: PostCardType) {
 	const {user} = useUser();
 	const [liked, setLiked] = useState(false);
 	const [likeCount, setLikeCount] = useState(post.likes_count);
@@ -188,6 +190,10 @@ function PostCard({post, isWallOwner}: PostCardType) {
 			});
 			if (response.ok) {
 				toast.success("Post removed successfully");
+				// Call the callback function to refresh posts if it exists
+				if (onPostRemoved) {
+					onPostRemoved();
+				}
 			}
 		} catch (error) {
 			console.error(error);

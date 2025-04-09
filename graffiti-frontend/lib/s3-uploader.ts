@@ -34,7 +34,6 @@ export async function getPresignedUrl(
 	file: Blob,
 	upload_type: string = "uploads"
 ): Promise<PresignedUrlDataType> {
-	console.log(upload_type);
 	const requestBody = {
 		filename,
 		content_type: file.type,
