@@ -1,11 +1,9 @@
 package redis
 
 import (
-	"context"
 	"crypto/tls"
 	"github.com/redis/go-redis/v9"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
-	"log"
 )
 
 func NewRedisClient(cfg util.Config) redis.UniversalClient {
@@ -22,10 +20,6 @@ func NewRedisClient(cfg util.Config) redis.UniversalClient {
 	}
 
 	client := redis.NewClusterClient(opts)
-	err := client.Ping(context.Background())
-	if err != nil {
-		log.Fatalf("failed to connect to redis: %v at this address: %s", err, cfg.RedisHost)
-	}
 
 	return client
 }
