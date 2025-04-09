@@ -53,6 +53,23 @@ export default function PendingFriendsList() {
 		}
 	};
 
+	const rejectFriendRequest = async (friendship_id: string) => {
+		try {
+			const response = await fetchWithAuth("/api/v1/friendships", {
+				method: "DELETE",
+				body: JSON.stringify({
+					friendship_id,
+				}),
+			});
+			if (!response.ok) throw new Error("Error rejecting friend request");
+			toast.success("Successfully rejected friend request!");
+			await fetchPendingFriends();
+		} catch (error) {
+			console.error(error);
+			toast.warning("Error rejecting friend request");
+		}
+	};
+
 	if (!pendingFriends || !pendingFriends.length)
 		return <div className="h-8 text-center">No pending friend requests</div>;
 
@@ -98,7 +115,7 @@ export default function PendingFriendsList() {
 								variant="outline"
 								size="sm"
 								onClick={() => {
-									acceptFriends(friend.ID);
+									rejectFriendRequest(friend.ID);
 								}}
 							>
 								<Ban className="h-4 w-4 mr-2" />

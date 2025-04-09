@@ -93,6 +93,9 @@ export function CreateWallModal({
 				);
 				await uploadToS3(presignedUrlData.presignedUrl, wallImage);
 				wallImageUrl = presignedUrlData.publicUrl;
+			} else if (sentWallData?.background_image && !wallImage && !isWallRemoved) {
+				// Keep the existing image URL if no new image is uploaded and image wasn't removed
+				wallImageUrl = sentWallData.background_image;
 			}
 
 			if (sentWallData) {

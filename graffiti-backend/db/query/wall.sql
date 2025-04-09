@@ -60,6 +60,14 @@ UPDATE walls
 WHERE id = $1
 RETURNING *;
 
+
+-- name: GetArchivedWalls :many
+SELECT * FROM walls
+WHERE user_id = $1
+AND is_deleted = false
+AND is_archived = true
+ORDER BY created_at DESC;
+
 -- name: PublicizeWall :one
 UPDATE walls
     set is_public = true

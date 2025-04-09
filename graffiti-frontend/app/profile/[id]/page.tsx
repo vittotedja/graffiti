@@ -29,6 +29,43 @@ export default function ProfilePage() {
 
 	const userId = splitPath[2];
 
+	const fetchFriendshipData = async (userId: string) => {
+		try {
+			const isFriendResp = await fetchWithAuth("/api/v1/friendships", {
+				method: "POST",
+				body: JSON.stringify({
+					to_user_id: userId,
+				}),
+			});
+			if (!isFriendResp.ok) return;
+			const isFriendsData = await isFriendResp.json();
+			if (isFriendsData) {
+				setFriendshipID(isFriendsData.ID);
+
+				const status = isFriendsData.Status.Status;
+				const fromUser = isFriendsData.FromUser;
+
+				if (status === "friends") {
+					setFriendshipStatus("friends");
+				} else if (status === "pending") {
+					setFriendshipStatus("pending");
+					setFriendshipFromUserID(fromUser);
+				} else {
+					setFriendshipStatus(false);
+					setFriendshipFromUserID(null);
+				}
+			} else {
+				setFriendshipStatus(false);
+				setFriendshipFromUserID(null);
+			}
+		} catch (e) {
+			if (!(e instanceof Error)) {
+				e = new Error("Failed to fetch friendshipData");
+				throw e;
+			}
+		}
+	};
+
 	useEffect(() => {
 		const fetchUser = async () => {
 			if (!userId) return;
@@ -37,34 +74,7 @@ export default function ProfilePage() {
 				if (!response) return;
 				const data = await response.json();
 				setUser(data);
-
-				const isFriendResp = await fetchWithAuth("/api/v1/friendships", {
-					method: "POST",
-					body: JSON.stringify({
-						to_user_id: userId,
-					}),
-				});
-				if (!isFriendResp.ok) return;
-				const isFriendsData = await isFriendResp.json();
-				if (isFriendsData) {
-					setFriendshipID(isFriendsData.ID);
-
-					const status = isFriendsData.Status.Status;
-					const fromUser = isFriendsData.FromUser;
-
-					if (status === "friends") {
-						setFriendshipStatus("friends");
-					} else if (status === "pending") {
-						setFriendshipStatus("pending");
-						setFriendshipFromUserID(fromUser);
-					} else {
-						setFriendshipStatus(false);
-						setFriendshipFromUserID(null);
-					}
-				} else {
-					setFriendshipStatus(false);
-					setFriendshipFromUserID(null);
-				}
+				fetchFriendshipData(userId);
 			} catch (err) {
 				console.error("Failed to fetch wall data:", err);
 			}
@@ -86,6 +96,7 @@ export default function ProfilePage() {
 			});
 			if (!response.ok) throw new Error("Error Adding Friends");
 			toast.success("Successfully sent friend request!");
+			fetchFriendshipData(userId);
 		} catch (error) {
 			console.error(error);
 			toast.warning("Error Adding Friends");
@@ -103,6 +114,7 @@ export default function ProfilePage() {
 			});
 			if (!response.ok) throw new Error("Error Removing Friends");
 			toast.success("Successfully removed friend!");
+			fetchFriendshipData(userId);
 		} catch (error) {
 			console.error(error);
 			toast.warning("Error Removing Friends");
@@ -123,6 +135,7 @@ export default function ProfilePage() {
 			}
 			toast.success(`You are now friends with ${user?.fullname}`);
 			setFriendshipStatus("friends");
+			fetchFriendshipData(userId);
 		} catch (error) {
 			console.error("Error fetching pending friends:", error);
 			toast.error("Failed to accept friend request");

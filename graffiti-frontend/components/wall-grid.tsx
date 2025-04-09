@@ -82,6 +82,20 @@ export function WallGrid({userId}: WallGridProps) {
 		}
 	};
 
+	const archiveWall = async (wallId: string) => {
+		try {
+			const response = await fetchWithAuth(`/api/v1/walls/${wallId}/archive`, {
+				method: "PUT",
+			});
+			if (!response.ok) return;
+			setWalls((prevWalls) => prevWalls.filter((wall) => wall.id !== wallId));
+			toast.success("Wall archived successfully");
+		} catch (err) {
+			console.error("Failed to archive wall:", err);
+			toast.error("Failed to archive wall");
+		}
+	};
+
 	useEffect(() => {
 		fetchWalls();
 	}, [fetchWalls]);
@@ -147,7 +161,13 @@ export function WallGrid({userId}: WallGridProps) {
 														>
 															<Pin /> {wall.is_pinned ? "Unpin" : "Pin"} Wall
 														</DropdownMenuItem>
-														<DropdownMenuItem className="text-gray-400 cursor-pointer">
+														<DropdownMenuItem
+															className="text-gray-400 cursor-pointer"
+															onClick={(e) => {
+																e.preventDefault();
+																archiveWall(wall.id);
+															}}
+														>
 															<Archive /> Archive Wall
 														</DropdownMenuItem>
 														<DropdownMenuSeparator />

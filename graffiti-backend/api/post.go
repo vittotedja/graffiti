@@ -17,7 +17,6 @@ import (
 // Post request/response types
 type createPostRequest struct {
 	WallID   string `json:"wall_id" binding:"required,uuid"`
-	Author   string `json:"author" binding:"required,uuid"`
 	MediaURL string `json:"media_url" binding:"required"`
 	PostType string `json:"post_type" binding:"required,oneof=media embed_link"`
 }
@@ -90,6 +89,13 @@ func (s *Server) createPost(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received create post request")
 
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var req createPostRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
@@ -97,14 +103,9 @@ func (s *Server) createPost(ctx *gin.Context) {
 		return
 	}
 
-	var wallID, author pgtype.UUID
+	var wallID pgtype.UUID
 	if err := wallID.Scan(req.WallID); err != nil {
 		log.Error("Invalid wall_id", err)
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	if err := author.Scan(req.Author); err != nil {
-		log.Error("Invalid author", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -112,7 +113,7 @@ func (s *Server) createPost(ctx *gin.Context) {
 	postType := db.PostType(req.PostType)
 	arg := db.CreatePostParams{
 		WallID:   wallID,
-		Author:   author,
+		Author:   currentUser.ID,
 		MediaUrl: pgtype.Text{String: req.MediaURL, Valid: true},
 		PostType: db.NullPostType{PostType: postType, Valid: true},
 	}

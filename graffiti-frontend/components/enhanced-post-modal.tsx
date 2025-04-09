@@ -493,14 +493,12 @@ export function EnhancedPostModal({
 				wall_id: wallId,
 			};
 		}
-		// TODO: Author to be set to the logged-in user
 		try {
 			if (newPost.media_url == "") return;
 			const response = await fetchWithAuth("/api/v1/posts", {
 				method: "POST",
 				body: JSON.stringify({
 					...newPost,
-					author: user?.id,
 				}),
 			});
 

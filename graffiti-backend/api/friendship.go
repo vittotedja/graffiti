@@ -1,6 +1,8 @@
 package api
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -129,6 +131,13 @@ func (s *Server) acceptFriendRequest(ctx *gin.Context) {
 	log := meta.GetLogger()
 	log.Info("Received accept friend request")
 
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("Failed to get current user from context", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+		return
+	}
+
 	var req FriendshipIDRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
@@ -140,6 +149,19 @@ func (s *Server) acceptFriendRequest(ctx *gin.Context) {
 	if err := friendshipID.Scan(req.FriendshipID); err != nil {
 		log.Error("Invalid friendship ID", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	friendships, err := s.hub.GetFriendship(ctx, friendshipID)
+	if err != nil {
+		log.Error("Failed to get friendship", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if currentUser.ID != friendships.FromUser && currentUser.ID != friendships.ToUser {
+		log.Error("Unauthorized to delete friendship", errors.New("unauthorized"))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
 		return
 	}
 
@@ -305,24 +327,6 @@ func (s *Server) getPendingFriendRequests(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, pendingRequests)
 }
 
-func (s *Server) getReceivedPendingFriendRequests(ctx *gin.Context) {
-	userIDStr := ctx.Param("id")
-
-	var userID pgtype.UUID
-	if err := userID.Scan(userIDStr); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	pendingRequests, err := s.hub.ListReceivedPendingFriendRequests(ctx, userID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, pendingRequests)
-}
-
 // GetNumberOfPendingFriendRequests retrieves the number of pending friend requests for a user
 func (s *Server) getNumberOfPendingFriendRequests(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
@@ -373,24 +377,6 @@ func (s *Server) getSentFriendRequests(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sentRequests)
 }
 
-func (s *Server) getSentPendingFriendRequests(ctx *gin.Context) {
-	userIDStr := ctx.Param("id")
-
-	var userID pgtype.UUID
-	if err := userID.Scan(userIDStr); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	pendingRequests, err := s.hub.ListSentPendingFriendRequests(ctx, userID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, pendingRequests)
-}
-
 // ListFriendshipByUserPairs retrieves a friendship by user pairs
 func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 	meta := logger.GetMetadata(ctx.Request.Context())
@@ -429,6 +415,14 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 
 	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			// No friendship found, but not an error you want to report
+			ctx.JSON(http.StatusOK, gin.H{
+				"ID":     "00000000",
+				"Status": gin.H{"Status": "none", "Valid": true},
+			})
+			return
+		}
 		log.Error("Failed to list friendship by user pairs", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

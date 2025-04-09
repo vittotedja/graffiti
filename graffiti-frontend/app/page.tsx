@@ -13,6 +13,7 @@ import {cn} from "@/lib/utils";
 import {useUser} from "@/hooks/useUser";
 import {formatFullName} from "@/lib/formatter";
 import {EditProfileModal} from "@/components/edit-profile-modal";
+import Link from "next/link";
 
 export default function HomePage() {
 	const {user, loading} = useUser();
@@ -177,9 +178,11 @@ export default function HomePage() {
 						<div className="bg-white text-xs font-medium text-black px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
 							View Archives
 						</div>
-						<Button className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-lg z-100 hover:scale-110">
-							<Archive className="h-5 w-5" />
-						</Button>
+						<Link href={"/archive"}>
+							<Button className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-lg z-100 hover:scale-110">
+								<Archive className="h-5 w-5" />
+							</Button>
+						</Link>
 					</div>
 				</div>
 			</div>
