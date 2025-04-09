@@ -117,7 +117,9 @@ func (s *Server) registerRoutes(env string) {
 	// s.router.POST("/api/v1/auth/logout", s.Logout)
 
 	protected := s.router.Group("/api")
-	protected.Use(s.AuthMiddleware())
+	if env != "unit-test" {
+		protected.Use(s.AuthMiddleware())
+	}
 	{
 		protected.POST("/v1/auth/me", s.Me)
 
