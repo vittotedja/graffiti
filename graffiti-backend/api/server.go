@@ -1,9 +1,7 @@
 package api
 
 import (
-	"github.com/redis/go-redis/v9"
 	cron "github.com/vittotedja/graffiti/graffiti-backend/util/cron"
-	ratelimiter "github.com/vittotedja/graffiti/graffiti-backend/util/rate-limit"
 	"log"
 	"time"
 
@@ -18,14 +16,12 @@ import (
 	"github.com/vittotedja/graffiti/graffiti-backend/token"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
-	cache "github.com/vittotedja/graffiti/graffiti-backend/util/redis"
 )
 
 // Server serves HTTP requests
 type Server struct {
 	hub        *db.Hub
 	db         *pgxpool.Pool
-	redis      redis.UniversalClient
 	config     util.Config
 	router     *gin.Engine // helps us send each API request to the correct handler for processing
 	tokenMaker token.Maker
@@ -38,17 +34,8 @@ func NewServer(config util.Config) *Server {
 	if err != nil {
 		log.Fatal("cannot create token maker", err)
 	}
-	redisClient := cache.NewRedisClient(config)
-	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker, redis: redisClient}
+	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
 	server.router.Use(logger.Middleware())
-
-	limiter := ratelimiter.NewTokenBucketLimiter(
-		redisClient,
-		5,    // Capacity = 5 tokens
-		60.0, // Refill rate = 60 tokens per second
-		2*time.Minute,
-	)
-	server.router.Use(limiter.Middleware())
 	server.registerRoutes()
 
 	return server
