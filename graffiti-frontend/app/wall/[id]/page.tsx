@@ -248,7 +248,11 @@ export default function WallPage() {
 				</div>
 
 				{/* Posts Grid */}
-				<PostGrid posts={filteredPosts} isWallOwner={isWallOwner} />
+				<PostGrid 
+						posts={filteredPosts} 
+						isWallOwner={isWallOwner} 
+						onPostRemoved={handlePostCreated} 
+					/>
 
 				{/* Floating Add Post Button */}
 				<Button
