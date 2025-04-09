@@ -239,15 +239,16 @@ func TestListWallsByUser(t *testing.T) {
 
 func TestPinUnpinWall(t *testing.T) {
     wall := createRandomWall(t)
-    require.False(t, wall.IsPinned)
+    require.False(t, wall.IsPinned.Bool)
 
     // Test pinning the wall
     pinnedWall, err := testHub.PinUnpinWall(context.Background(), wall.ID)
     require.NoError(t, err)
-    require.True(t, pinnedWall.IsPinned)
+    require.True(t, pinnedWall.IsPinned.Bool)
 
     // Test unpinning the wall
     unpinnedWall, err := testHub.PinUnpinWall(context.Background(), wall.ID)
     require.NoError(t, err)
-    require.False(t, unpinnedWall.IsPinned)
+    require.False(t, unpinnedWall.IsPinned.Bool) 
 }
+
