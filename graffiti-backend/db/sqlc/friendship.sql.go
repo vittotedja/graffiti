@@ -110,6 +110,7 @@ AND af2.user_id NOT IN (
 ) -- exclude existing friends
 GROUP BY u.id
 ORDER BY mutual_friend_count DESC
+LIMIT 10
 `
 
 type DiscoverFriendsByMutualsRow struct {
