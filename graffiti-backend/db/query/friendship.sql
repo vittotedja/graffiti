@@ -113,7 +113,8 @@ AND af2.user_id NOT IN (
   SELECT friend_id FROM accepted_friendships_mv WHERE user_id = $1
 ) -- exclude existing friends
 GROUP BY u.id
-ORDER BY mutual_friend_count DESC;
+ORDER BY mutual_friend_count DESC
+LIMIT 10;
 
 -- name: ListMutualFriends :many
 SELECT u.id, u.fullname, u.username, u.profile_picture
