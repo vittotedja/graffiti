@@ -30,7 +30,9 @@ ORDER BY id DESC;
 -- name: ListWallsByUser :many
 SELECT * FROM walls
 WHERE user_id = $1
-ORDER BY id;
+AND is_deleted = false
+AND is_archived = false
+ORDER BY created_at DESC;
 
 -- name: UpdateWall :one
 UPDATE walls
@@ -58,6 +60,14 @@ UPDATE walls
     set is_archived = false
 WHERE id = $1
 RETURNING *;
+
+
+-- name: GetArchivedWalls :many
+SELECT * FROM walls
+WHERE user_id = $1
+AND is_deleted = false
+AND is_archived = true
+ORDER BY created_at DESC;
 
 -- name: PublicizeWall :one
 UPDATE walls

@@ -3,10 +3,10 @@
 import {useState, useEffect} from "react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {Bell, Search, Menu, X, Home, Users, Compass} from "lucide-react";
+import {Bell, Menu, Home, Users, Compass} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
+// import {Input} from "@/components/ui/input";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ThemeToggle} from "@/components/theme-toggle";
 import {
@@ -33,7 +33,7 @@ export function Navbar() {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [hasNotifications, setHasNotifications] = useState(true);
 	const [isScrolled, setIsScrolled] = useState(false);
-	const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+	// const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
 	// Check if the current path matches the link
 	const isActive = (path: string) => {
@@ -49,6 +49,23 @@ export function Navbar() {
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
+
+	const logout = async () => {
+		const res = await fetch(
+			`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/logout`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (res.ok) {
+			window.location.href = "/login";
+		} else {
+			console.error("Logout failed");
+		}
+	};
 
 	if (pathname.includes("/login")) return null;
 	if (loading) return null;
@@ -159,30 +176,6 @@ export function Navbar() {
 
 					{/* Search, Notifications, and Profile */}
 					<div className="flex items-center gap-2">
-						{/* Desktop Search */}
-						<div className="hidden md:flex relative w-64">
-							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-							<Input
-								placeholder="Search walls, friends..."
-								className="pl-8 bg-background"
-							/>
-						</div>
-
-						{/* Mobile Search Toggle */}
-						<Button
-							variant="ghost"
-							size="icon"
-							className="md:hidden"
-							onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-							aria-label="Search"
-						>
-							{isMobileSearchOpen ? (
-								<X className="h-5 w-5" />
-							) : (
-								<Search className="h-5 w-5" />
-							)}
-						</Button>
-
 						{/* Notifications */}
 						<Link href="/notifications">
 							<Button
@@ -213,16 +206,9 @@ export function Navbar() {
 									aria-label="Profile"
 								>
 									<Avatar className="h-8 w-8">
-										<AvatarImage
-											src={
-												user.profile_picture ||
-												"/placeholder.svg?height=32&width=32"
-											}
-											alt="User"
-										/>
+										<AvatarImage src={user.profile_picture} alt="User" />
 										<AvatarFallback>
 											{formatFullName(user.fullname)}
-											{/* VT */}
 										</AvatarFallback>
 									</Avatar>
 								</Button>
@@ -231,29 +217,12 @@ export function Navbar() {
 								<DropdownMenuItem asChild>
 									<Link href="/">Profile</Link>
 								</DropdownMenuItem>
-								{/* <DropdownMenuItem asChild>
-									<Link href="/settings">Settings</Link>
-								</DropdownMenuItem> */}
 								<DropdownMenuSeparator />
-								<DropdownMenuItem>Sign out</DropdownMenuItem>
+								<DropdownMenuItem onClick={logout}>Sign out</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>
 				</div>
-
-				{/* Mobile Search Bar (Expandable) */}
-				{isMobileSearchOpen && (
-					<div className="pb-3 md:hidden">
-						<div className="relative">
-							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-							<Input
-								placeholder="Search walls, friends..."
-								className="pl-8 bg-background w-full"
-								autoFocus
-							/>
-						</div>
-					</div>
-				)}
 			</div>
 		</header>
 	);

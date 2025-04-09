@@ -123,6 +123,47 @@ func (q *Queries) DeleteWall(ctx context.Context, id pgtype.UUID) error {
 	return err
 }
 
+const getArchivedWalls = `-- name: GetArchivedWalls :many
+SELECT id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at, is_pinned FROM walls
+WHERE user_id = $1
+AND is_deleted = false
+AND is_archived = true
+ORDER BY created_at DESC
+`
+
+func (q *Queries) GetArchivedWalls(ctx context.Context, userID pgtype.UUID) ([]Wall, error) {
+	rows, err := q.db.Query(ctx, getArchivedWalls, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Wall
+	for rows.Next() {
+		var i Wall
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Title,
+			&i.Description,
+			&i.BackgroundImage,
+			&i.IsPublic,
+			&i.IsArchived,
+			&i.IsDeleted,
+			&i.PopularityScore,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.IsPinned,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getWall = `-- name: GetWall :one
 SELECT id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at, is_pinned FROM walls
 WHERE id = $1 LIMIT 1
@@ -189,7 +230,9 @@ func (q *Queries) ListWalls(ctx context.Context) ([]Wall, error) {
 const listWallsByUser = `-- name: ListWallsByUser :many
 SELECT id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at, is_pinned FROM walls
 WHERE user_id = $1
-ORDER BY id
+AND is_deleted = false
+AND is_archived = false
+ORDER BY created_at DESC
 `
 
 func (q *Queries) ListWallsByUser(ctx context.Context, userID pgtype.UUID) ([]Wall, error) {

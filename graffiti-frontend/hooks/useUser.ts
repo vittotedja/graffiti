@@ -25,7 +25,6 @@ export function useUser(redirectIfNull = false) {
 			})
 			.then((data) => {
 				setUser(data.user);
-				console.log(data.user);
 			})
 			.catch(() => {
 				setUser(null);
