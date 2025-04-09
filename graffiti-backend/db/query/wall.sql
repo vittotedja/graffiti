@@ -1,10 +1,11 @@
 -- name: CreateWall :one
 INSERT INTO walls(
     user_id,
+    title,
     description,
     background_image
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: CreateTestWall :one

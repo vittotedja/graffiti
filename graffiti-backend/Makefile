@@ -14,7 +14,7 @@ connect-postgres-network:
 
 postgres:
 	docker run --name $(POSTGRES_CONTAINER) --network $(NETWORK_NAME) -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret1234 -d postgres:17
-
+	
 createdb:
 	docker exec -it $(POSTGRES_CONTAINER) createdb --username=root --owner=root graffiti
 
