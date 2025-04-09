@@ -29,23 +29,29 @@ func createRandomLike(t *testing.T) Like {
 }
 
 func TestCreateGetDeleteLike(t *testing.T) {
-	like := createRandomLike(t)
+    like := createRandomLike(t)
 
-	fetchedLike, err := testHub.GetLike(context.Background(), like.ID)
-	require.NoError(t, err, "Error occurred while fetching the like")
-	require.Equal(t, like.ID, fetchedLike.ID, "Fetched like ID should match the created like ID")
-	require.Equal(t, like.PostID, fetchedLike.PostID, "Fetched like PostID should match the created like PostID")
-	require.Equal(t, like.UserID, fetchedLike.UserID, "Fetched like UserID should match the created like UserID")
-
-	err = testHub.DeleteLike(context.Background(), DeleteLikeParams{
+    fetchedLike, err := testHub.GetLike(context.Background(), GetLikeParams{
 		PostID: like.PostID,
 		UserID: like.UserID,
 	})
-	require.NoError(t, err, "Error occurred while deleting the like")
+    require.NoError(t, err, "Error occurred while fetching the like")
+    require.Equal(t, like.ID, fetchedLike.ID, "Fetched like ID should match the created like ID")
+    require.Equal(t, like.PostID, fetchedLike.PostID, "Fetched like PostID should match the created like PostID")
+    require.Equal(t, like.UserID, fetchedLike.UserID, "Fetched like UserID should match the created like UserID")
 
-	deletedLike, err := testHub.GetLike(context.Background(), like.ID)
-	require.Error(t, err, "Like should have been deleted and should not be found")
-	require.Equal(t, pgtype.UUID{}, deletedLike.ID, "Deleted like ID should be empty")
+    err = testHub.DeleteLike(context.Background(), DeleteLikeParams{
+        PostID: like.PostID,
+        UserID: like.UserID,
+    })
+    require.NoError(t, err, "Error occurred while deleting the like")
+
+    deletedLike, err := testHub.GetLike(context.Background(), GetLikeParams{
+        PostID: like.PostID,
+        UserID: like.UserID,
+    })
+    require.Error(t, err, "Like should have been deleted and should not be found")
+    require.Equal(t, pgtype.UUID{}, deletedLike.ID, "Deleted like ID should be empty")
 }
 
 func TestListLikes(t *testing.T) {

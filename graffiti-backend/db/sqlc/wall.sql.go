@@ -72,21 +72,28 @@ func (q *Queries) CreateTestWall(ctx context.Context, arg CreateTestWallParams) 
 const createWall = `-- name: CreateWall :one
 INSERT INTO walls(
     user_id,
+    title,
     description,
     background_image
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 ) RETURNING id, user_id, title, description, background_image, is_public, is_archived, is_deleted, popularity_score, created_at, updated_at, is_pinned
 `
 
 type CreateWallParams struct {
 	UserID          pgtype.UUID
+	Title           string
 	Description     pgtype.Text
 	BackgroundImage pgtype.Text
 }
 
 func (q *Queries) CreateWall(ctx context.Context, arg CreateWallParams) (Wall, error) {
-	row := q.db.QueryRow(ctx, createWall, arg.UserID, arg.Description, arg.BackgroundImage)
+	row := q.db.QueryRow(ctx, createWall,
+		arg.UserID,
+		arg.Title,
+		arg.Description,
+		arg.BackgroundImage,
+	)
 	var i Wall
 	err := row.Scan(
 		&i.ID,

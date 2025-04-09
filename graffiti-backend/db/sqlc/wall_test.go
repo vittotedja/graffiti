@@ -15,6 +15,7 @@ func createRandomWall(t *testing.T) Wall {
 
 	arg := CreateWallParams{
 		UserID:          user.ID,
+		Title:           "Wall Title" + util.RandomString(10),
 		Description:     pgtype.Text{String: util.RandomString(20), Valid: true},
 		BackgroundImage: pgtype.Text{String: "https://example.com/" + util.RandomString(10) + ".jpg", Valid: true},
 	}
@@ -24,6 +25,7 @@ func createRandomWall(t *testing.T) Wall {
 	require.NotEmpty(t, wall)
 
 	require.Equal(t, arg.UserID, wall.UserID)
+	require.Equal(t, arg.Title, wall.Title)
 	require.Equal(t, arg.Description.String, wall.Description.String)
 	require.Equal(t, arg.BackgroundImage.String, wall.BackgroundImage.String)
 	require.False(t, wall.IsPublic.Bool)
@@ -233,4 +235,19 @@ func TestListWallsByUser(t *testing.T) {
 	for _, wall := range userWalls {
 		require.Equal(t, user.ID, wall.UserID)
 	}
+}
+
+func TestPinUnpinWall(t *testing.T) {
+    wall := createRandomWall(t)
+    require.False(t, wall.IsPinned)
+
+    // Test pinning the wall
+    pinnedWall, err := testHub.PinUnpinWall(context.Background(), wall.ID)
+    require.NoError(t, err)
+    require.True(t, pinnedWall.IsPinned)
+
+    // Test unpinning the wall
+    unpinnedWall, err := testHub.PinUnpinWall(context.Background(), wall.ID)
+    require.NoError(t, err)
+    require.False(t, unpinnedWall.IsPinned)
 }

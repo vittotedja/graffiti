@@ -11,10 +11,10 @@ create-network:
 connect-postgres-network:
 	docker network connect $(NETWORK_NAME) $(POSTGRES_CONTAINER)
 
-postgres:
-	docker run --name $(POSTGRES_CONTAINER) --network $(NETWORK_NAME) -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret1234 -d postgres:17
 # postgres:
-# 	docker run --name $(POSTGRES_CONTAINER) --network $(NETWORK_NAME) -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret1234 -d postgres:17
+# 	docker run --name $(POSTGRES_CONTAINER) --network $(NETWORK_NAME) -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret1234 -d postgres:17
+postgres:
+	docker run --name $(POSTGRES_CONTAINER) --network $(NETWORK_NAME) -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret1234 -d postgres:17
 
 
 createdb:
@@ -26,10 +26,10 @@ dropdb:
 sqlc:
 	sqlc generate
 
-migrateup:
-	migrate -path db/migration -database "postgresql://root:secret1234@localhost:5432/graffiti?sslmode=disable" -verbose up
 # migrateup:
-# 	migrate -path db/migration -database "postgresql://root:secret1234@localhost:5433/graffiti?sslmode=disable" -verbose up
+# 	migrate -path db/migration -database "postgresql://root:secret1234@localhost:5432/graffiti?sslmode=disable" -verbose up
+migrateup:
+	migrate -path db/migration -database "postgresql://root:secret1234@localhost:5433/graffiti?sslmode=disable" -verbose up
 
 migratedown:
 	migrate -path db/migration -database "postgresql://root:secret1234@localhost:5432/graffiti?sslmode=disable" -verbose down
