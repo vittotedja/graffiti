@@ -500,7 +500,7 @@ func (s *Server) getNumberOfMutualFriends(ctx *gin.Context) {
 		return
 	}
 
-	count, err := s.hub.Queries.GetNumberOfMutualFriends(ctx, db.GetNumberOfMutualFriendsParams{
+	count, err := s.hub.GetNumberOfMutualFriends(ctx, db.GetNumberOfMutualFriendsParams{
 		UserID:   userID1,
 		UserID_2: userID2,
 	})
@@ -524,7 +524,7 @@ func (s *Server) discoverFriendsByMutuals(ctx *gin.Context) {
 		return
 	}
 
-	results, err := s.hub.Queries.DiscoverFriendsByMutuals(ctx, userID)
+	results, err := s.hub.DiscoverFriendsByMutuals(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -550,7 +550,7 @@ func (s *Server) getMutualFriends(ctx *gin.Context) {
 		return
 	}
 
-	mutuals, err := s.hub.Queries.ListMutualFriends(ctx, db.ListMutualFriendsParams{
+	mutuals, err := s.hub.ListMutualFriends(ctx, db.ListMutualFriendsParams{
 		UserID:   userID1,
 		UserID_2: userID2,
 	})

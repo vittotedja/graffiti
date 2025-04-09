@@ -327,6 +327,21 @@ func (mr *MockHubMockRecorder) DeleteWall(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteWall", reflect.TypeOf((*MockHub)(nil).DeleteWall), arg0, arg1)
 }
 
+// DiscoverFriendsByMutuals mocks base method.
+func (m *MockHub) DiscoverFriendsByMutuals(arg0 context.Context, arg1 pgtype.UUID) ([]db.DiscoverFriendsByMutualsRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DiscoverFriendsByMutuals", arg0, arg1)
+	ret0, _ := ret[0].([]db.DiscoverFriendsByMutualsRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DiscoverFriendsByMutuals indicates an expected call of DiscoverFriendsByMutuals.
+func (mr *MockHubMockRecorder) DiscoverFriendsByMutuals(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DiscoverFriendsByMutuals", reflect.TypeOf((*MockHub)(nil).DiscoverFriendsByMutuals), arg0, arg1)
+}
+
 // FinishOnboarding mocks base method.
 func (m *MockHub) FinishOnboarding(arg0 context.Context, arg1 pgtype.UUID) error {
 	m.ctrl.T.Helper()
@@ -339,6 +354,21 @@ func (m *MockHub) FinishOnboarding(arg0 context.Context, arg1 pgtype.UUID) error
 func (mr *MockHubMockRecorder) FinishOnboarding(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FinishOnboarding", reflect.TypeOf((*MockHub)(nil).FinishOnboarding), arg0, arg1)
+}
+
+// GetArchivedWalls mocks base method.
+func (m *MockHub) GetArchivedWalls(arg0 context.Context, arg1 pgtype.UUID) ([]db.Wall, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetArchivedWalls", arg0, arg1)
+	ret0, _ := ret[0].([]db.Wall)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetArchivedWalls indicates an expected call of GetArchivedWalls.
+func (mr *MockHubMockRecorder) GetArchivedWalls(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetArchivedWalls", reflect.TypeOf((*MockHub)(nil).GetArchivedWalls), arg0, arg1)
 }
 
 // GetFriendsTx mocks base method.
@@ -444,6 +474,21 @@ func (m *MockHub) GetNumberOfLikesByPost(arg0 context.Context, arg1 pgtype.UUID)
 func (mr *MockHubMockRecorder) GetNumberOfLikesByPost(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNumberOfLikesByPost", reflect.TypeOf((*MockHub)(nil).GetNumberOfLikesByPost), arg0, arg1)
+}
+
+// GetNumberOfMutualFriends mocks base method.
+func (m *MockHub) GetNumberOfMutualFriends(arg0 context.Context, arg1 db.GetNumberOfMutualFriendsParams) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNumberOfMutualFriends", arg0, arg1)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNumberOfMutualFriends indicates an expected call of GetNumberOfMutualFriends.
+func (mr *MockHubMockRecorder) GetNumberOfMutualFriends(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNumberOfMutualFriends", reflect.TypeOf((*MockHub)(nil).GetNumberOfMutualFriends), arg0, arg1)
 }
 
 // GetNumberOfPendingFriendRequests mocks base method.
@@ -731,6 +776,21 @@ func (mr *MockHubMockRecorder) ListLikesByUser(arg0, arg1 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLikesByUser", reflect.TypeOf((*MockHub)(nil).ListLikesByUser), arg0, arg1)
 }
 
+// ListMutualFriends mocks base method.
+func (m *MockHub) ListMutualFriends(arg0 context.Context, arg1 db.ListMutualFriendsParams) ([]db.ListMutualFriendsRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListMutualFriends", arg0, arg1)
+	ret0, _ := ret[0].([]db.ListMutualFriendsRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListMutualFriends indicates an expected call of ListMutualFriends.
+func (mr *MockHubMockRecorder) ListMutualFriends(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMutualFriends", reflect.TypeOf((*MockHub)(nil).ListMutualFriends), arg0, arg1)
+}
+
 // ListPosts mocks base method.
 func (m *MockHub) ListPosts(arg0 context.Context) ([]db.Post, error) {
 	m.ctrl.T.Helper()
@@ -894,6 +954,20 @@ func (m *MockHub) PublicizeWall(arg0 context.Context, arg1 pgtype.UUID) (db.Wall
 func (mr *MockHubMockRecorder) PublicizeWall(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PublicizeWall", reflect.TypeOf((*MockHub)(nil).PublicizeWall), arg0, arg1)
+}
+
+// RefreshMaterializedViews mocks base method.
+func (m *MockHub) RefreshMaterializedViews(arg0 context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RefreshMaterializedViews", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RefreshMaterializedViews indicates an expected call of RefreshMaterializedViews.
+func (mr *MockHubMockRecorder) RefreshMaterializedViews(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RefreshMaterializedViews", reflect.TypeOf((*MockHub)(nil).RefreshMaterializedViews), arg0)
 }
 
 // RejectFriendship mocks base method.

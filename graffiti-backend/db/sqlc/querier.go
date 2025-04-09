@@ -26,13 +26,16 @@ type Querier interface {
 	DeletePost(ctx context.Context, id pgtype.UUID) error
 	DeleteUser(ctx context.Context, id pgtype.UUID) error
 	DeleteWall(ctx context.Context, id pgtype.UUID) error
+	DiscoverFriendsByMutuals(ctx context.Context, userID pgtype.UUID) ([]DiscoverFriendsByMutualsRow, error)
 	FinishOnboarding(ctx context.Context, id pgtype.UUID) error
+	GetArchivedWalls(ctx context.Context, userID pgtype.UUID) ([]Wall, error)
 	GetFriendship(ctx context.Context, id pgtype.UUID) (Friendship, error)
 	GetHighlightedPosts(ctx context.Context) ([]Post, error)
 	GetHighlightedPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Post, error)
 	GetLike(ctx context.Context, arg GetLikeParams) (Like, error)
 	GetNumberOfFriends(ctx context.Context, fromUser pgtype.UUID) (int64, error)
 	GetNumberOfLikesByPost(ctx context.Context, postID pgtype.UUID) (int64, error)
+	GetNumberOfMutualFriends(ctx context.Context, arg GetNumberOfMutualFriendsParams) (int64, error)
 	GetNumberOfPendingFriendRequests(ctx context.Context, toUser pgtype.UUID) (int64, error)
 	GetPost(ctx context.Context, id pgtype.UUID) (Post, error)
 	GetUser(ctx context.Context, id pgtype.UUID) (User, error)
@@ -48,6 +51,7 @@ type Querier interface {
 	ListLikes(ctx context.Context) ([]Like, error)
 	ListLikesByPost(ctx context.Context, postID pgtype.UUID) ([]Like, error)
 	ListLikesByUser(ctx context.Context, userID pgtype.UUID) ([]Like, error)
+	ListMutualFriends(ctx context.Context, arg ListMutualFriendsParams) ([]ListMutualFriendsRow, error)
 	ListPosts(ctx context.Context) ([]Post, error)
 	ListPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Post, error)
 	ListPostsByWallWithAuthorsDetails(ctx context.Context, wallID pgtype.UUID) ([]ListPostsByWallWithAuthorsDetailsRow, error)
