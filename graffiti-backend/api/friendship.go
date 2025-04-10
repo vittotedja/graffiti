@@ -36,13 +36,17 @@ type getNumberOfMutualFriendsRequest struct {
 	UserID2 string `json:"user_id_2" binding:"required"`
 }
 
-type discoverRequest struct {
+type getMutualFriendsRequest struct {
 	UserID string `json:"user_id" binding:"required"`
 }
 
-type getMutualFriendsRequest struct {
-	UserID1 string `json:"user_id_1" binding:"required"`
-	UserID2 string `json:"user_id_2" binding:"required"`
+type MutualFriendsResponse struct {
+	ID                string `json:"id"`
+	Username          string `json:"username"`
+	FullName          string `json:"fullname"`
+	ProfilePicture    string `json:"profile_picture"`
+	BackgroundImage   string `json:"background_image"`
+	MutualFriendCount int    `json:"mutual_friend_count"`
 }
 
 // CreateFriendRequest handles creating a new friend request
@@ -513,51 +517,81 @@ func (s *Server) getNumberOfMutualFriends(ctx *gin.Context) {
 }
 
 func (s *Server) discoverFriendsByMutuals(ctx *gin.Context) {
-	var req discoverRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	var userID pgtype.UUID
-	if err := userID.Scan(req.UserID); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received discover friends by mutual request")
+
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("User not found in context", nil)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return
 	}
 
-	results, err := s.hub.Queries.DiscoverFriendsByMutuals(ctx, userID)
+	results, err := s.hub.Queries.DiscoverFriendsByMutuals(ctx, currentUser.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, results)
+	var resp []MutualFriendsResponse
+
+	for _, u := range results {
+		resp = append(resp, MutualFriendsResponse{
+			ID:                u.ID.String(),
+			Username:          u.Username,
+			FullName:          u.Fullname.String,
+			ProfilePicture:    u.ProfilePicture.String,
+			BackgroundImage:   u.BackgroundImage.String,
+			MutualFriendCount: int(u.MutualFriendCount),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (s *Server) getMutualFriends(ctx *gin.Context) {
+	meta := logger.GetMetadata(ctx.Request.Context())
+	log := meta.GetLogger()
+	log.Info("Received get mutual friends")
+
+	currentUser, ok := ctx.MustGet("currentUser").(db.User)
+	if !ok {
+		log.Error("User not found in context", nil)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		return
+	}
+
 	var req getMutualFriendsRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	var userID1, userID2 pgtype.UUID
-	if err := userID1.Scan(req.UserID1); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	if err := userID2.Scan(req.UserID2); err != nil {
+	var userID pgtype.UUID
+	if err := userID.Scan(req.UserID); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	mutuals, err := s.hub.Queries.ListMutualFriends(ctx, db.ListMutualFriendsParams{
-		UserID:   userID1,
-		UserID_2: userID2,
+		UserID:   userID,
+		UserID_2: currentUser.ID,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mutuals)
+	var resp []UserSearchResponse
+	for _, u := range mutuals {
+		resp = append(resp, UserSearchResponse{
+			ID:             u.ID.String(),
+			Username:       u.Username,
+			FullName:       u.Fullname.String,
+			ProfilePicture: u.ProfilePicture.String,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, resp)
 }
