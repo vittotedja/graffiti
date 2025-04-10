@@ -96,6 +96,11 @@ func (ns NullStatus) Value() (driver.Value, error) {
 	return string(ns.Status), nil
 }
 
+type AcceptedFriendshipsMv struct {
+	UserID   pgtype.UUID
+	FriendID pgtype.UUID
+}
+
 type Friendship struct {
 	ID        pgtype.UUID
 	FromUser  pgtype.UUID
@@ -110,6 +115,17 @@ type Like struct {
 	PostID  pgtype.UUID
 	UserID  pgtype.UUID
 	LikedAt pgtype.Timestamp
+}
+
+type Notification struct {
+	ID          pgtype.UUID
+	RecipientID pgtype.UUID
+	SenderID    pgtype.UUID
+	Type        string
+	EntityID    pgtype.UUID
+	Message     string
+	IsRead      pgtype.Bool
+	CreatedAt   pgtype.Timestamp
 }
 
 type Post struct {

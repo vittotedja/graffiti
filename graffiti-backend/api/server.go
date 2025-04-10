@@ -1,9 +1,10 @@
 package api
 
 import (
-	cron "github.com/vittotedja/graffiti/graffiti-backend/util/cron"
 	"log"
 	"time"
+
+	cron "github.com/vittotedja/graffiti/graffiti-backend/util/cron"
 
 	"context"
 	"fmt"
@@ -26,6 +27,7 @@ type Server struct {
 	router     *gin.Engine // helps us send each API request to the correct handler for processing
 	tokenMaker token.Maker
 	httpServer *http.Server
+	notification *SQSProducer
 }
 
 // NewServer creates a new HTTP server and sets up all routes
@@ -34,9 +36,19 @@ func NewServer(config util.Config) *Server {
 	if err != nil {
 		log.Fatal("cannot create token maker", err)
 	}
-	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
+
+	// Initialize the SQS producer for notifications
+	sqsProducer, err := NewSQSProducer(config.AWSRegion, config.SQSQueueURL, config.AWSAccessKeyID, config.AWSSecretKey, config.AWSSessionToken)
+	if err != nil {
+		log.Fatal("cannot create SQS producer", err)
+	}
+
+	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker, notification: sqsProducer,}
 	server.router.Use(logger.Middleware())
 	server.registerRoutes()
+
+
+	
 
 	return server
 }
