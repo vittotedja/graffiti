@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import {Brush, Eraser, Undo, Redo, Check, X} from "lucide-react";
+import {Brush, Eraser, Undo, Redo, Check, X, ZoomIn, ZoomOut} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Slider} from "@/components/ui/slider";
 import {Label} from "@/components/ui/label";
@@ -10,8 +10,8 @@ interface DrawTabProps {
 	selectedImage: string;
 	bgCanvasRef: React.RefObject<HTMLCanvasElement | null>;
 	drawCanvasRef: React.RefObject<HTMLCanvasElement | null>;
-	startDrawing: (e: React.MouseEvent<HTMLCanvasElement>) => void;
-	draw: (e: React.MouseEvent<HTMLCanvasElement>) => void;
+	startDrawing: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
+	draw: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
 	stopDrawing: () => void;
 	drawingMode: string;
 	setDrawingMode: (mode: string) => void;
@@ -45,13 +45,17 @@ const DrawTab: React.FC<DrawTabProps> = ({
 	setActiveTab,
 	handleNext,
 }) => {
+	// Preset brush sizes for touch-friendly selection
+	const brushPresets = [2, 5, 10, 20, 30];
+
 	return (
-		<div className="grid gap-4 md:grid-cols-[1fr_250px]">
+		<div className="grid gap-4 md:grid-cols-[1fr_250px] sm:grid-cols-1">
 			{/* Canvas Area */}
 			<div
-				className="relative border rounded-md overflow-hidden bg-white"
+				className="relative border rounded-md overflow-hidden bg-white mx-auto"
 				style={{
-					width: drawCanvasRef.current?.width || 600,
+					width: "100%",
+					maxWidth: drawCanvasRef.current?.width || 600,
 					height: drawCanvasRef.current?.height || 400,
 				}}
 			>
@@ -62,12 +66,16 @@ const DrawTab: React.FC<DrawTabProps> = ({
 				/>
 				<canvas
 					ref={drawCanvasRef}
-					className="absolute inset-0"
+					className="absolute inset-0 touch-none"
 					style={{zIndex: 1}}
 					onMouseDown={startDrawing}
 					onMouseMove={draw}
 					onMouseUp={stopDrawing}
 					onMouseLeave={stopDrawing}
+					onTouchStart={startDrawing}
+					onTouchMove={draw}
+					onTouchEnd={stopDrawing}
+					onTouchCancel={stopDrawing}
 				/>
 			</div>
 			{/* Drawing Tools */}
@@ -95,10 +103,22 @@ const DrawTab: React.FC<DrawTabProps> = ({
 							<Redo className="h-5 w-5" />
 						</Button>
 					</div>
-					<div className="space-y-2">
-						<div className="flex justify-between items-center">
-							<Label>Brush Size</Label>
-							<span className="text-sm">{brushSize}px</span>
+					
+					{/* Touch-friendly brush size presets */}
+					<div>
+						<Label className="mb-2 block">Brush Size: {brushSize}px</Label>
+						<div className="flex flex-wrap gap-2 justify-between mb-2">
+							{brushPresets.map(size => (
+								<Button 
+									key={size}
+									variant={brushSize === size ? "default" : "outline"}
+									size="sm"
+									className="flex-1"
+									onClick={() => setBrushSize(size)}
+								>
+									{size}px
+								</Button>
+							))}
 						</div>
 						<Slider
 							value={[brushSize]}
@@ -108,13 +128,14 @@ const DrawTab: React.FC<DrawTabProps> = ({
 							onValueChange={(value: number[]) => setBrushSize(value[0])}
 						/>
 					</div>
+					
 					<div>
 						<Label className="mb-2 block">Color</Label>
 						<div className="flex flex-wrap gap-2">
 							{colors.map((color) => (
 								<button
 									key={color}
-									className={`h-8 w-8 rounded-full ${
+									className={`h-10 w-10 rounded-full ${
 										brushColor === color
 											? "ring-2 ring-offset-2 ring-primary"
 											: "ring-2 ring-offset-1 ring-gray-700"
