@@ -764,3 +764,4 @@ time="2025-04-02T18:28:34+08:00" level=info msg="Received get own wall request" 
 time="2025-04-02T18:28:34+08:00" level=info msg="Walls listed successfully" request_id=91731477-0cb2-41f1-a795-d458fabec982 route=/api/v2/walls
 time="2025-04-02T18:28:34+08:00" level=info msg="Received get own wall request" request_id=74a426f8-a06e-4743-a4a6-e6bc52fa76b5 route=/api/v2/walls
 time="2025-04-02T18:28:34+08:00" level=info msg="Walls listed successfully" request_id=74a426f8-a06e-4743-a4a6-e6bc52fa76b5 route=/api/v2/walls
+[36mINFO[0m[2025-04-11T06:13:34+08:00] Logger initialized successfully              
