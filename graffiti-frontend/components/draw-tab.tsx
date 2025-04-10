@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import {Brush, Eraser, Undo, Redo, Check, X, ZoomIn, ZoomOut} from "lucide-react";
+import {Brush, Eraser, Undo, Redo, Check, X} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Slider} from "@/components/ui/slider";
 import {Label} from "@/components/ui/label";
@@ -10,8 +10,12 @@ interface DrawTabProps {
 	selectedImage: string;
 	bgCanvasRef: React.RefObject<HTMLCanvasElement | null>;
 	drawCanvasRef: React.RefObject<HTMLCanvasElement | null>;
-	startDrawing: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
-	draw: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
+	startDrawing: (
+		e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+	) => void;
+	draw: (
+		e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+	) => void;
 	stopDrawing: () => void;
 	drawingMode: string;
 	setDrawingMode: (mode: string) => void;
@@ -103,13 +107,13 @@ const DrawTab: React.FC<DrawTabProps> = ({
 							<Redo className="h-5 w-5" />
 						</Button>
 					</div>
-					
+
 					{/* Touch-friendly brush size presets */}
 					<div>
 						<Label className="mb-2 block">Brush Size: {brushSize}px</Label>
 						<div className="flex flex-wrap gap-2 justify-between mb-2">
-							{brushPresets.map(size => (
-								<Button 
+							{brushPresets.map((size) => (
+								<Button
 									key={size}
 									variant={brushSize === size ? "default" : "outline"}
 									size="sm"
@@ -128,7 +132,7 @@ const DrawTab: React.FC<DrawTabProps> = ({
 							onValueChange={(value: number[]) => setBrushSize(value[0])}
 						/>
 					</div>
-					
+
 					<div>
 						<Label className="mb-2 block">Color</Label>
 						<div className="flex flex-wrap gap-2">
