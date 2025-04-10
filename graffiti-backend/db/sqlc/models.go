@@ -96,6 +96,11 @@ func (ns NullStatus) Value() (driver.Value, error) {
 	return string(ns.Status), nil
 }
 
+type AcceptedFriendshipsMv struct {
+	UserID   pgtype.UUID
+	FriendID pgtype.UUID
+}
+
 type Friendship struct {
 	ID        pgtype.UUID
 	FromUser  pgtype.UUID

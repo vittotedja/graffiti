@@ -11,3 +11,7 @@ export type User = {
 	createdAt: Date;
 	updatedAt: Date;
 };
+
+export type UserWithMutualFriends = User & {
+	mutual_friend_count: number;
+};

@@ -145,7 +145,7 @@ export default function ProfilePage() {
 	if (!user) return <p>Not logged in</p>;
 
 	return (
-		<div className="min-h-screen bg-[url('/images/concrete-texture.jpg')] bg-cover">
+		<div className="min-h-screen">
 			<div className="container mx-auto px-4 pb-20">
 				{/* Home Content */}
 				<main className="mt-6">
