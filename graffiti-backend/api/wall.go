@@ -17,7 +17,7 @@ import (
 
 // Wall request/response types
 type createTestWallRequest struct {
-	Title           string `json:"title"`
+	Title           string `json:"title" binding:"required"`
 	Description     string `json:"description"`
 	BackgroundImage string `json:"background_image"`
 	IsPublic        bool   `json:"is_public"`
