@@ -98,26 +98,25 @@ func TestCreateWallAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
+			
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
+			
 			server.router.POST("/test/walls", func(ctx *gin.Context) {
 				ctx.Set("currentUser", user)
 				server.createNewWall(ctx)
 			})
 
-			// Create a recorder and request
 			recorder := httptest.NewRecorder()
 			data, err := json.Marshal(tc.body)
 			require.NoError(t, err)
 
-			// Create and execute the request
+			
 			request, err := http.NewRequest(http.MethodPost, "/test/walls", bytes.NewReader(data))
 			require.NoError(t, err)
 			request.Header.Set("Content-Type", "application/json")
@@ -200,24 +199,24 @@ func TestGetWallAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
+			
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
+			
 			server.router.GET("/test/walls/:id", func(ctx *gin.Context) {
 				ctx.Set("currentUser", user)
 				server.getWall(ctx)
 			})
 
-			// Create a recorder
+			
 			recorder := httptest.NewRecorder()
 
-			// Create and execute the request
+			
 			url := fmt.Sprintf("/test/walls/%s", tc.wallID)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
@@ -273,18 +272,17 @@ func TestListWallsAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
 			tc.setupMock(mockHub)
 
-			// Create a recorder
+			
 			recorder := httptest.NewRecorder()
 
-			// Create and execute the request
+			
 			request, err := http.NewRequest(http.MethodGet, "/api/v1/walls", nil)
 			require.NoError(t, err)
 
@@ -439,28 +437,25 @@ func TestUpdateWallAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
+			
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
+			
 			server.router.PUT("/test/walls/:id", func(ctx *gin.Context) {
 				ctx.Set("currentUser", user)
 				server.updateWall(ctx)
 			})
-
-			// Create a recorder
+			
 			recorder := httptest.NewRecorder()
-
-			// Marshal body data to JSON
+			
 			data, err := json.Marshal(tc.body)
 			require.NoError(t, err)
 
-			// Create and execute the request
 			url := fmt.Sprintf("/test/walls/%s", tc.wallID)
 			request, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(data))
 			require.NoError(t, err)
@@ -728,24 +723,23 @@ func TestPublicizeWallAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
+			
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
 			server.router.PUT("/test/walls/:id/publicize", func(ctx *gin.Context) {
 				ctx.Set("currentUser", user)
 				server.publicizeWall(ctx)
 			})
 
-			// Create a recorder
+			
 			recorder := httptest.NewRecorder()
 
-			// Create and execute the request
+			
 			url := fmt.Sprintf("/test/walls/%s/publicize", tc.wallID)
 			request, err := http.NewRequest(http.MethodPut, url, nil)
 			require.NoError(t, err)
@@ -874,24 +868,24 @@ func TestPrivatizeWallAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
+			
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
+			
 			server.router.PUT("/test/walls/:id/privatize", func(ctx *gin.Context) {
 				ctx.Set("currentUser", user)
 				server.privatizeWall(ctx)
 			})
 
-			// Create a recorder
+			
 			recorder := httptest.NewRecorder()
 
-			// Create and execute the request
+			
 			url := fmt.Sprintf("/test/walls/%s/privatize", tc.wallID)
 			request, err := http.NewRequest(http.MethodPut, url, nil)
 			require.NoError(t, err)
@@ -1020,24 +1014,24 @@ func TestPinWallAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
+			
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
+			
 			server.router.PUT("/test/walls/:id/pin", func(ctx *gin.Context) {
 				ctx.Set("currentUser", user)
 				server.pinWall(ctx)
 			})
 
-			// Create a recorder
+			
 			recorder := httptest.NewRecorder()
 
-			// Create and execute the request
+			
 			url := fmt.Sprintf("/test/walls/%s/pin", tc.wallID)
 			request, err := http.NewRequest(http.MethodPut, url, nil)
 			require.NoError(t, err)
@@ -1094,24 +1088,24 @@ func TestGetOwnWallAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
+			
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
+			
 			server.router.GET("/test/walls", func(ctx *gin.Context) {
 				ctx.Set("currentUser", user)
 				server.getOwnWall(ctx)
 			})
 
-			// Create a recorder
+			
 			recorder := httptest.NewRecorder()
 
-			// Create and execute the request
+			
 			request, err := http.NewRequest(http.MethodGet, "/test/walls", nil)
 			require.NoError(t, err)
 
@@ -1242,24 +1236,24 @@ func TestListWallsByUserAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			// Create a new test server
+			
 			server := newTestServer(t)
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
-			// Set up mock expectations
+			
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
+			
 			server.router.GET("/test/users/:id/walls", func(ctx *gin.Context) {
 				ctx.Set("currentUser", currentUser)
 				server.listWallsByUser(ctx)
 			})
 
-			// Create a recorder
+			
 			recorder := httptest.NewRecorder()
 
-			// Create and execute the request
+			
 			url := fmt.Sprintf("/test/users/%s/walls", tc.userID)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
@@ -1354,7 +1348,6 @@ func requireBodyMatchWallsResponse(t *testing.T, body *bytes.Buffer, walls []db.
 
 	require.Equal(t, len(walls), len(gotResponses))
 
-	// Create a map of wall IDs to walls for easier lookup
 	wallMap := make(map[string]db.Wall)
 	for _, wall := range walls {
 		wallMap[wall.ID.String()] = wall
