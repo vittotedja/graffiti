@@ -99,6 +99,7 @@ SELECT
     u.fullname,
     u.username,
     u.profile_picture,
+    u.background_image,
     COUNT(*) AS mutual_friend_count
 FROM accepted_friendships_mv af1
     JOIN accepted_friendships_mv af2 ON af1.friend_id = af2.friend_id
@@ -118,6 +119,7 @@ type DiscoverFriendsByMutualsRow struct {
 	Fullname          pgtype.Text
 	Username          string
 	ProfilePicture    pgtype.Text
+	BackgroundImage   pgtype.Text
 	MutualFriendCount int64
 }
 
@@ -135,6 +137,7 @@ func (q *Queries) DiscoverFriendsByMutuals(ctx context.Context, userID pgtype.UU
 			&i.Fullname,
 			&i.Username,
 			&i.ProfilePicture,
+			&i.BackgroundImage,
 			&i.MutualFriendCount,
 		); err != nil {
 			return nil, err

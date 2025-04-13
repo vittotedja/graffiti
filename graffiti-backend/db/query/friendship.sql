@@ -103,6 +103,7 @@ SELECT
     u.fullname,
     u.username,
     u.profile_picture,
+    u.background_image,
     COUNT(*) AS mutual_friend_count
 FROM accepted_friendships_mv af1
     JOIN accepted_friendships_mv af2 ON af1.friend_id = af2.friend_id

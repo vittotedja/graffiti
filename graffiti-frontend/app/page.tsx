@@ -61,7 +61,7 @@ export default function HomePage() {
 							width={1200}
 							height={400}
 							quality={100}
-							className="w-full object-cover"
+							className="w-full max-h-[350px] object-cover"
 						/>
 
 						{/* Bottom section with avatar and buttons */}

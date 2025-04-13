@@ -1,9 +1,10 @@
 package api
 
 import (
-	cron "github.com/vittotedja/graffiti/graffiti-backend/util/cron"
 	"log"
 	"time"
+
+	cron "github.com/vittotedja/graffiti/graffiti-backend/util/cron"
 
 	"context"
 	"fmt"
@@ -166,6 +167,11 @@ func (s *Server) registerRoutes(env string) {
 		//likes
 		protected.POST("/v1/likes", s.updateLike) // add and delete likes in 1 endpoint in likes count
 		protected.GET("/v1/likes/:post_id", s.getLike)
+
+		//discover
+		protected.POST("/v1/friends/discover", s.discoverFriendsByMutuals)
+		protected.POST("/v1/friends/mutual", s.getMutualFriends)
+
 	}
 
 	s.router.GET("/api/v1/users", s.listUsers) // working
@@ -183,11 +189,8 @@ func (s *Server) registerRoutes(env string) {
 	s.router.PUT("/api/v1/posts/:id/highlight", s.highlightPost)                     // working
 	s.router.PUT("/api/v1/posts/:id/unhighlight", s.unhighlightPost)                 // working
 
-	// Updated Friendship API routes
 	// Friend Requests
 	s.router.POST("/api/v1/friends/mutual/count", s.getNumberOfMutualFriends)
-	s.router.POST("/api/v1/friends/discover", s.discoverFriendsByMutuals)
-	s.router.POST("/api/v1/friends/mutual", s.getMutualFriends)
 
 	// User Blocking
 	s.router.PUT("/api/v1/users/block", s.blockUser)

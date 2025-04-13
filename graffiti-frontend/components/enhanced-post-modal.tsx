@@ -100,8 +100,10 @@ export function EnhancedPostModal({
 			const drawContext = drawCanvas.getContext("2d");
 			if (!user || !bgContext || !drawContext) return;
 
-			const MAX_WIDTH = 480;
-			const MAX_HEIGHT = 480;
+			// Responsive canvas size based on device
+			const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+			const MAX_WIDTH = isMobile ? 300 : 480;
+			const MAX_HEIGHT = isMobile ? 300 : 480;
 
 			if (selectedImage.includes("placeholder.svg")) {
 				bgCanvas.width = MAX_WIDTH;
@@ -179,17 +181,40 @@ export function EnhancedPostModal({
 		setActiveTab("draw");
 	};
 
-	// Drawing handlers
-	const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+	// Drawing handlers with touch support
+	const getCanvasCoordinates = (
+		canvas: HTMLCanvasElement,
+		clientX: number,
+		clientY: number
+	) => {
+		const rect = canvas.getBoundingClientRect();
+		return {
+			x: (clientX - rect.left) * (canvas.width / rect.width),
+			y: (clientY - rect.top) * (canvas.height / rect.height)
+		};
+	};
+
+	const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
 		if (!drawCanvasRef.current) return;
 		const canvas = drawCanvasRef.current;
 		const context = canvas.getContext("2d");
 		if (!context) return;
-		const rect = canvas.getBoundingClientRect();
-		const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-		const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+		
+		let clientX, clientY;
+		// Handle both mouse and touch events
+		if ('touches' in e) {
+			e.preventDefault(); // Prevent scrolling when drawing
+			clientX = e.touches[0].clientX;
+			clientY = e.touches[0].clientY;
+		} else {
+			clientX = e.clientX;
+			clientY = e.clientY;
+		}
+		
+		const {x, y} = getCanvasCoordinates(canvas, clientX, clientY);
 		context.beginPath();
 		context.moveTo(x, y);
+		
 		if (drawingMode === "brush") {
 			context.globalCompositeOperation = "source-over";
 			context.strokeStyle = brushColor;
@@ -203,14 +228,24 @@ export function EnhancedPostModal({
 		setIsDrawing(true);
 	};
 
-	const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+	const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
 		if (!isDrawing || !drawCanvasRef.current) return;
 		const canvas = drawCanvasRef.current;
 		const context = canvas.getContext("2d");
 		if (!context) return;
-		const rect = canvas.getBoundingClientRect();
-		const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-		const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+		
+		let clientX, clientY;
+		// Handle both mouse and touch events
+		if ('touches' in e) {
+			e.preventDefault(); // Prevent scrolling when drawing
+			clientX = e.touches[0].clientX;
+			clientY = e.touches[0].clientY;
+		} else {
+			clientX = e.clientX;
+			clientY = e.clientY;
+		}
+		
+		const {x, y} = getCanvasCoordinates(canvas, clientX, clientY);
 		context.lineTo(x, y);
 		context.stroke();
 	};
@@ -549,7 +584,7 @@ export function EnhancedPostModal({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleClose}>
-			<DialogContent className="sm:max-w-[90%] md:max-w-[800px] max-h-[90vh] overflow-y-auto bg-background border-2 border-primary/20">
+			<DialogContent className="sm:max-w-[95%] md:max-w-[800px] max-h-[90vh] overflow-y-auto bg-background border-2 border-primary/20">
 				<DialogHeader>
 					<DialogTitle className="text-2xl font-graffiti">
 						{activeTab === "upload"

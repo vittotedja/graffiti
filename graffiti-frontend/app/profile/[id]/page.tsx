@@ -13,11 +13,15 @@ import {Button} from "@/components/ui/button";
 import {ClockIcon, UserMinus2, UserPlus2} from "lucide-react";
 import {toast} from "sonner";
 import {useUser} from "@/hooks/useUser";
+import RecommendedFriends from "./recommended-friends";
 
 export default function ProfilePage() {
 	const {user: loggedInUser} = useUser();
 	const pathname = usePathname();
 	const splitPath = pathname.split("/");
+	const userId = splitPath[2];
+
+	const [loading, setLoading] = useState(true);
 	const [user, setUser] = useState<User>();
 	const [friendshipID, setFriendshipID] = useState<string>("");
 	const [friendshipStatus, setFriendshipStatus] = useState<
@@ -26,8 +30,7 @@ export default function ProfilePage() {
 	const [friendshipFromUserID, setFriendshipFromUserID] = useState<
 		string | null
 	>(null);
-
-	const userId = splitPath[2];
+	const [showRecommendedFriends, setShowRecommendedFriends] = useState(false);
 
 	const fetchFriendshipData = async (userId: string) => {
 		try {
@@ -77,6 +80,8 @@ export default function ProfilePage() {
 				fetchFriendshipData(userId);
 			} catch (err) {
 				console.error("Failed to fetch wall data:", err);
+			} finally {
+				setLoading(false);
 			}
 		};
 
@@ -97,6 +102,7 @@ export default function ProfilePage() {
 			if (!response.ok) throw new Error("Error Adding Friends");
 			toast.success("Successfully sent friend request!");
 			fetchFriendshipData(userId);
+			setShowRecommendedFriends(true);
 		} catch (error) {
 			console.error(error);
 			toast.warning("Error Adding Friends");
@@ -142,10 +148,20 @@ export default function ProfilePage() {
 		}
 	};
 
-	if (!user) return <p>Not logged in</p>;
+	if (loading || !user) {
+		return (
+			<div className="min-h-screen">
+				<div className="container mx-auto px-4 pb-20">
+					<div className="mt-6">
+						<div className="h-[350px] rounded-xl bg-muted animate-pulse" />
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
-		<div className="min-h-screen bg-[url('/images/concrete-texture.jpg')] bg-cover">
+		<div className="min-h-screen">
 			<div className="container mx-auto px-4 pb-20">
 				{/* Home Content */}
 				<main className="mt-6">
@@ -158,7 +174,7 @@ export default function ProfilePage() {
 							width={1200}
 							height={400}
 							quality={100}
-							className="w-full object-cover"
+							className="w-full max-h-[350px] object-cover"
 						/>
 
 						{/* Bottom section with avatar and buttons */}
@@ -237,6 +253,12 @@ export default function ProfilePage() {
 							</div>
 						</div>
 					</div>
+					{showRecommendedFriends && (
+						<RecommendedFriends
+							onClose={() => setShowRecommendedFriends(false)}
+							friendId={userId}
+						/>
+					)}
 					{/* Walls */}
 					<WallGrid userId={userId} />
 				</main>
