@@ -386,7 +386,6 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, respList)
 }
 
-// Helper function to hash passwords (you should implement a proper password hashing algorithm)
 func hashPassword(password string) string {
 	// TODO: Implement proper password hashing
 	return password

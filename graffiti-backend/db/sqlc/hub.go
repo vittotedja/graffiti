@@ -11,16 +11,32 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Hub provides all functions to execute db queries and transactions
-type Hub struct {
+type Hub interface {
+	Querier
+	CreateFriendRequestTx(ctx context.Context, fromUser, toUser pgtype.UUID) (Friendship, error)
+	CreateLikeTx(ctx context.Context, postID, userID pgtype.UUID) error
+	CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgtype.UUID) (liked bool, err error)
+	AcceptFriendRequestTx(ctx context.Context, friendshipID pgtype.UUID) error
+	BlockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) error
+	UnblockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) error
+	GetFriendsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error)
+	IsFriendTx(ctx context.Context, userID, otherUserID pgtype.UUID) (bool, error)
+	GetPendingFriendRequestsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error)
+	GetSentFriendRequestsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error)
+	IsUserBlockedTx(ctx context.Context, fromUser, toUser pgtype.UUID) (bool, error)
+	RefreshMaterializedViews(ctx context.Context) error
+}
+
+// SQLHub provides all functions to execute db SQL queries and transactions
+type SQLHub struct {
 	// a composition, a preferred way to extend struct functionality in Golang instead of inheritance
 	// All individual query functions are defined in the Queries struct
 	*Queries
 	pool *pgxpool.Pool
 }
 
-func NewHub(pool *pgxpool.Pool) *Hub {
-	return &Hub{
+func NewHub(pool *pgxpool.Pool) Hub {
+	return &SQLHub{
 		pool:    pool,
 		Queries: New(pool),
 	}
@@ -28,7 +44,7 @@ func NewHub(pool *pgxpool.Pool) *Hub {
 
 // execTx executes a function within a database transaction
 // It rolls back the transaction if the function returns an error
-func (hub *Hub) execTx(ctx context.Context, fn func(*Queries) error) error {
+func (hub *SQLHub) execTx(ctx context.Context, fn func(*Queries) error) error {
 	// Create empty TxOptions for default options
 	txOptions := pgx.TxOptions{}
 
@@ -48,7 +64,7 @@ func (hub *Hub) execTx(ctx context.Context, fn func(*Queries) error) error {
 }
 
 // CreateFriendRequestTx creates a new friendship request (one-way, pending status)
-func (hub *Hub) CreateFriendRequestTx(ctx context.Context, fromUser, toUser pgtype.UUID) (Friendship, error) {
+func (hub *SQLHub) CreateFriendRequestTx(ctx context.Context, fromUser, toUser pgtype.UUID) (Friendship, error) {
 	var friendship Friendship
 
 	err := hub.execTx(ctx, func(q *Queries) error {
@@ -90,7 +106,7 @@ func (hub *Hub) CreateFriendRequestTx(ctx context.Context, fromUser, toUser pgty
 	return friendship, err
 }
 
-func (hub *Hub) CreateLikeTx(ctx context.Context, postID, userID pgtype.UUID) error {
+func (hub *SQLHub) CreateLikeTx(ctx context.Context, postID, userID pgtype.UUID) error {
 	err := hub.execTx(ctx, func(q *Queries) error {
 		// Create the like
 		arg := CreateLikeParams{
@@ -111,7 +127,7 @@ func (hub *Hub) CreateLikeTx(ctx context.Context, postID, userID pgtype.UUID) er
 	return err
 }
 
-func (hub *Hub) CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgtype.UUID) (liked bool, err error) {
+func (hub *SQLHub) CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgtype.UUID) (liked bool, err error) {
 	err = hub.execTx(ctx, func(q *Queries) error {
 		// Check if like already exists
 		_, err := q.GetLike(ctx, GetLikeParams{
@@ -156,7 +172,7 @@ func (hub *Hub) CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgtype.
 	return liked, err
 }
 
-func (hub *Hub) AcceptFriendRequestTx(ctx context.Context, friendshipID pgtype.UUID) error {
+func (hub *SQLHub) AcceptFriendRequestTx(ctx context.Context, friendshipID pgtype.UUID) error {
 	return hub.execTx(ctx, func(q *Queries) error {
 		// Get the friendship to accept
 		friendship, err := q.GetFriendship(ctx, friendshipID)
@@ -189,7 +205,7 @@ func (hub *Hub) AcceptFriendRequestTx(ctx context.Context, friendshipID pgtype.U
 }
 
 // BlockUserTx blocks a user
-func (hub *Hub) BlockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) error {
+func (hub *SQLHub) BlockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) error {
 	return hub.execTx(ctx, func(q *Queries) error {
 
 		// First, try to find an existing friendship between these users
@@ -220,7 +236,7 @@ func (hub *Hub) BlockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) e
 }
 
 // UnblockUserTx removes a block between users
-func (hub *Hub) UnblockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) error {
+func (hub *SQLHub) UnblockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) error {
 	return hub.execTx(ctx, func(q *Queries) error {
 		// Find existing friendship between users
 		existingFriendship, err := q.ListFriendshipByUserPairs(ctx, ListFriendshipByUserPairsParams{
@@ -241,7 +257,7 @@ func (hub *Hub) UnblockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID)
 }
 
 // GetFriendsTx returns all accepted friendships for a user
-func (hub *Hub) GetFriendsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error) {
+func (hub *SQLHub) GetFriendsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error) {
 	var friends []Friendship
 
 	err := hub.execTx(ctx, func(q *Queries) error {
@@ -266,7 +282,7 @@ func (hub *Hub) GetFriendsTx(ctx context.Context, userID pgtype.UUID) ([]Friends
 }
 
 // IsFriendTx checks if two users are friends
-func (hub *Hub) IsFriendTx(ctx context.Context, userID, otherUserID pgtype.UUID) (bool, error) {
+func (hub *SQLHub) IsFriendTx(ctx context.Context, userID, otherUserID pgtype.UUID) (bool, error) {
 	isFriend := false
 
 	err := hub.execTx(ctx, func(q *Queries) error {
@@ -294,7 +310,7 @@ func (hub *Hub) IsFriendTx(ctx context.Context, userID, otherUserID pgtype.UUID)
 }
 
 // GetPendingFriendRequestsTx returns all pending friend requests received by a user
-func (hub *Hub) GetPendingFriendRequestsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error) {
+func (hub *SQLHub) GetPendingFriendRequestsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error) {
 	var pendingRequests []Friendship
 
 	err := hub.execTx(ctx, func(q *Queries) error {
@@ -318,7 +334,7 @@ func (hub *Hub) GetPendingFriendRequestsTx(ctx context.Context, userID pgtype.UU
 }
 
 // GetSentFriendRequestsTx returns all pending friend requests sent by a user
-func (hub *Hub) GetSentFriendRequestsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error) {
+func (hub *SQLHub) GetSentFriendRequestsTx(ctx context.Context, userID pgtype.UUID) ([]Friendship, error) {
 	var sentRequests []Friendship
 
 	err := hub.execTx(ctx, func(q *Queries) error {
@@ -342,7 +358,7 @@ func (hub *Hub) GetSentFriendRequestsTx(ctx context.Context, userID pgtype.UUID)
 }
 
 // IsUserBlockedTx checks if toUser is blocked by fromUser
-func (hub *Hub) IsUserBlockedTx(ctx context.Context, fromUser, toUser pgtype.UUID) (bool, error) {
+func (hub *SQLHub) IsUserBlockedTx(ctx context.Context, fromUser, toUser pgtype.UUID) (bool, error) {
 	var isBlocked bool
 
 	err := hub.execTx(ctx, func(q *Queries) error {
@@ -366,11 +382,11 @@ func (hub *Hub) IsUserBlockedTx(ctx context.Context, fromUser, toUser pgtype.UUI
 	return isBlocked, err
 }
 
-func (h *Hub) Exec(ctx context.Context, sql string, args ...interface{}) (pgconn.CommandTag, error) {
+func (h *SQLHub) Exec(ctx context.Context, sql string, args ...interface{}) (pgconn.CommandTag, error) {
 	return h.db.Exec(ctx, sql, args...)
 }
 
-func (h *Hub) RefreshMaterializedViews(ctx context.Context) error {
+func (h *SQLHub) RefreshMaterializedViews(ctx context.Context) error {
 	_, err := h.db.Exec(ctx, "REFRESH MATERIALIZED VIEW accepted_friendships_mv")
 	return err
 }

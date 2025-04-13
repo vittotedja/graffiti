@@ -167,6 +167,11 @@ func (s *Server) getAWSRegion() string {
 }
 
 func (s *Server) DeleteFile(ctx context.Context, key string) error {
+
+	if s.config.Env == "unit-test" {
+		return nil
+	}
+
 	cfg, err := s.getAWSConfig()
 	if err != nil {
 		return fmt.Errorf("failed to get AWS config: %w", err)

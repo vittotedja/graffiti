@@ -62,6 +62,10 @@ setup-dev: create-network postgres
 	make migrateup
 	make redis
 
+mock:
+	mockgen -package mockdb -destination db/mock/hub.go github.com/vittotedja/graffiti/graffiti-backend/db/sqlc Hub
 
-.PHONY: create-network connect-postgres-network postgres createdb dropdb sqlc migrateup migratedown test server rebuild-server-docker run-server-docker redis connect-redis-network
+
+
+.PHONY: create-network connect-postgres-network postgres createdb dropdb sqlc migrateup migratedown test server rebuild-server-docker run-server-docker redis connect-redis-network mock
 

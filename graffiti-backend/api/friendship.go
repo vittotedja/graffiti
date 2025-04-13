@@ -431,7 +431,7 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 		ToUser:   toUserID,
 	}
 
-	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	friendship, err := s.hub.ListFriendshipByUserPairs(ctx, params)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			// No friendship found, but not an error you want to report
@@ -504,7 +504,7 @@ func (s *Server) getNumberOfMutualFriends(ctx *gin.Context) {
 		return
 	}
 
-	count, err := s.hub.Queries.GetNumberOfMutualFriends(ctx, db.GetNumberOfMutualFriendsParams{
+	count, err := s.hub.GetNumberOfMutualFriends(ctx, db.GetNumberOfMutualFriendsParams{
 		UserID:   userID1,
 		UserID_2: userID2,
 	})
@@ -528,7 +528,7 @@ func (s *Server) discoverFriendsByMutuals(ctx *gin.Context) {
 		return
 	}
 
-	results, err := s.hub.Queries.DiscoverFriendsByMutuals(ctx, currentUser.ID)
+	results, err := s.hub.DiscoverFriendsByMutuals(ctx, currentUser.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -574,7 +574,7 @@ func (s *Server) getMutualFriends(ctx *gin.Context) {
 		return
 	}
 
-	mutuals, err := s.hub.Queries.ListMutualFriends(ctx, db.ListMutualFriendsParams{
+	mutuals, err := s.hub.ListMutualFriends(ctx, db.ListMutualFriendsParams{
 		UserID:   userID,
 		UserID_2: currentUser.ID,
 	})

@@ -17,7 +17,7 @@ import (
 
 // Wall request/response types
 type createTestWallRequest struct {
-	Title           string `json:"title"`
+	Title           string `json:"title" binding:"required"`
 	Description     string `json:"description"`
 	BackgroundImage string `json:"background_image"`
 	IsPublic        bool   `json:"is_public"`
@@ -224,7 +224,7 @@ func (s *Server) listWallsByUser(ctx *gin.Context) {
 		ToUser:   userID,
 	}
 
-	friendship, err := s.hub.Queries.ListFriendshipByUserPairs(ctx, params)
+	friendship, err := s.hub.ListFriendshipByUserPairs(ctx, params)
 
 	isFriend := true
 	if err != nil {

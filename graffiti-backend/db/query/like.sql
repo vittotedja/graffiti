@@ -24,7 +24,7 @@ SELECT * FROM likes
 WHERE user_id = $1
 ORDER BY liked_at DESC;
 
--- name: getNumberOfLikesByPost :one
+-- name: GetNumberOfLikesByPost :one
 SELECT COUNT(*) FROM likes
 WHERE post_id = $1;
 

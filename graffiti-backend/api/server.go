@@ -21,7 +21,7 @@ import (
 
 // Server serves HTTP requests
 type Server struct {
-	hub        *db.Hub
+	hub        db.Hub
 	db         *pgxpool.Pool
 	config     util.Config
 	router     *gin.Engine // helps us send each API request to the correct handler for processing
@@ -30,16 +30,16 @@ type Server struct {
 }
 
 // NewServer creates a new HTTP server and sets up all routes
-func NewServer(config util.Config) *Server {
+func NewServer(config util.Config) (*Server, error) {
 	tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
 	if err != nil {
 		log.Fatal("cannot create token maker", err)
 	}
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
 	server.router.Use(logger.Middleware())
-	server.registerRoutes()
+	server.registerRoutes("server")
 
-	return server
+	return server, nil
 }
 
 // Start runs the HTTP server on a specific address
@@ -89,17 +89,27 @@ func (s *Server) Shutdown() error {
 	return nil
 }
 
-func (s *Server) registerRoutes() {
+func (s *Server) registerRoutes(env string) {
 
 	frontendURL := s.config.FrontendURL
 	// Apply CORS middleware
-	s.router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{frontendURL}, // frontend URL
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	if (env == "unit-test") {
+		s.router.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"*"}, 
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+		}))
+	} else {
+		s.router.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{frontendURL}, // frontend URL
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
+	}
 
 	// ALB Health check endpoint
 	s.router.GET("/", func(c *gin.Context) {
@@ -111,7 +121,9 @@ func (s *Server) registerRoutes() {
 	s.router.POST("/api/v1/auth/logout", s.Logout)
 
 	protected := s.router.Group("/api")
-	protected.Use(s.AuthMiddleware())
+	if env != "unit-test" {
+		protected.Use(s.AuthMiddleware())
+	}
 	{
 		// auth
 		protected.POST("/v1/auth/me", s.Me)

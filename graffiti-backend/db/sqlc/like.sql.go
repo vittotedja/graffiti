@@ -74,6 +74,18 @@ func (q *Queries) GetLike(ctx context.Context, arg GetLikeParams) (Like, error) 
 	return i, err
 }
 
+const getNumberOfLikesByPost = `-- name: GetNumberOfLikesByPost :one
+SELECT COUNT(*) FROM likes
+WHERE post_id = $1
+`
+
+func (q *Queries) GetNumberOfLikesByPost(ctx context.Context, postID pgtype.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, getNumberOfLikesByPost, postID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const listLikes = `-- name: ListLikes :many
 SELECT id, post_id, user_id, liked_at FROM likes
 ORDER BY liked_at DESC
@@ -164,16 +176,4 @@ func (q *Queries) ListLikesByUser(ctx context.Context, userID pgtype.UUID) ([]Li
 		return nil, err
 	}
 	return items, nil
-}
-
-const getNumberOfLikesByPost = `-- name: getNumberOfLikesByPost :one
-SELECT COUNT(*) FROM likes
-WHERE post_id = $1
-`
-
-func (q *Queries) getNumberOfLikesByPost(ctx context.Context, postID pgtype.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, getNumberOfLikesByPost, postID)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
 }
