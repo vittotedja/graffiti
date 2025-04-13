@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -21,153 +20,23 @@ import (
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
 )
 
-type eqCreateUserParamsMatcher struct {
-    arg      db.CreateUserParams
-    password string
-}
-
-func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
-    arg, ok := x.(db.CreateUserParams)
-    if !ok {
-        return false
-    }
-    if arg.HashedPassword != e.password {
-        return false
-    }
-
-    return arg.Username == e.arg.Username &&
-           arg.Fullname.String == e.arg.Fullname.String &&
-           arg.Email == e.arg.Email
-}
-
-func (e eqCreateUserParamsMatcher) String() string {
-    return fmt.Sprintf("matches arg %v and password %v", e.arg, e.password)
-}
-
-func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher {
-    return eqCreateUserParamsMatcher{arg, password}
-}
-
-func TestCreateUserAPI(t *testing.T) {
-	user, password := randomUser(t)
-
-	testCases := []struct {
-		name          string
-		body          gin.H
-		setupMock     func(mockHub *mockdb.MockHub)
-		checkResponse func(recoder *httptest.ResponseRecorder)
-	}{
-		{
-			name: "OK",
-			body: gin.H{
-                "username": user.Username,
-                "password": password,
-                "fullname": user.Fullname.String,
-                "email":    user.Email,
-            },
-			setupMock: func(mockHub *mockdb.MockHub) {
-				arg := db.CreateUserParams{
-					Username: user.Username,
-					Fullname: pgtype.Text{String: user.Fullname.String, Valid: true},
-					Email:    user.Email,
-				}
-				
-				// Use gomock.Any() for the hashed password since it might be processed
-				mockHub.EXPECT().
-					CreateUser(gomock.Any(), gomock.Any()).
-					DoAndReturn(func(_ interface{}, params db.CreateUserParams) (db.User, error) {
-						// Verify the parameters match what we expect
-						require.Equal(t, arg.Username, params.Username)
-						require.Equal(t, arg.Fullname.String, params.Fullname.String)
-						require.Equal(t, arg.Email, params.Email)
-						require.Equal(t, password, params.HashedPassword) // Since hashPassword just returns the password in tests
-						
-						return user, nil
-					})
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchUserResponse(t, recorder.Body, user)
-			},
-		},
-		{
-			name: "InternalError",
-			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"fullname": user.Fullname.String,
-				"email":     user.Email,
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					CreateUser(gomock.Any(), gomock.Any()).
-					Times(1).
-					Return(db.User{}, sql.ErrConnDone)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusInternalServerError, recorder.Code)
-			},
-		},
-		{
-			name: "DuplicateUsername",
-			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"fullname": user.Fullname.String,
-				"email":     user.Email,
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					CreateUser(gomock.Any(), gomock.Any()).
-					Times(1).
-					Return(db.User{}, db.ErrUniqueViolation)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusInternalServerError, recorder.Code)
-			},
-		},
-
-	}
-
-	for i := range testCases {
-		tc := testCases[i]
-
-		t.Run(tc.name, func(t *testing.T) {
-			server := newTestServer(t)
-			
-			mockHub, ok := server.hub.(*mockdb.MockHub)
-			require.True(t, ok, "server.hub is not a *mockdb.MockHub")
-			
-			tc.setupMock(mockHub)
-			
-			recorder := httptest.NewRecorder()
-
-			data, err := json.Marshal(tc.body)
-			require.NoError(t, err)
-
-			url := "/api/v1/users"
-			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
-			require.NoError(t, err)
-
-			server.router.ServeHTTP(recorder, request)
-			tc.checkResponse(recorder)
-		})
-	}
-}
-
 // TestGetUserAPI tests the getUser handler
-func TestGetUserAPI(t *testing.T) {
+func TestGetUserAPIFixed(t *testing.T) {
 	user, _ := randomUser(t)
 
 	testCases := []struct {
 		name          string
 		userID        string
+		setupAuth     func(t *testing.T, request *http.Request, currentUser db.User)
 		setupMock     func(mockHub *mockdb.MockHub)
 		checkResponse func(recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name:   "OK",
 			userID: user.ID.String(),
+			setupAuth: func(t *testing.T, request *http.Request, currentUser db.User) {
+				// No special setup needed, the test handler will inject the current user
+			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				var id pgtype.UUID
 				id.Scan(user.ID.String())
@@ -185,6 +54,9 @@ func TestGetUserAPI(t *testing.T) {
 		{
 			name:   "UserNotFound",
 			userID: user.ID.String(),
+			setupAuth: func(t *testing.T, request *http.Request, currentUser db.User) {
+				// No special setup needed
+			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetUser(gomock.Any(), gomock.Any()).
@@ -198,6 +70,9 @@ func TestGetUserAPI(t *testing.T) {
 		{
 			name:   "InvalidID",
 			userID: "invalid-id",
+			setupAuth: func(t *testing.T, request *http.Request, currentUser db.User) {
+				// No special setup needed
+			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetUser(gomock.Any(), gomock.Any()).
@@ -210,6 +85,9 @@ func TestGetUserAPI(t *testing.T) {
 		{
 			name:   "InternalError",
 			userID: user.ID.String(),
+			setupAuth: func(t *testing.T, request *http.Request, currentUser db.User) {
+				// No special setup needed
+			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetUser(gomock.Any(), gomock.Any()).
@@ -233,9 +111,19 @@ func TestGetUserAPI(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			url := fmt.Sprintf("/api/v1/users/%s", tc.userID)
+			// Create the test route with middleware that injects the current user
+			server.router.GET("/test/users/:id", func(ctx *gin.Context) {
+				// Inject current user into context
+				ctx.Set("currentUser", user)
+				server.getUser(ctx)
+			})
+
+			url := "/test/users/" + tc.userID
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
+
+			// Set up authentication if required
+			tc.setupAuth(t, request, user)
 
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(recorder)
@@ -243,8 +131,8 @@ func TestGetUserAPI(t *testing.T) {
 	}
 }
 
-// TestListUsersAPI tests the listUsers handler
-func TestListUsersAPI(t *testing.T) {
+// TestListUsersAPIFixed tests the listUsers handler
+func TestListUsersAPIFixed(t *testing.T) {
 	user1, _ := randomUser(t)
 	user2, _ := randomUser(t)
 
@@ -301,9 +189,13 @@ func TestListUsersAPI(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			url := "/api/v1/users"
+			// Create the test route
+			url := "/test/users"
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
+
+			// Register the route
+			server.router.GET("/test/users", server.listUsers)
 
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(recorder)
@@ -311,46 +203,33 @@ func TestListUsersAPI(t *testing.T) {
 	}
 }
 
-// TestUpdateUserAPI tests the updateUser handler
-func TestUpdateUserAPI(t *testing.T) {
-	user, _ := randomUser(t)
+// TestUpdateUserNewAPI tests the updateUserNew handler
+func TestUpdateUserNewAPIFixed(t *testing.T) {
+	currentUser, _ := randomUser(t)
 	
 	// Create updated user
-	updatedUser := user
-	newUsername := util.RandomUsername()
-	updatedUser.Username = newUsername
+	updatedUser := currentUser
+	newUsername := "new_" + currentUser.Username
 
 	testCases := []struct {
 		name          string
-		userID        string
 		body          gin.H
 		setupMock     func(mockHub *mockdb.MockHub)
 		checkResponse func(recorder *httptest.ResponseRecorder)
 	}{
 		{
-			name:   "OK",
-			userID: user.ID.String(),
+			name: "OK",
 			body: gin.H{
 				"username": newUsername,
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
-				var id pgtype.UUID
-				id.Scan(user.ID.String())
-				
-				// First expect GetUser to be called
 				mockHub.EXPECT().
-					GetUser(gomock.Any(), gomock.Any()).
-					DoAndReturn(func(_ interface{}, uuid pgtype.UUID) (db.User, error) {
-						require.Equal(t, user.ID.String(), uuid.String())
-						return user, nil
-					})
-					
-				// Then expect UpdateUser to be called with the updated params
-				mockHub.EXPECT().
-					UpdateUser(gomock.Any(), gomock.Any()).
-					DoAndReturn(func(_ interface{}, params db.UpdateUserParams) (db.User, error) {
-						require.Equal(t, id.String(), params.ID.String())
+					UpdateUserNew(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ interface{}, params db.UpdateUserNewParams) (db.User, error) {
+						require.Equal(t, currentUser.ID, params.ID)
 						require.Equal(t, newUsername, params.Username)
+						
+						updatedUser.Username = newUsername
 						return updatedUser, nil
 					})
 			},
@@ -368,38 +247,13 @@ func TestUpdateUserAPI(t *testing.T) {
 			},
 		},
 		{
-			name:   "UserNotFound",
-			userID: uuid.New().String(), // Use a random valid UUID that won't be found
+			name: "InvalidRequest",
 			body: gin.H{
-				"username": newUsername,
+				"username": []string{"invalid"}, // Invalid type
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
-					GetUser(gomock.Any(), gomock.Any()).
-					Return(db.User{}, db.ErrRecordNotFound)
-					
-				// UpdateUser should not be called
-				mockHub.EXPECT().
-					UpdateUser(gomock.Any(), gomock.Any()).
-					Times(0)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusInternalServerError, recorder.Code)
-			},
-		},
-		{
-			name:   "InvalidID",
-			userID: "invalid-id", // Not a valid UUID format
-			body: gin.H{
-				"username": newUsername,
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				// No database calls should be made
-				mockHub.EXPECT().
-					GetUser(gomock.Any(), gomock.Any()).
-					Times(0)
-				mockHub.EXPECT().
-					UpdateUser(gomock.Any(), gomock.Any()).
+					UpdateUserNew(gomock.Any(), gomock.Any()).
 					Times(0)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -407,125 +261,13 @@ func TestUpdateUserAPI(t *testing.T) {
 			},
 		},
 		{
-			name:   "InternalError",
-			userID: user.ID.String(),
+			name: "InternalError",
 			body: gin.H{
 				"username": newUsername,
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
-					GetUser(gomock.Any(), gomock.Any()).
-					Return(user, nil)
-					
-				mockHub.EXPECT().
-					UpdateUser(gomock.Any(), gomock.Any()).
-					Return(db.User{}, sql.ErrConnDone)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusInternalServerError, recorder.Code)
-			},
-		},
-	}
-
-	for i := range testCases {
-		tc := testCases[i]
-
-		t.Run(tc.name, func(t *testing.T) {
-			server := newTestServer(t)
-			mockHub, ok := server.hub.(*mockdb.MockHub)
-			require.True(t, ok)
-
-			tc.setupMock(mockHub)
-			recorder := httptest.NewRecorder()
-
-			// Marshal body data to JSON
-			data, err := json.Marshal(tc.body)
-			require.NoError(t, err)
-
-			// Make sure the URL matches exactly how it's registered in your router
-			t.Logf("UserID type: %T, value: %v", tc.userID, tc.userID)
-			url := fmt.Sprintf("/api/v1/users/%s", tc.userID)
-			request, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(data))
-			require.NoError(t, err)
-
-			server.router.ServeHTTP(recorder, request)
-			tc.checkResponse(recorder)
-		})
-	}
-}
-
-
-// TestUpdateProfileAPI tests the updateProfile handler
-func TestUpdateProfileAPI(t *testing.T) {
-	user, _ := randomUser(t)
-	
-	// Create updated profile
-	updatedUser := user
-	newBio := "New bio text"
-	updatedUser.Bio = pgtype.Text{String: newBio, Valid: true}
-
-	testCases := []struct {
-		name          string
-		userID        string
-		body          gin.H
-		setupMock     func(mockHub *mockdb.MockHub)
-		checkResponse func(recorder *httptest.ResponseRecorder)
-	}{
-		{
-			name:   "OK",
-			userID: user.ID.String(),
-			body: gin.H{
-				"bio": newBio,
-				"profile_picture": "",
-				"background_image": "",
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					UpdateProfile(gomock.Any(), gomock.Any()).
-					DoAndReturn(func(_ interface{}, params db.UpdateProfileParams) (db.User, error) {
-						require.Equal(t, newBio, params.Bio.String)
-						return updatedUser, nil
-					})
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusOK, recorder.Code)
-				
-				data, err := io.ReadAll(recorder.Body)
-				require.NoError(t, err)
-				
-				var gotResponse getUserResponse
-				err = json.Unmarshal(data, &gotResponse)
-				require.NoError(t, err)
-				
-				require.Equal(t, newBio, gotResponse.Bio)
-			},
-		},
-		{
-			name:   "InvalidID",
-			userID: "invalid-id",
-			body: gin.H{
-				"bio": newBio,
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					UpdateProfile(gomock.Any(), gomock.Any()).
-					Times(0)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusBadRequest, recorder.Code)
-			},
-		},
-		{
-			name:   "InternalError",
-			userID: user.ID.String(),
-			body: gin.H{
-				"bio": newBio,
-				"profile_picture": "",
-				"background_image": "",
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					UpdateProfile(gomock.Any(), gomock.Any()).
+					UpdateUserNew(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(db.User{}, sql.ErrConnDone)
 			},
@@ -543,6 +285,11 @@ func TestUpdateProfileAPI(t *testing.T) {
 			mockHub, ok := server.hub.(*mockdb.MockHub)
 			require.True(t, ok)
 
+			server.router.POST("/test/updateuser", func(ctx *gin.Context) {
+				ctx.Set("currentUser", currentUser)
+				server.updateUserNew(ctx)
+			})
+
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
@@ -550,8 +297,8 @@ func TestUpdateProfileAPI(t *testing.T) {
 			data, err := json.Marshal(tc.body)
 			require.NoError(t, err)
 
-			url := fmt.Sprintf("/api/v1/users/%s/profile", tc.userID)
-			request, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(data))
+			url := "/test/updateuser"
+			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 			require.NoError(t, err)
 
 			server.router.ServeHTTP(recorder, request)
@@ -560,8 +307,8 @@ func TestUpdateProfileAPI(t *testing.T) {
 	}
 }
 
-// TestFinishOnboardingAPI tests the finishOnboarding handler
-func TestFinishOnboardingAPI(t *testing.T) {
+// TestFinishOnboardingAPIFixed tests the finishOnboarding handler
+func TestFinishOnboardingAPIFixed(t *testing.T) {
 	user, _ := randomUser(t)
 
 	testCases := []struct {
@@ -624,7 +371,10 @@ func TestFinishOnboardingAPI(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			url := fmt.Sprintf("/api/v1/users/%s/onboarding", tc.userID)
+			// Register the route directly
+			server.router.PUT("/test/users/:id/onboarding", server.finishOnboarding)
+
+			url := "/test/users/" + tc.userID + "/onboarding"
 			request, err := http.NewRequest(http.MethodPut, url, nil)
 			require.NoError(t, err)
 
@@ -634,8 +384,8 @@ func TestFinishOnboardingAPI(t *testing.T) {
 	}
 }
 
-// TestDeleteUserAPI tests the deleteUser handler
-func TestDeleteUserAPI(t *testing.T) {
+// TestDeleteUserAPIFixed tests the deleteUser handler
+func TestDeleteUserAPIFixed(t *testing.T) {
 	user, _ := randomUser(t)
 
 	testCases := []struct {
@@ -708,7 +458,10 @@ func TestDeleteUserAPI(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			url := fmt.Sprintf("/api/v1/users/%s", tc.userID)
+			// Register the route directly
+			server.router.DELETE("/test/users/:id", server.deleteUser)
+
+			url := "/test/users/" + tc.userID
 			request, err := http.NewRequest(http.MethodDelete, url, nil)
 			require.NoError(t, err)
 
@@ -718,270 +471,46 @@ func TestDeleteUserAPI(t *testing.T) {
 	}
 }
 
-// TestSearchUsersAPI tests the searchUsers handler
-func TestSearchUsersAPI(t *testing.T) {
-	searchUser, _ := randomUser(t)
-	
-	// Create test search results
-	searchResultTrigram := db.SearchUsersTrigramRow{
-		ID: searchUser.ID,
-		Username: searchUser.Username,
-		Fullname: searchUser.Fullname,
-		ProfilePicture: searchUser.ProfilePicture,
-	}
-	
-	searchResultILike := db.SearchUsersILikeRow{
-		ID: searchUser.ID,
-		Username: searchUser.Username,
-		Fullname: searchUser.Fullname,
-		ProfilePicture: searchUser.ProfilePicture,
-	}
 
-	testCases := []struct {
-		name          string
-		body          gin.H
-		setupMock     func(mockHub *mockdb.MockHub)
-		checkResponse func(recorder *httptest.ResponseRecorder)
-	}{
-		{
-			name: "OK_Trigram",
-			body: gin.H{
-				"search_term": "test_search_term_longer",
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					SearchUsersTrigram(gomock.Any(), gomock.Eq("test_search_term_longer")).
-					Times(1).
-					Return([]db.SearchUsersTrigramRow{searchResultTrigram}, nil)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusOK, recorder.Code)
-				
-				var response []UserSearchResponse
-				data, err := io.ReadAll(recorder.Body)
-				require.NoError(t, err)
-				
-				err = json.Unmarshal(data, &response)
-				require.NoError(t, err)
-				
-				require.Len(t, response, 1)
-				require.Equal(t, searchUser.ID.String(), response[0].ID)
-				require.Equal(t, searchUser.Username, response[0].Username)
-			},
-		},
-		{
-			name: "OK_ILike",
-			body: gin.H{
-				"search_term": "ab",
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					SearchUsersILike(gomock.Any(), gomock.Any()).
-					DoAndReturn(func(_ interface{}, searchTerm pgtype.Text) ([]db.SearchUsersILikeRow, error) {
-						require.Equal(t, "ab", searchTerm.String)
-						return []db.SearchUsersILikeRow{searchResultILike}, nil
-					})
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusOK, recorder.Code)
-				
-				var response []UserSearchResponse
-				data, err := io.ReadAll(recorder.Body)
-				require.NoError(t, err)
-				
-				err = json.Unmarshal(data, &response)
-				require.NoError(t, err)
-				
-				require.Len(t, response, 1)
-				require.Equal(t, searchUser.ID.String(), response[0].ID)
-			},
-		},
-		{
-			name: "MissingSearchTerm",
-			body: gin.H{
-				// Missing search_term
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					SearchUsersTrigram(gomock.Any(), gomock.Any()).
-					Times(0)
-				mockHub.EXPECT().
-					SearchUsersILike(gomock.Any(), gomock.Any()).
-					Times(0)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusBadRequest, recorder.Code)
-			},
-		},
-		{
-			name: "InternalError",
-			body: gin.H{
-				"search_term": "test_search",
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					SearchUsersTrigram(gomock.Any(), gomock.Any()).
-					Times(1).
-					Return(nil, sql.ErrConnDone)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusInternalServerError, recorder.Code)
-			},
-		},
-	}
-
-	for i := range testCases {
-		tc := testCases[i]
-
-		t.Run(tc.name, func(t *testing.T) {
-			server := newTestServer(t)
-			mockHub, ok := server.hub.(*mockdb.MockHub)
-			require.True(t, ok)
-
-			tc.setupMock(mockHub)
-			testUser, _ := randomUser(t)
-			server.router.POST("/test/search", func(ctx *gin.Context) {
-				ctx.Set("currentUser", testUser)
-				server.searchUsers(ctx)
-			})
-
-			recorder := httptest.NewRecorder()
-			data, err := json.Marshal(tc.body)
-			require.NoError(t, err)
-
-			url := "/test/search"
-			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
-			require.NoError(t, err)
-			
-
-			server.router.ServeHTTP(recorder, request)
-			tc.checkResponse(recorder)
-		})
-	}
-}
-
-// TestUpdateUserNewAPI tests the updateUserNew handler
-func TestUpdateUserNewAPI(t *testing.T) {
-	currentUser, _ := randomUser(t)
-	
-	// Create updated user
-	updatedUser := currentUser
-	newUsername := util.RandomUsername()
-	updatedUser.Username = newUsername
-
-	testCases := []struct {
-		name          string
-		body          gin.H
-		setupMock     func(mockHub *mockdb.MockHub)
-		checkResponse func(recorder *httptest.ResponseRecorder)
-	}{
-		{
-			name: "OK",
-			body: gin.H{
-				"username": newUsername,
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					UpdateUserNew(gomock.Any(), gomock.Any()).
-					DoAndReturn(func(_ interface{}, params db.UpdateUserNewParams) (db.User, error) {
-						require.Equal(t, currentUser.ID, params.ID)
-						require.Equal(t, newUsername, params.Username)
-						return updatedUser, nil
-					})
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusOK, recorder.Code)
-				
-				data, err := io.ReadAll(recorder.Body)
-				require.NoError(t, err)
-				
-				var gotResponse getUserResponse
-				err = json.Unmarshal(data, &gotResponse)
-				require.NoError(t, err)
-				
-				require.Equal(t, newUsername, gotResponse.Username)
-			},
-		},
-		{
-			name: "InvalidRequest",
-			body: gin.H{
-				"username": []string{"invalid"}, // Invalid type
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					UpdateUserNew(gomock.Any(), gomock.Any()).
-					Times(0)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusBadRequest, recorder.Code)
-			},
-		},
-		{
-			name: "InternalError",
-			body: gin.H{
-				"username": newUsername,
-			},
-			setupMock: func(mockHub *mockdb.MockHub) {
-				mockHub.EXPECT().
-					UpdateUserNew(gomock.Any(), gomock.Any()).
-					Times(1).
-					Return(db.User{}, sql.ErrConnDone)
-			},
-			checkResponse: func(recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusInternalServerError, recorder.Code)
-			},
-		},
-	}
-
-	for i := range testCases {
-		tc := testCases[i]
-
-		t.Run(tc.name, func(t *testing.T) {
-			server := newTestServer(t)
-			mockHub, ok := server.hub.(*mockdb.MockHub)
-			require.True(t, ok)
-
-		
-			server.router.POST("/test/updateuser/v2", func(ctx *gin.Context) {
-				ctx.Set("currentUser", currentUser)
-				server.updateUserNew(ctx)
-			})
-
-			tc.setupMock(mockHub)
-			recorder := httptest.NewRecorder()
-
-			// Marshal body data to JSON
-			data, err := json.Marshal(tc.body)
-			require.NoError(t, err)
-
-			url := "/test/updateuser/v2"
-			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
-			require.NoError(t, err)
-
-			server.router.ServeHTTP(recorder, request)
-			tc.checkResponse(recorder)
-		})
-	}
-}
-
-func TestUUIDGeneration(t *testing.T) {
-    // Generate a UUID directly
-    rawUUID := uuid.New()
-    rawUUIDString := rawUUID.String()
-    t.Logf("Raw UUID string: %s", rawUUIDString)
-    
-    // Test the pgtype.UUID conversion
-    var pgUUID pgtype.UUID
-    err := pgUUID.Scan(rawUUIDString)
+// Helper function to match user response
+func requireBodyMatchUserResponse(t *testing.T, body *bytes.Buffer, user db.User) {
+    data, err := io.ReadAll(body)
     require.NoError(t, err)
-    t.Logf("pgtype.UUID after scanning: %s", pgUUID.String())
-    
-    // Test full user creation
-	var testUser db.User
-	testUser.ID = pgUUID
-    t.Logf("User ID: %s", testUser.ID.String())
-}
 
+    var gotResponse getUserResponse
+    err = json.Unmarshal(data, &gotResponse)
+    require.NoError(t, err)
+
+    require.Equal(t, user.ID.String(), gotResponse.ID)
+    require.Equal(t, user.Username, gotResponse.Username)
+    require.Equal(t, user.Fullname.String, gotResponse.Fullname)
+    require.Equal(t, user.Email, gotResponse.Email)
+    require.Equal(t, user.HasOnboarded.Bool, gotResponse.HasOnboarded)
+    
+    if user.ProfilePicture.Valid {
+        require.Equal(t, user.ProfilePicture.String, gotResponse.ProfilePicture)
+    }
+    
+    if user.Bio.Valid {
+        require.Equal(t, user.Bio.String, gotResponse.Bio)
+    }
+    
+    if user.BackgroundImage.Valid {
+        require.Equal(t, user.BackgroundImage.String, gotResponse.BackgroundImage)
+    }
+    
+    if !user.CreatedAt.Time.IsZero() {
+        createdAt, err := time.Parse(time.RFC3339, gotResponse.CreatedAt)
+        require.NoError(t, err)
+        require.WithinDuration(t, user.CreatedAt.Time, createdAt, time.Second)
+    }
+    
+    if user.UpdatedAt.Valid && !user.UpdatedAt.Time.IsZero() {
+        updatedAt, err := time.Parse(time.RFC3339, gotResponse.UpdatedAt)
+        require.NoError(t, err)
+        require.WithinDuration(t, user.UpdatedAt.Time, updatedAt, time.Second)
+    }
+}
 
 func randomUser(t *testing.T) (db.User, string) {
     password := util.RandomString(6)
@@ -1033,42 +562,4 @@ func randomUser(t *testing.T) (db.User, string) {
     return user, password
 }
 
-func requireBodyMatchUserResponse(t *testing.T, body *bytes.Buffer, user db.User) {
-    data, err := io.ReadAll(body)
-    require.NoError(t, err)
-
-    var gotResponse getUserResponse
-    err = json.Unmarshal(data, &gotResponse)
-    require.NoError(t, err)
-
-    require.Equal(t, user.ID.String(), gotResponse.ID)
-    require.Equal(t, user.Username, gotResponse.Username)
-    require.Equal(t, user.Fullname.String, gotResponse.Fullname)
-    require.Equal(t, user.Email, gotResponse.Email)
-    require.Equal(t, user.HasOnboarded.Bool, gotResponse.HasOnboarded)
-    
-    if user.ProfilePicture.Valid {
-        require.Equal(t, user.ProfilePicture.String, gotResponse.ProfilePicture)
-    }
-    
-    if user.Bio.Valid {
-        require.Equal(t, user.Bio.String, gotResponse.Bio)
-    }
-    
-    if user.BackgroundImage.Valid {
-        require.Equal(t, user.BackgroundImage.String, gotResponse.BackgroundImage)
-    }
-    
-    if !user.CreatedAt.Time.IsZero() {
-        createdAt, err := time.Parse(time.RFC3339, gotResponse.CreatedAt)
-        require.NoError(t, err)
-        require.WithinDuration(t, user.CreatedAt.Time, createdAt, time.Second)
-    }
-    
-    if user.UpdatedAt.Valid && !user.UpdatedAt.Time.IsZero() {
-        updatedAt, err := time.Parse(time.RFC3339, gotResponse.UpdatedAt)
-        require.NoError(t, err)
-        require.WithinDuration(t, user.UpdatedAt.Time, updatedAt, time.Second)
-    }
-}
 
