@@ -39,3 +39,8 @@ time="2025-04-02T16:53:36+08:00" level=error msg="Failed to bind JSON" error="Ke
 time="2025-04-02T18:15:35+08:00" level=error msg="Server encountered an error: http: Server closed"
 time="2025-04-02T18:15:46+08:00" level=fatal msg="cannot load config: Config File \"env\" Not Found in \"[C:\\\\Users\\\\DELL\\\\Documents\\\\Projects\\\\graffiti\\\\graffiti-backend]\""
 [31mERRO[0m[2025-04-15T20:26:20+08:00] Server encountered an error: http: Server closed 
+[31mERRO[0m[2025-04-15T23:39:32+08:00] Failed to send notification                   [31merror[0m="failed to send message to SQS: operation error SQS: SendMessage, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://sqs.ap-southeast-1.amazonaws.com/\": dial tcp 13.251.116.214:443: connect: connection refused" [31mrequest_id[0m=aaf5d36b-7ef7-4c0e-9a4c-6b46ff1264ab [31mroute[0m=/api/v1/friend-requests
+[31mERRO[0m[2025-04-15T23:41:37+08:00] Server encountered an error: http: Server closed 
+[31mERRO[0m[2025-04-15T23:42:12+08:00] Failed to send notification                   [31merror[0m="failed to send message to SQS: operation error SQS: SendMessage, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://sqs.ap-southeast-1.amazonaws.com/\": dial tcp 13.251.116.28:443: connect: connection refused" [31mrequest_id[0m=39742c3c-89a5-43f7-987a-4df10512519f [31mroute[0m=/api/v1/friend-requests
+[31mERRO[0m[2025-04-16T00:04:47+08:00] Server encountered an error: http: Server closed 
+[31mERRO[0m[2025-04-16T00:10:49+08:00] Server encountered an error: http: Server closed 

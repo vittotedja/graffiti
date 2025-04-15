@@ -89,7 +89,7 @@ func (s *Server) createFriendRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-
+	
 	// Send notification to the recipient
 	err = s.SendNotification(
         ctx,
