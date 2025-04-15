@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -88,6 +89,21 @@ func (s *Server) createFriendRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
+	// Send notification to the recipient
+	err = s.SendNotification(
+        ctx,
+        toUserID.String(),
+        user.ID.String(),
+        "friend_request",
+		friendship.ID.String(),
+        fmt.Sprintf("%s sent you a friend request", user.Username),
+    )
+    if err != nil {
+        // Just log the error, don't fail the request
+        log.Error("Failed to send notification", err)
+    }
+
 
 	log.Info("Friend request created successfully")
 	ctx.JSON(http.StatusOK, friendship)

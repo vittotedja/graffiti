@@ -38,3 +38,4 @@ time="2025-04-02T16:53:11+08:00" level=error msg="Server encountered an error: h
 time="2025-04-02T16:53:36+08:00" level=error msg="Failed to bind JSON" error="Key: 'createPostRequest.MediaURL' Error:Field validation for 'MediaURL' failed on the 'required' tag" request_id=87643288-9196-4cea-8efd-9bba88485b86 route=/api/v1/posts
 time="2025-04-02T18:15:35+08:00" level=error msg="Server encountered an error: http: Server closed"
 time="2025-04-02T18:15:46+08:00" level=fatal msg="cannot load config: Config File \"env\" Not Found in \"[C:\\\\Users\\\\DELL\\\\Documents\\\\Projects\\\\graffiti\\\\graffiti-backend]\""
+[31mERRO[0m[2025-04-15T20:26:20+08:00] Server encountered an error: http: Server closed 

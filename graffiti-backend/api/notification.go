@@ -1,0 +1,179 @@
+package api
+
+import (
+    "context"
+    "encoding/json"
+    "fmt"
+    "log"
+    "time"
+
+    "github.com/aws/aws-sdk-go-v2/aws"
+    "github.com/aws/aws-sdk-go-v2/service/sqs"
+    // "github.com/aws/aws-sdk-go-v2/service/sqs/types"
+    "github.com/google/uuid"
+    db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
+    "github.com/jackc/pgx/v5/pgtype"
+)
+
+// NotificationMessage represents a notification message to be sent to SQS
+type NotificationMessage struct {
+    RecipientID string    `json:"recipient_id"`
+    SenderID    string    `json:"sender_id"`
+    Type        string    `json:"type"`
+    EntityID    string    `json:"entity_id"`
+    Message     string    `json:"message"`
+    IsRead      bool      `json:"is_read"`
+    CreatedAt   time.Time `json:"created_at"`
+}
+
+// getSQSClient creates and returns an SQS client using the server's AWS configuration
+func (s *Server) getSQSClient() (*sqs.Client, error) {
+    // Get AWS config using the existing method
+    cfg, err := s.getAWSConfig()
+    if err != nil {
+        return nil, fmt.Errorf("failed to get AWS config: %w", err)
+    }
+    
+    // Create SQS client
+    sqsClient := sqs.NewFromConfig(cfg)
+    return sqsClient, nil
+}
+
+// SendNotification sends a notification message to SQS
+func (s *Server) SendNotification(ctx context.Context, recipientID, senderID, notificationType, entityID, message string) error {
+    // Create notification message
+    notification := NotificationMessage{
+        RecipientID: recipientID,
+        SenderID:    senderID,
+        Type:        notificationType,
+        EntityID:    entityID,
+        Message:     message,
+        IsRead:      false,
+        CreatedAt:   time.Now(),
+    }
+    
+    // Convert notification to JSON
+    messageBody, err := json.Marshal(notification)
+    if err != nil {
+        return fmt.Errorf("failed to marshal notification: %w", err)
+    }
+    
+    // Get SQS client
+    client, err := s.getSQSClient()
+    if err != nil {
+        return fmt.Errorf("failed to get SQS client: %w", err)
+    }
+    
+    // Send message to SQS
+    _, err = client.SendMessage(ctx, &sqs.SendMessageInput{
+        QueueUrl:    aws.String(s.config.SQSQueueURL),
+        MessageBody: aws.String(string(messageBody)),
+    })
+    if err != nil {
+        return fmt.Errorf("failed to send message to SQS: %w", err)
+    }
+    
+    return nil
+}
+
+// ListQueues lists all available SQS queues (useful for debugging)
+func (s *Server) ListQueues(ctx context.Context) ([]string, error) {
+    client, err := s.getSQSClient()
+    if err != nil {
+        return nil, err
+    }
+    
+    var queueUrls []string
+    paginator := sqs.NewListQueuesPaginator(client, &sqs.ListQueuesInput{})
+    
+    for paginator.HasMorePages() {
+        output, err := paginator.NextPage(ctx)
+        if err != nil {
+            return nil, fmt.Errorf("failed to list SQS queues: %w", err)
+        }
+        queueUrls = append(queueUrls, output.QueueUrls...)
+    }
+    
+    return queueUrls, nil
+}
+
+// ProcessNotifications polls the SQS queue for notifications and processes them
+func (s *Server) ProcessNotifications(ctx context.Context) error {
+    client, err := s.getSQSClient()
+    if err != nil {
+        return err
+    }
+    
+    // Receive messages from SQS
+    result, err := client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
+        QueueUrl:            aws.String(s.config.SQSQueueURL),
+        MaxNumberOfMessages: 10, // Receive up to 10 messages at once
+        WaitTimeSeconds:     20, // Long polling (wait up to 20 seconds for messages)
+    })
+    if err != nil {
+        return fmt.Errorf("failed to receive messages from SQS: %w", err)
+    }
+    
+    // Process each message
+    for _, message := range result.Messages {
+        // Parse the notification message
+        var notification NotificationMessage
+        err := json.Unmarshal([]byte(*message.Body), &notification)
+        if err != nil {
+            // Log the error but continue processing other messages
+            log.Printf("Failed to unmarshal notification: %v\n", err)
+            continue
+        }
+        
+        // Store the notification in the database
+        err = s.storeNotificationInDB(ctx, notification)
+        if err != nil {
+            log.Printf("Failed to store notification in DB: %v\n", err)
+            continue
+        }
+        
+        // Delete the message from the queue after successful processing
+        _, err = client.DeleteMessage(ctx, &sqs.DeleteMessageInput{
+            QueueUrl:      aws.String(s.config.SQSQueueURL),
+            ReceiptHandle: message.ReceiptHandle,
+        })
+        if err != nil {
+            log.Printf("Failed to delete message from SQS: %v\n", err)
+        }
+    }
+    
+    return nil
+}
+
+// storeNotificationInDB stores a notification in the database
+func (s *Server) storeNotificationInDB(ctx context.Context, notification NotificationMessage) error {
+    // Convert string IDs to UUID
+    recipientID, err := uuid.Parse(notification.RecipientID)
+    if err != nil {
+        return fmt.Errorf("invalid recipient ID: %w", err)
+    }
+    
+    senderID, err := uuid.Parse(notification.SenderID)
+    if err != nil {
+        return fmt.Errorf("invalid sender ID: %w", err)
+    }
+    
+    entityID, err := uuid.Parse(notification.EntityID)
+    if err != nil {
+        return fmt.Errorf("invalid entity ID: %w", err)
+    }
+    
+    // Create notification in database
+    params := db.CreateNotificationParams{
+        RecipientID: pgtype.UUID{Bytes: recipientID, Valid: true},
+        SenderID:    pgtype.UUID{Bytes: senderID, Valid: true},
+        Type:        notification.Type,
+        EntityID:    pgtype.UUID{Bytes: entityID, Valid: true},
+        Message:     notification.Message,
+        IsRead:      pgtype.Bool{Bool: notification.IsRead, Valid: true},
+        CreatedAt:   pgtype.Timestamp{Time: notification.CreatedAt, Valid: true},
+    }
+    
+    _, err = s.hub.CreateNotification(ctx, params)
+    return err
+}

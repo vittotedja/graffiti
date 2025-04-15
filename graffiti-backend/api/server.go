@@ -13,6 +13,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	"github.com/vittotedja/graffiti/graffiti-backend/token"
 	"github.com/vittotedja/graffiti/graffiti-backend/util"
@@ -38,6 +40,12 @@ func NewServer(config util.Config) (*Server, error) {
 	server := &Server{config: config, router: gin.Default(), tokenMaker: tokenMaker}
 	server.router.Use(logger.Middleware())
 	server.registerRoutes("server")
+
+	// Start the notification worker if SQS is configured
+    if config.SQSQueueURL != "" {
+        ctx := context.Background()
+        server.StartNotificationWorker(ctx)
+    }
 
 	return server, nil
 }
@@ -87,6 +95,28 @@ func (s *Server) Shutdown() error {
 
 	logger.Global().Info("Server shut down successfully.")
 	return nil
+}
+
+// StartNotificationWorker starts a background worker to process notifications from SQS
+func (s *Server) StartNotificationWorker(ctx context.Context) {
+    go func() {
+        ticker := time.NewTicker(30 * time.Second) // Poll every 30 seconds
+        defer ticker.Stop()
+        
+        for {
+            select {
+            case <-ctx.Done():
+                // Context cancelled, stop the worker
+                return
+            case <-ticker.C:
+                // Process notifications from SQS
+                err := s.ProcessNotifications(ctx)
+                if err != nil {
+                    log.Printf("Error processing notifications: %v\n", err)
+                }
+            }
+        }
+    }()
 }
 
 func (s *Server) registerRoutes(env string) {
@@ -172,6 +202,11 @@ func (s *Server) registerRoutes(env string) {
 		protected.POST("/v1/friends/discover", s.discoverFriendsByMutuals)
 		protected.POST("/v1/friends/mutual", s.getMutualFriends)
 
+		//notifications
+		protected.GET("/v1/notifications", s.getNotifications)
+		protected.PUT("/v1/notifications/:id/read", s.markNotificationAsRead)
+		protected.PUT("/v1/notifications/read-all", s.markAllNotificationsAsRead)
+
 	}
 
 	s.router.GET("/api/v1/users", s.listUsers) // working
@@ -213,6 +248,77 @@ func (s *Server) registerRoutes(env string) {
 	s.router.GET("/api/v1/users/:id/likes", s.listLikesByUser)
 	s.router.DELETE("/api/v1/likes", s.deleteLike)
 }
+
+// NotificationResponse represents the response for a notification
+type NotificationResponse struct {
+    ID          string    `json:"id"`
+    RecipientID string    `json:"recipient_id"`
+    SenderID    string    `json:"sender_id"`
+    Type        string    `json:"type"`
+    EntityID    string    `json:"entity_id"`
+    Message     string    `json:"message"`
+    IsRead      bool      `json:"is_read"`
+    CreatedAt   time.Time `json:"created_at"`
+}
+
+// getNotifications handles requests to get a user's notifications
+func (s *Server) getNotifications(ctx *gin.Context) {
+    user := ctx.MustGet("currentUser").(db.User)
+    
+    notifications, err := s.hub.GetNotificationsByUser(ctx, pgtype.UUID{Bytes: user.ID.Bytes, Valid: true})
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get notifications"})
+        return
+    }
+    
+    var response []NotificationResponse
+    for _, notification := range notifications {
+        response = append(response, NotificationResponse{
+            ID:          notification.ID.String(),
+            RecipientID: notification.RecipientID.String(),
+            SenderID:    notification.SenderID.String(),
+            Type:        notification.Type,
+            EntityID:    notification.EntityID.String(),
+            Message:     notification.Message,
+            IsRead:      notification.IsRead.Bool,
+            CreatedAt:   notification.CreatedAt.Time,
+        })
+    }
+    
+    ctx.JSON(http.StatusOK, response)
+}
+
+// markNotificationAsRead handles requests to mark a notification as read
+func (s *Server) markNotificationAsRead(ctx *gin.Context) {
+    idStr := ctx.Param("id")
+    id, err := uuid.Parse(idStr)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid notification ID"})
+        return
+    }
+    
+    err = s.hub.MarkNotificationAsRead(ctx, pgtype.UUID{Bytes: id, Valid: true})
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to mark notification as read"})
+        return
+    }
+    
+    ctx.JSON(http.StatusOK, gin.H{"message": "Notification marked as read"})
+}
+
+// markAllNotificationsAsRead handles requests to mark all notifications as read
+func (s *Server) markAllNotificationsAsRead(ctx *gin.Context) {
+    user := ctx.MustGet("currentUser").(db.User)
+    
+    err := s.hub.MarkAllNotificationsAsRead(ctx, pgtype.UUID{Bytes: user.ID.Bytes, Valid: true})
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to mark all notifications as read"})
+        return
+    }
+    
+    ctx.JSON(http.StatusOK, gin.H{"message": "All notifications marked as read"})
+}
+
 
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}

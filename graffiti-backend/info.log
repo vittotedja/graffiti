@@ -764,3 +764,33 @@ time="2025-04-02T18:28:34+08:00" level=info msg="Received get own wall request" 
 time="2025-04-02T18:28:34+08:00" level=info msg="Walls listed successfully" request_id=91731477-0cb2-41f1-a795-d458fabec982 route=/api/v2/walls
 time="2025-04-02T18:28:34+08:00" level=info msg="Received get own wall request" request_id=74a426f8-a06e-4743-a4a6-e6bc52fa76b5 route=/api/v2/walls
 time="2025-04-02T18:28:34+08:00" level=info msg="Walls listed successfully" request_id=74a426f8-a06e-4743-a4a6-e6bc52fa76b5 route=/api/v2/walls
+[36mINFO[0m[2025-04-15T20:15:07+08:00] Logger initialized successfully              
+[36mINFO[0m[2025-04-15T20:15:07+08:00] Starting server in devlocal environment on 0.0.0.0:8080 
+[36mINFO[0m[2025-04-15T20:15:07+08:00] Server listening on 0.0.0.0:8080             
+[36mINFO[0m[2025-04-15T20:18:21+08:00] Received get own wall request                 [36mrequest_id[0m=f933a6f3-0525-4094-aa76-584d3289607e [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-15T20:18:21+08:00] Walls listed successfully                     [36mrequest_id[0m=f933a6f3-0525-4094-aa76-584d3289607e [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-15T20:18:21+08:00] Received get own wall request                 [36mrequest_id[0m=ab758b27-99d9-49d4-81d3-f3eb31d4a8e3 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-15T20:18:21+08:00] Walls listed successfully                     [36mrequest_id[0m=ab758b27-99d9-49d4-81d3-f3eb31d4a8e3 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-15T20:18:35+08:00] Received search users request                 [36mrequest_id[0m=6fd2a469-b926-430a-8c99-47e7c6d5f884 [36mroute[0m=/api/v1/users/search
+[36mINFO[0m[2025-04-15T20:18:35+08:00] User search returned results successfully     [36mrequest_id[0m=6fd2a469-b926-430a-8c99-47e7c6d5f884 [36mroute[0m=/api/v1/users/search
+[36mINFO[0m[2025-04-15T20:18:40+08:00] Received get user request                     [36mrequest_id[0m=27a10ecb-9fb0-4cc8-9248-862993599577 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-15T20:18:40+08:00] User retrieved successfully                   [36mrequest_id[0m=27a10ecb-9fb0-4cc8-9248-862993599577 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-15T20:18:40+08:00] Received get user request                     [36mrequest_id[0m=667d2a4a-2e1c-441f-b461-74c3cd3d0a6d [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-15T20:18:40+08:00] User retrieved successfully                   [36mrequest_id[0m=667d2a4a-2e1c-441f-b461-74c3cd3d0a6d [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-15T20:18:40+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=db0eade5-20b2-4751-a8a5-470a47056511 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-15T20:18:40+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=1a0378e6-fb3c-4349-91c4-9bde49cfa40b [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-15T20:18:40+08:00] Received list walls by user request           [36mrequest_id[0m=1cee7b5f-963d-40f8-aa6a-01af18c8113e [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-15T20:18:40+08:00] Walls by user listed successfully             [36mrequest_id[0m=1cee7b5f-963d-40f8-aa6a-01af18c8113e [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-15T20:18:40+08:00] Received list walls by user request           [36mrequest_id[0m=4a345563-0d0a-413b-8b07-e9cb57121299 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-15T20:18:40+08:00] Walls by user listed successfully             [36mrequest_id[0m=4a345563-0d0a-413b-8b07-e9cb57121299 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-15T20:18:42+08:00] Received create friend request                [36mrequest_id[0m=6779cd2e-8533-42da-a4b9-69debb496cec [36mroute[0m=/api/v1/friend-requests
+[36mINFO[0m[2025-04-15T20:18:43+08:00] Friend request created successfully           [36mrequest_id[0m=6779cd2e-8533-42da-a4b9-69debb496cec [36mroute[0m=/api/v1/friend-requests
+[36mINFO[0m[2025-04-15T20:18:43+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=b96d1828-247b-4c97-a727-28ede8182443 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-15T20:18:43+08:00] Listed friendship by user pairs successfully  [36mrequest_id[0m=b96d1828-247b-4c97-a727-28ede8182443 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-15T20:18:43+08:00] Received discover friends by mutual request   [36mrequest_id[0m=ea9f7d8d-276a-47e2-9281-0c0d09bbbb86 [36mroute[0m=/api/v1/friends/discover
+[36mINFO[0m[2025-04-15T20:18:43+08:00] Received discover friends by mutual request   [36mrequest_id[0m=a00fb9e6-3638-438b-9aea-042d4df8f21c [36mroute[0m=/api/v1/friends/discover
+[36mINFO[0m[2025-04-15T20:26:20+08:00] Received shutdown signal, shutting down gracefully... 
+[36mINFO[0m[2025-04-15T20:26:20+08:00] Attempting graceful shutdown...              
+[36mINFO[0m[2025-04-15T20:26:20+08:00] Database connection closed.                  
+[36mINFO[0m[2025-04-15T20:26:20+08:00] Server shut down successfully.               
+[36mINFO[0m[2025-04-15T20:26:20+08:00] Server shut down successfully                
