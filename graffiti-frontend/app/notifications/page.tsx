@@ -28,7 +28,6 @@ export default function NotificationsPage() {
   	const [notifications, setNotifications] = useState<Notification[]>([]);
   	const [loading, setLoading] = useState(true);
   	const router = useRouter();
-	const [localDate, setLocalDate] = useState(new Date());
 	
 	  useEffect(() => {
 		// Only fetch notifications if user is logged in
@@ -44,7 +43,6 @@ export default function NotificationsPage() {
 			  data.map(async (notification) => {
 				// If the sender is the current user, we already have the details
 				if (notification.sender_id === user.id) {
-					setLocalDate(new Date(notification.created_at));
 				  return {
 					...notification,
 					sender_name: user.fullname,
@@ -58,7 +56,6 @@ export default function NotificationsPage() {
 				  const response = await fetchWithAuth(`/api/v1/users/${notification.sender_id}`);
 				  if (response.ok) {
 					const sender = await response.json();
-					setLocalDate(new Date(notification.created_at));
 					return {
 					  ...notification,
 					  sender_name: sender.fullname,
@@ -76,6 +73,8 @@ export default function NotificationsPage() {
 			);
 			
 			setNotifications(enhancedNotifications);
+			// Auto-mark all notifications as read when the page loads
+			await markAllAsRead();
 		  } catch (error) {
 			console.error("Failed to fetch notifications:", error);
 			toast.error("Failed to load notifications");
@@ -86,6 +85,23 @@ export default function NotificationsPage() {
 	
 		fetchNotifications();
 	  }, [user, userLoading]);
+
+	// Function to mark all notifications as read
+	const markAllAsRead = async () => {
+		try {
+			await notificationService.markAllAsRead();
+			// Update local state
+			setNotifications(prevNotifications => 
+				prevNotifications.map(notification => ({
+				...notification,
+				is_read: true
+				}))
+			);
+			} catch (error) {
+			console.error("Failed to mark all notifications as read:", error);
+			// Don't show a toast error here to avoid disrupting the user experience
+		}
+	};
 
 	// Function to render notification icon based on type
 	const getNotificationIcon = (type: string) => {
@@ -168,25 +184,46 @@ export default function NotificationsPage() {
 										</div> */}
 									</div>
 
-									{notification.type === "friend_request" && !notification.is_read && (
-										<div className="flex items-center gap-2">
-											<Button size="sm" className="h-8 w-8 p-0 rounded-full">
-												<Check className="h-4 w-4" />
+									{notification.type === "friend_request" && (
+										// <div className="flex items-center gap-2">
+										// 	<Button size="sm" className="h-8 w-8 p-0 rounded-full">
+										// 		<Check className="h-4 w-4" />
+										// 	</Button>
+										// 	<Button
+										// 		size="sm"
+										// 		variant="outline"
+										// 		className="h-8 w-8 p-0 rounded-full"
+										// 	>
+										// 		<X className="h-4 w-4" />
+										// 	</Button>
+										// </div>
+										<Link href={`/friends`}>
+											<Button size="sm" variant="outline">
+												View Friend Request
 											</Button>
-											<Button
-												size="sm"
-												variant="outline"
-												className="h-8 w-8 p-0 rounded-full"
-											>
-												<X className="h-4 w-4" />
-											</Button>
-										</div>
+										</Link>
 									)}
 
 									{notification.type === "friend_request_accepted" && (
 										<Link href={`/profile/${notification.sender_id}`}>
 											<Button size="sm" variant="outline">
 												View Profile
+											</Button>
+										</Link>
+									)}
+
+									{notification.type === "wall_post" && (
+										<Link href={`/wall/${notification.entity_id}`}>
+											<Button size="sm" variant="outline">
+												View Post
+											</Button>
+										</Link>
+									)}
+
+									{notification.type === "post_like" && (
+										<Link href={`/wall/${notification.entity_id}`}>
+											<Button size="sm" variant="outline">
+												View Liked Post
 											</Button>
 										</Link>
 									)}

@@ -68,7 +68,7 @@ func (s *Server) updateLike(ctx *gin.Context) {
 					post.Author.String(),           // recipient (post owner)
 					currentUser.ID.String(),        // sender (user who liked)
 					"post_like",                    // notification type
-					post.ID.String(),               // entity ID (post ID)
+					post.WallID.String(),           // entity ID (wall ID)
 					fmt.Sprintf("%s liked your post", currentUser.Username), // message
 				)
 

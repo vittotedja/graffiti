@@ -142,7 +142,7 @@ func (s *Server) createPost(ctx *gin.Context) {
 			wall.UserID.String(),           // recipient (wall owner)
 			currentUser.ID.String(),        // sender (post author)
 			"wall_post",                    // notification type
-			post.ID.String(),               // entity ID (post ID)
+			wallID.String(),               // entity ID (post ID)
 			fmt.Sprintf("%s posted on your wall", currentUser.Username), // message
 		)
 
