@@ -2023,3 +2023,1055 @@ time="2025-04-02T18:28:34+08:00" level=info msg="Walls listed successfully" requ
 [36mINFO[0m[2025-04-16T01:55:45+08:00] SQS client initialized successfully          
 [36mINFO[0m[2025-04-16T01:55:45+08:00] Receiving messages with long polling (wait time: 20s) 
 [36mINFO[0m[2025-04-16T01:56:04+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:56:16+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:56:16+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:56:16+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:56:16+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:56:35+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:56:47+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:56:47+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:56:47+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:56:47+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:57:07+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:57:19+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:57:19+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:57:19+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:57:19+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:57:40+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:57:50+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:57:50+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:57:50+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:57:50+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:58:09+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:58:21+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:58:21+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:58:21+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:58:21+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:58:41+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:58:53+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:58:53+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:58:53+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:58:53+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:59:13+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:59:24+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:59:24+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:59:24+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:59:24+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:59:44+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:59:55+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:59:55+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:59:55+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:59:55+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:00:15+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:00:27+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:00:27+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:00:27+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:00:27+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:00:46+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:00:58+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:00:58+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:00:58+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:00:58+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:01:18+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:01:30+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:01:30+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:01:30+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:01:30+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:01:49+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:02:01+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:02:01+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:02:01+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:02:01+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:02:22+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:02:32+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:02:32+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:02:32+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:02:32+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:02:52+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:03:04+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:03:04+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:03:04+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:03:04+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:03:23+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:03:35+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:03:35+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:03:35+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:03:35+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:03:55+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:04:06+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:04:06+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:04:06+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:04:06+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:04:26+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:04:38+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:04:38+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:04:38+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:04:38+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:04:57+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:05:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:05:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:05:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:05:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:05:31+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:05:41+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:05:41+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:05:41+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:05:41+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:06:00+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:06:12+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:06:12+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:06:12+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:06:12+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:06:31+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:06:43+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:06:43+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:06:43+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:06:43+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:07:03+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:07:15+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:07:15+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:07:15+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:07:15+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:07:34+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:07:46+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:07:46+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:07:46+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:07:46+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:08:06+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:08:17+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:08:17+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:08:17+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:08:17+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:08:39+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:08:49+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:08:49+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:08:49+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:08:49+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:09:08+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:09:20+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:09:20+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:09:20+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:09:20+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:09:40+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:09:52+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:09:52+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:09:52+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:09:52+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:10:11+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:10:23+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:10:23+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:10:23+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:10:23+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:10:42+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:10:54+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:10:54+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:10:54+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:10:54+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:11:14+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:11:26+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:11:26+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:11:26+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:11:26+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:11:45+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:11:57+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:11:57+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:11:57+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:11:57+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:12:16+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:12:28+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:12:28+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:12:28+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:12:28+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:12:48+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:13:00+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:13:00+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:13:00+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:13:00+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:13:19+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:13:31+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:13:31+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:13:31+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:13:31+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:13:51+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:14:03+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:14:03+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:14:03+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:14:03+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:14:22+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:14:34+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:14:34+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:14:34+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:14:34+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:14:53+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:15:05+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:15:05+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:15:05+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:15:05+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:15:25+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:15:37+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:15:37+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:15:37+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:15:37+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:15:56+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:16:08+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:16:08+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:16:08+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:16:08+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:16:30+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:16:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:16:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:16:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:16:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:16:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:17:11+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:17:11+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:17:11+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:17:11+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:17:30+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:17:42+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:17:42+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:17:42+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:17:42+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:18:02+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:18:14+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:18:14+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:18:14+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:18:14+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:18:33+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:18:45+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:18:45+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:18:45+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:18:45+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:19:04+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:19:16+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:19:16+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:19:16+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:19:16+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:19:38+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:19:47+08:00] Received shutdown signal, shutting down gracefully... 
+[36mINFO[0m[2025-04-16T02:19:47+08:00] Attempting graceful shutdown...              
+[36mINFO[0m[2025-04-16T02:19:47+08:00] Database connection closed.                  
+[36mINFO[0m[2025-04-16T02:19:47+08:00] Server shut down successfully.               
+[36mINFO[0m[2025-04-16T02:19:47+08:00] Server shut down successfully                
+[36mINFO[0m[2025-04-16T02:22:46+08:00] Logger initialized successfully              
+[36mINFO[0m[2025-04-16T02:22:46+08:00] Starting server in devlocal environment on 0.0.0.0:8080 
+[36mINFO[0m[2025-04-16T02:22:46+08:00] Server listening on 0.0.0.0:8080             
+[36mINFO[0m[2025-04-16T02:22:48+08:00] Received get unread notifications count request  [36mrequest_id[0m=20d9e88d-3c73-4476-b67c-d6ef72982d46 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:22:48+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=20d9e88d-3c73-4476-b67c-d6ef72982d46 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:22:48+08:00] Received get unread notifications count request  [36mrequest_id[0m=bae62122-ef5f-4476-8359-adfbd8f07de1 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:22:48+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=bae62122-ef5f-4476-8359-adfbd8f07de1 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:22:48+08:00] Received get own wall request                 [36mrequest_id[0m=3cad336c-9419-4c7f-b51a-d1ff1fc9e3a8 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T02:22:48+08:00] Walls listed successfully                     [36mrequest_id[0m=3cad336c-9419-4c7f-b51a-d1ff1fc9e3a8 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T02:22:48+08:00] Received get own wall request                 [36mrequest_id[0m=89f7f5b8-0a18-4e41-b4c1-abaa264d6dcb [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T02:22:48+08:00] Walls listed successfully                     [36mrequest_id[0m=89f7f5b8-0a18-4e41-b4c1-abaa264d6dcb [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T02:23:17+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:23:17+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:23:17+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:23:17+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:23:38+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:23:48+08:00] Received get unread notifications count request  [36mrequest_id[0m=c46fa165-0e60-42c1-8a35-163cc857fbf4 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:23:48+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=c46fa165-0e60-42c1-8a35-163cc857fbf4 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:23:48+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:23:48+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:23:48+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:23:48+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:24:09+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:24:20+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:24:20+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:24:20+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:24:20+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:24:41+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:24:48+08:00] Received get unread notifications count request  [36mrequest_id[0m=88617d43-3383-4ca3-8ff8-7c98e9c5d5dd [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:24:48+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=88617d43-3383-4ca3-8ff8-7c98e9c5d5dd [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:24:51+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:24:51+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:24:51+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:24:51+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:25:12+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:25:23+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:25:23+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:25:23+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:25:23+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:25:43+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:25:49+08:00] Received get unread notifications count request  [36mrequest_id[0m=1652dd17-003e-414b-962f-4d7ccc808142 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:25:49+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=1652dd17-003e-414b-962f-4d7ccc808142 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:25:54+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:25:54+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:25:54+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:25:54+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:26:15+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:26:25+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:26:25+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:26:25+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:26:25+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:26:49+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:26:49+08:00] Received get unread notifications count request  [36mrequest_id[0m=f85db05d-87c7-43db-97dc-fd25ce5741d0 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:26:49+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=f85db05d-87c7-43db-97dc-fd25ce5741d0 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:26:57+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:26:57+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:26:57+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:26:57+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:27:18+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:27:28+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:27:28+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:27:28+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:27:28+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:27:49+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:28:00+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:28:00+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:28:00+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:28:00+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:28:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=9fa33cbb-0dcc-4a6b-b198-b48183a9dc72 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:28:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=9fa33cbb-0dcc-4a6b-b198-b48183a9dc72 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:28:20+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:28:31+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:28:31+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:28:31+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:28:31+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:28:52+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:29:02+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:29:02+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:29:02+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:29:02+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:29:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=074163bc-ecb4-4537-b922-523343c9e17a [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:29:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=074163bc-ecb4-4537-b922-523343c9e17a [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:29:23+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:29:34+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:29:34+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:29:34+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:29:34+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:29:54+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:30:05+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:30:05+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:30:05+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:30:05+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:30:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=b8ff725a-468f-48ba-aa6c-1bbce8de4462 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:30:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=b8ff725a-468f-48ba-aa6c-1bbce8de4462 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:30:26+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:30:36+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:30:36+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:30:36+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:30:36+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:30:57+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:31:08+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:31:08+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:31:08+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:31:08+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:31:13+08:00] Received get unread notifications count request  [36mrequest_id[0m=aed15cc9-8b0b-4504-8e5a-0aba52b0c6c0 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:31:13+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=aed15cc9-8b0b-4504-8e5a-0aba52b0c6c0 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:31:30+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:31:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:31:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:31:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:31:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:32:00+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:32:11+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:32:11+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:32:11+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:32:11+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:32:13+08:00] Received get unread notifications count request  [36mrequest_id[0m=328c46cb-680d-44b8-bbc5-d195ca133225 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:32:13+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=328c46cb-680d-44b8-bbc5-d195ca133225 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:32:31+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:32:42+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:32:42+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:32:42+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:32:42+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:33:05+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:33:13+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:33:13+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:33:13+08:00] Received get unread notifications count request  [36mrequest_id[0m=1dbf74be-7516-4905-b58c-e198e1d911c2 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:33:13+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=1dbf74be-7516-4905-b58c-e198e1d911c2 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:33:13+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:33:13+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:33:34+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:33:45+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:33:45+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:33:45+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:33:45+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:34:05+08:00] Received get unread notifications count request  [36mrequest_id[0m=9954de24-1f5f-4ae4-a02d-7fb57c3fda02 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:34:05+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=9954de24-1f5f-4ae4-a02d-7fb57c3fda02 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:34:05+08:00] Received get unread notifications count request  [36mrequest_id[0m=f4e3ffea-60da-4388-8751-dd28f191b5e4 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:34:05+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=f4e3ffea-60da-4388-8751-dd28f191b5e4 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:34:06+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:34:16+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:34:16+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:34:16+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:34:16+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:34:39+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:34:48+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:34:48+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:34:48+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:34:48+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:35:06+08:00] Received get unread notifications count request  [36mrequest_id[0m=7736e42c-26d4-44f7-96c1-8390a4cc3d15 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:35:06+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=7736e42c-26d4-44f7-96c1-8390a4cc3d15 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:35:08+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:35:19+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:35:19+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:35:19+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:35:19+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:35:40+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:35:50+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:35:50+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:35:50+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:35:50+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:36:06+08:00] Received get unread notifications count request  [36mrequest_id[0m=003649bc-a40a-4ade-8d33-c17597f333a9 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:36:06+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=003649bc-a40a-4ade-8d33-c17597f333a9 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:36:13+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:36:22+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:36:22+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:36:22+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:36:22+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:36:43+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:36:53+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:36:53+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:36:53+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:36:53+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:37:06+08:00] Received get unread notifications count request  [36mrequest_id[0m=ed28f900-e639-41bd-9946-90082dc484ac [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:37:06+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=ed28f900-e639-41bd-9946-90082dc484ac [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:37:14+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:37:25+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:37:25+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:37:25+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:37:25+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:37:45+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:37:56+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:37:56+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:37:56+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:37:56+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:38:06+08:00] Received get unread notifications count request  [36mrequest_id[0m=8ac21d2a-93df-447a-b201-0659fb93041e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:38:06+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=8ac21d2a-93df-447a-b201-0659fb93041e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T02:38:17+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:38:27+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:38:27+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:38:27+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:38:27+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:38:48+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:38:59+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:38:59+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:38:59+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:38:59+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:39:22+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:39:30+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:39:30+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:39:30+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:39:30+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:39:51+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:40:02+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:40:02+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:40:02+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:40:02+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:40:22+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:40:33+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:40:33+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:40:33+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:40:33+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:40:58+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:41:04+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:41:04+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:41:04+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:41:04+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:41:25+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:41:36+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:41:36+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:41:36+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:41:36+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:41:57+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T02:42:07+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T02:42:07+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T02:42:07+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T02:42:07+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T02:42:27+08:00] Received shutdown signal, shutting down gracefully... 
+[36mINFO[0m[2025-04-16T02:42:27+08:00] Attempting graceful shutdown...              
+[36mINFO[0m[2025-04-16T02:42:27+08:00] Database connection closed.                  
+[36mINFO[0m[2025-04-16T02:42:27+08:00] Server shut down successfully.               
+[36mINFO[0m[2025-04-16T02:42:27+08:00] Server shut down successfully                
+[36mINFO[0m[2025-04-16T03:37:09+08:00] Logger initialized successfully              
+[36mINFO[0m[2025-04-16T03:37:09+08:00] Starting server in devlocal environment on 0.0.0.0:8080 
+[36mINFO[0m[2025-04-16T03:37:09+08:00] Server listening on 0.0.0.0:8080             
+[36mINFO[0m[2025-04-16T03:37:18+08:00] Received get own wall request                 [36mrequest_id[0m=c4a5a93d-0235-4df5-b45b-27a725dacba1 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T03:37:18+08:00] Walls listed successfully                     [36mrequest_id[0m=c4a5a93d-0235-4df5-b45b-27a725dacba1 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T03:37:18+08:00] Received get own wall request                 [36mrequest_id[0m=dd8c82e2-816d-4837-8700-c17793815d26 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T03:37:18+08:00] Walls listed successfully                     [36mrequest_id[0m=dd8c82e2-816d-4837-8700-c17793815d26 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T03:37:18+08:00] Received get unread notifications count request  [36mrequest_id[0m=26c4c0b1-57bb-4c4f-b209-11288be8177e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:37:18+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=26c4c0b1-57bb-4c4f-b209-11288be8177e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:37:22+08:00] Received get unread notifications count request  [36mrequest_id[0m=8642a038-c5d6-496f-91a9-e3cb65b53d93 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:37:22+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=8642a038-c5d6-496f-91a9-e3cb65b53d93 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:37:22+08:00] Received get user request                     [36mrequest_id[0m=6f51afb9-bd91-4331-82eb-fa86ab8172ec [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:37:22+08:00] User retrieved successfully                   [36mrequest_id[0m=6f51afb9-bd91-4331-82eb-fa86ab8172ec [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:37:22+08:00] Received get user request                     [36mrequest_id[0m=9bae14b8-db65-4809-9b3d-58ff11da5db0 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:37:22+08:00] User retrieved successfully                   [36mrequest_id[0m=9bae14b8-db65-4809-9b3d-58ff11da5db0 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:37:22+08:00] Received get user request                     [36mrequest_id[0m=0a69380e-9f8f-4cfc-8250-72884c65ebf7 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:37:22+08:00] User retrieved successfully                   [36mrequest_id[0m=0a69380e-9f8f-4cfc-8250-72884c65ebf7 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:37:22+08:00] Received get user request                     [36mrequest_id[0m=5035a42d-8cac-48ba-9016-4e3464eaf204 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:37:22+08:00] User retrieved successfully                   [36mrequest_id[0m=5035a42d-8cac-48ba-9016-4e3464eaf204 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:37:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:37:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:37:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:37:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:38:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:38:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:38:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:38:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:38:22+08:00] Received get unread notifications count request  [36mrequest_id[0m=6a89b77e-35f8-4abb-9bc7-8e0ea2697592 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:38:22+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=6a89b77e-35f8-4abb-9bc7-8e0ea2697592 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:38:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:38:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:38:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:38:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:39:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:39:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:39:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:39:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:39:22+08:00] Received get unread notifications count request  [36mrequest_id[0m=43a116dc-e573-44b2-82e4-3c1edc4e4b56 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:39:22+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=43a116dc-e573-44b2-82e4-3c1edc4e4b56 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:39:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:39:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:39:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:39:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:40:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:40:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:40:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:40:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:40:22+08:00] Received get unread notifications count request  [36mrequest_id[0m=0e841db7-ada6-4a7c-9e96-87a6da5bfa7c [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:40:22+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=0e841db7-ada6-4a7c-9e96-87a6da5bfa7c [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:40:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:40:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:40:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:40:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:41:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:41:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:41:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:41:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:41:22+08:00] Received get unread notifications count request  [36mrequest_id[0m=fb54d1fa-c0eb-4c44-a198-1092fc7ee789 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:41:22+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=fb54d1fa-c0eb-4c44-a198-1092fc7ee789 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:41:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:41:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:41:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:41:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:42:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:42:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:42:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:42:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:42:22+08:00] Received get unread notifications count request  [36mrequest_id[0m=de336e62-9b61-40b6-b7e8-a2d43334d5e2 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:42:22+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=de336e62-9b61-40b6-b7e8-a2d43334d5e2 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:42:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:42:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:42:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:42:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:43:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:43:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:43:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:43:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:43:23+08:00] Received get unread notifications count request  [36mrequest_id[0m=dc3dd93d-d2a4-4d5c-bb69-9efe9dfb7462 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:43:23+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=dc3dd93d-d2a4-4d5c-bb69-9efe9dfb7462 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:43:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:43:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:43:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:43:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:43:47+08:00] Received get unread notifications count request  [36mrequest_id[0m=febe8e04-1f57-4ad4-a53d-4479e426e4be [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:43:47+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=febe8e04-1f57-4ad4-a53d-4479e426e4be [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:43:47+08:00] Received get unread notifications count request  [36mrequest_id[0m=6717b600-0475-4619-bdee-bd743f6b62b3 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:43:47+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=6717b600-0475-4619-bdee-bd743f6b62b3 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Received get unread notifications count request  [36mrequest_id[0m=c28bc864-698c-4fb9-b4e4-c11f93b5467a [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Received get user request                     [36mrequest_id[0m=91c03ebf-e673-47f9-b2f4-565ab9ed80aa [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=c28bc864-698c-4fb9-b4e4-c11f93b5467a [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:43:50+08:00] User retrieved successfully                   [36mrequest_id[0m=91c03ebf-e673-47f9-b2f4-565ab9ed80aa [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Received get user request                     [36mrequest_id[0m=e4f907de-b133-4195-bf73-35cd4e6fb9d1 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:43:50+08:00] User retrieved successfully                   [36mrequest_id[0m=e4f907de-b133-4195-bf73-35cd4e6fb9d1 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=4a97cc14-5ebf-4abd-b7b6-dc2216224b6b [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Listed friendship by user pairs successfully  [36mrequest_id[0m=4a97cc14-5ebf-4abd-b7b6-dc2216224b6b [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=384bbfd7-8ed4-4fa4-a27a-943be76c8e39 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Received list walls by user request           [36mrequest_id[0m=f7a27b4d-96dd-46e1-b42a-4239abac0bfc [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Listed friendship by user pairs successfully  [36mrequest_id[0m=384bbfd7-8ed4-4fa4-a27a-943be76c8e39 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Walls by user listed successfully             [36mrequest_id[0m=f7a27b4d-96dd-46e1-b42a-4239abac0bfc [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Received list walls by user request           [36mrequest_id[0m=4af1ac5b-a5a7-4dc0-a820-813082d27533 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T03:43:50+08:00] Walls by user listed successfully             [36mrequest_id[0m=4af1ac5b-a5a7-4dc0-a820-813082d27533 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T03:44:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:44:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:44:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:44:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:44:23+08:00] Received get unread notifications count request  [36mrequest_id[0m=b2a0b603-90bf-47aa-81f0-f045b9542aee [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:44:23+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=b2a0b603-90bf-47aa-81f0-f045b9542aee [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:44:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:44:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:44:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:44:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:44:50+08:00] Received get unread notifications count request  [36mrequest_id[0m=d02834c2-44ba-483e-9cc4-0352859d19fd [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:44:50+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=d02834c2-44ba-483e-9cc4-0352859d19fd [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:44:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:45:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:45:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:45:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:45:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:45:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:45:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:45:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:45:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:45:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:45:50+08:00] Received get unread notifications count request  [36mrequest_id[0m=8b3902d3-dd72-496a-bc52-c008b5015311 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:45:50+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=8b3902d3-dd72-496a-bc52-c008b5015311 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:45:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:46:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:46:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:46:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:46:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:46:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=42891ed1-6f2b-424c-8be6-351e89bbe455 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:46:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=42891ed1-6f2b-424c-8be6-351e89bbe455 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:46:31+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:46:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:46:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:46:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:46:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:46:50+08:00] Received get unread notifications count request  [36mrequest_id[0m=382d7801-851f-4f44-a997-9066d6225cf6 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:46:50+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=382d7801-851f-4f44-a997-9066d6225cf6 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:46:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:47:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:47:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:47:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:47:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:47:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=6ede127b-95c0-43a5-81c5-b5da213872e6 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:47:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=6ede127b-95c0-43a5-81c5-b5da213872e6 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:47:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:47:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:47:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:47:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:47:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:47:50+08:00] Received get unread notifications count request  [36mrequest_id[0m=3a180ad0-4073-49f5-9fc1-2e17909620c7 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:47:50+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=3a180ad0-4073-49f5-9fc1-2e17909620c7 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:47:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:48:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:48:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:48:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:48:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:48:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=dbda53e5-4493-488e-9e21-b7248558cb66 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:48:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=dbda53e5-4493-488e-9e21-b7248558cb66 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:48:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:48:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:48:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:48:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:48:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:48:50+08:00] Received get unread notifications count request  [36mrequest_id[0m=34b6d2cc-6841-4f75-bb79-2454a1fc5e79 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:48:50+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=34b6d2cc-6841-4f75-bb79-2454a1fc5e79 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:48:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:49:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:49:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:49:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:49:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:49:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=c5865327-e441-4ed1-8770-9a2b4887d618 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:49:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=c5865327-e441-4ed1-8770-9a2b4887d618 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:49:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:49:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:49:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:49:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:49:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:49:50+08:00] Received get unread notifications count request  [36mrequest_id[0m=d51c41af-2228-448f-bed3-5e311006fb85 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:49:50+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=d51c41af-2228-448f-bed3-5e311006fb85 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:49:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:50:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:50:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:50:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:50:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:50:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=299376fc-1b6a-4047-8e21-3e2fe55c22d9 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:50:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=299376fc-1b6a-4047-8e21-3e2fe55c22d9 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:50:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:50:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:50:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:50:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:50:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:50:50+08:00] Received get unread notifications count request  [36mrequest_id[0m=f210d692-61d3-4e92-bb53-6c6ee103b8ed [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:50:50+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=f210d692-61d3-4e92-bb53-6c6ee103b8ed [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:51:01+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:51:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:51:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:51:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:51:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:51:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=3f61191d-fa5e-4a2f-b169-e9810b61f409 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:51:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=3f61191d-fa5e-4a2f-b169-e9810b61f409 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:51:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:51:34+08:00] Received get unread notifications count request  [36mrequest_id[0m=4d4f9b63-cefa-4c92-85c8-1e5debfbd205 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:51:34+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=4d4f9b63-cefa-4c92-85c8-1e5debfbd205 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:51:34+08:00] Received get user request                     [36mrequest_id[0m=29053b40-aebc-440e-9b6a-5eb4d202eb32 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:51:34+08:00] User retrieved successfully                   [36mrequest_id[0m=29053b40-aebc-440e-9b6a-5eb4d202eb32 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:51:34+08:00] Received get user request                     [36mrequest_id[0m=d8e02f5f-dbf1-4d06-ad54-7c2f44ffa077 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:51:34+08:00] User retrieved successfully                   [36mrequest_id[0m=d8e02f5f-dbf1-4d06-ad54-7c2f44ffa077 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:51:34+08:00] Received get user request                     [36mrequest_id[0m=ae501162-788c-4667-9593-29a66d0d6a95 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:51:34+08:00] User retrieved successfully                   [36mrequest_id[0m=ae501162-788c-4667-9593-29a66d0d6a95 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:51:34+08:00] Received get user request                     [36mrequest_id[0m=4d3f27a5-1362-4de7-a335-38a90527481b [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:51:34+08:00] User retrieved successfully                   [36mrequest_id[0m=4d3f27a5-1362-4de7-a335-38a90527481b [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:51:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:51:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:51:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:51:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:51:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:52:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:52:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:52:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:52:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:52:33+08:00] Received get user request                     [36mrequest_id[0m=02a20a3d-17b5-4381-9aed-fa089f72feaa [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:52:33+08:00] User retrieved successfully                   [36mrequest_id[0m=02a20a3d-17b5-4381-9aed-fa089f72feaa [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:52:33+08:00] Received get user request                     [36mrequest_id[0m=e1747362-032b-4fad-a53a-7f54cc94b3c7 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:52:33+08:00] User retrieved successfully                   [36mrequest_id[0m=e1747362-032b-4fad-a53a-7f54cc94b3c7 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:52:33+08:00] Received get user request                     [36mrequest_id[0m=0e235f76-0795-492d-89ae-93fd48bb0438 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:52:33+08:00] User retrieved successfully                   [36mrequest_id[0m=0e235f76-0795-492d-89ae-93fd48bb0438 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:52:33+08:00] Received get user request                     [36mrequest_id[0m=afc2484e-6ab0-45ff-a0b3-bd523005da4a [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:52:33+08:00] User retrieved successfully                   [36mrequest_id[0m=afc2484e-6ab0-45ff-a0b3-bd523005da4a [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:52:33+08:00] Received get unread notifications count request  [36mrequest_id[0m=c491c382-10e3-4221-8f02-1a456d6a5b11 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:52:33+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=c491c382-10e3-4221-8f02-1a456d6a5b11 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:52:34+08:00] Received get unread notifications count request  [36mrequest_id[0m=d3430a65-2658-4f4a-8bf5-e0272331e227 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:52:34+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=d3430a65-2658-4f4a-8bf5-e0272331e227 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:52:34+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:52:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:52:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:52:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:52:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:52:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Received get user request                     [36mrequest_id[0m=409bb6f5-3efd-48a1-82dd-d76cd2936018 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Received get unread notifications count request  [36mrequest_id[0m=e13fb60a-0210-4636-95b5-988a6374d85f [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:53:05+08:00] User retrieved successfully                   [36mrequest_id[0m=409bb6f5-3efd-48a1-82dd-d76cd2936018 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=e13fb60a-0210-4636-95b5-988a6374d85f [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Received get user request                     [36mrequest_id[0m=7cbb5dc6-ccd5-4f58-88b9-931dd0485c52 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:53:05+08:00] User retrieved successfully                   [36mrequest_id[0m=7cbb5dc6-ccd5-4f58-88b9-931dd0485c52 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=95ee02ec-d516-486d-ab04-8f452365f24d [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Listed friendship by user pairs successfully  [36mrequest_id[0m=95ee02ec-d516-486d-ab04-8f452365f24d [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Received list walls by user request           [36mrequest_id[0m=15ebcd33-7c88-4eea-aff8-8496231017a0 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Walls by user listed successfully             [36mrequest_id[0m=15ebcd33-7c88-4eea-aff8-8496231017a0 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=95457416-f285-436a-94fa-773ea5640a3a [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Listed friendship by user pairs successfully  [36mrequest_id[0m=95457416-f285-436a-94fa-773ea5640a3a [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Received list walls by user request           [36mrequest_id[0m=f18af5a3-6338-469a-869c-1036ddb35ed8 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T03:53:05+08:00] Walls by user listed successfully             [36mrequest_id[0m=f18af5a3-6338-469a-869c-1036ddb35ed8 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T03:53:07+08:00] Received get unread notifications count request  [36mrequest_id[0m=3e6c10ce-cad8-4b5d-b632-6a051040f16f [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:53:07+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=3e6c10ce-cad8-4b5d-b632-6a051040f16f [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:53:07+08:00] Received get user request                     [36mrequest_id[0m=575e043a-f3a4-40d2-972c-0a986e024571 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:53:07+08:00] User retrieved successfully                   [36mrequest_id[0m=575e043a-f3a4-40d2-972c-0a986e024571 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:53:07+08:00] Received get user request                     [36mrequest_id[0m=3104425a-dbef-43fc-9490-052a1d09746d [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:53:07+08:00] User retrieved successfully                   [36mrequest_id[0m=3104425a-dbef-43fc-9490-052a1d09746d [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T03:53:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:53:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:53:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:53:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:53:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:53:34+08:00] Received get unread notifications count request  [36mrequest_id[0m=ba54efbd-4157-43cc-a670-b9b165950640 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:53:34+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=ba54efbd-4157-43cc-a670-b9b165950640 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:53:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:53:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:53:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:53:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:53:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:54:08+08:00] Received get unread notifications count request  [36mrequest_id[0m=c181996a-884a-45c0-a161-7b9c84c74b16 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:54:08+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=c181996a-884a-45c0-a161-7b9c84c74b16 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:54:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:54:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:54:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:54:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:54:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:54:34+08:00] Received get unread notifications count request  [36mrequest_id[0m=e40b065f-7830-41d0-91c1-5f8a98951fc1 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:54:34+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=e40b065f-7830-41d0-91c1-5f8a98951fc1 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:54:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:54:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:54:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:54:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:54:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:55:08+08:00] Received get unread notifications count request  [36mrequest_id[0m=99c82b5d-e222-4f6a-a2b6-a2276c5242d3 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:55:08+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=99c82b5d-e222-4f6a-a2b6-a2276c5242d3 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:55:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:55:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:55:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:55:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:55:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:55:34+08:00] Received get unread notifications count request  [36mrequest_id[0m=1aeb15cb-eb0e-44a7-a646-978876f02942 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:55:34+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=1aeb15cb-eb0e-44a7-a646-978876f02942 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:55:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:55:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:55:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:55:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:55:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:56:08+08:00] Received get unread notifications count request  [36mrequest_id[0m=6cc730a3-6980-4d77-ae67-68895a7d6ae7 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:56:08+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=6cc730a3-6980-4d77-ae67-68895a7d6ae7 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:56:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:56:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:56:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:56:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:56:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:56:34+08:00] Received get unread notifications count request  [36mrequest_id[0m=8c263ee4-7feb-48a0-8cc7-2f6b2dee6f17 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:56:34+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=8c263ee4-7feb-48a0-8cc7-2f6b2dee6f17 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:56:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:56:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:56:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:56:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:56:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:57:08+08:00] Received get unread notifications count request  [36mrequest_id[0m=9005f13e-05f2-4971-a880-c10fe14b1447 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:57:08+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=9005f13e-05f2-4971-a880-c10fe14b1447 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:57:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:57:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:57:09+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:57:09+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:57:30+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:57:40+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:57:40+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:57:40+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:57:40+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:58:00+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:58:11+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:58:11+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:58:11+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:58:11+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:58:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=b3fbbcc0-aa3c-4ee2-92e4-fbf78a711853 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:58:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=b3fbbcc0-aa3c-4ee2-92e4-fbf78a711853 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:58:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=b2d4a1b9-f213-413d-a394-095d2169db70 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:58:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=b2d4a1b9-f213-413d-a394-095d2169db70 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:58:31+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:58:41+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:58:41+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:58:41+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:58:41+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:59:00+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:59:12+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:59:12+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:59:12+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:59:12+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T03:59:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=c2ea23ed-62ef-420c-8f67-9f498ced8e8e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:59:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=c2ea23ed-62ef-420c-8f67-9f498ced8e8e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:59:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=6adea9a2-224a-4145-84ee-6acd78e4e984 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:59:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=6adea9a2-224a-4145-84ee-6acd78e4e984 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T03:59:32+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T03:59:43+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T03:59:43+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T03:59:43+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T03:59:43+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:00:04+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:00:14+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:00:14+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:00:14+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:00:14+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:00:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=1bfcb0f0-5f1d-48fc-a912-a47a2c36899e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:00:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=1bfcb0f0-5f1d-48fc-a912-a47a2c36899e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:00:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=2f3a2d92-3a28-4652-b2e8-92eb18034859 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:00:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=2f3a2d92-3a28-4652-b2e8-92eb18034859 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:00:34+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:00:45+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:00:45+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:00:45+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:00:45+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:01:05+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:01:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=68d2d2ec-1735-452c-a228-2df419dfa406 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:01:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=68d2d2ec-1735-452c-a228-2df419dfa406 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:01:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=b89629c6-69f7-4489-905e-725c326dcc86 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:01:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=b89629c6-69f7-4489-905e-725c326dcc86 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:01:16+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:01:16+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:01:16+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:01:16+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:01:36+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:01:46+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:01:46+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:01:46+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:01:46+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:02:07+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:02:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=13a20aed-b210-4f40-9585-9af63a40bc34 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:02:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=13a20aed-b210-4f40-9585-9af63a40bc34 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:02:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=1112ff20-260a-4d4e-8669-775cf4575887 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:02:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=1112ff20-260a-4d4e-8669-775cf4575887 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:02:17+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:02:17+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:02:17+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:02:17+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:02:38+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:02:48+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:02:48+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:02:48+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:02:48+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:03:09+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:03:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=8903f707-45da-4aca-be4d-de360b86980a [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=8903f707-45da-4aca-be4d-de360b86980a [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=434b8e27-ab1e-4556-9f43-1b788701e021 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=434b8e27-ab1e-4556-9f43-1b788701e021 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:19+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:03:19+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:03:19+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:03:19+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:03:36+08:00] Received get unread notifications count request  [36mrequest_id[0m=7f1c6152-5240-4156-8b26-772539cd2886 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:36+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=7f1c6152-5240-4156-8b26-772539cd2886 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:40+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:03:50+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:03:50+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:03:50+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:03:50+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:03:51+08:00] Received get user request                     [36mrequest_id[0m=011f7eda-6aec-4398-8dba-626d0b0a5ad9 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:03:51+08:00] User retrieved successfully                   [36mrequest_id[0m=011f7eda-6aec-4398-8dba-626d0b0a5ad9 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:03:51+08:00] Received get user request                     [36mrequest_id[0m=0f86350f-0e84-4ab7-835f-83ca748575aa [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:03:51+08:00] User retrieved successfully                   [36mrequest_id[0m=0f86350f-0e84-4ab7-835f-83ca748575aa [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:03:51+08:00] Received get unread notifications count request  [36mrequest_id[0m=e23aa505-00cb-489c-9c9a-3751092cc456 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:51+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=e23aa505-00cb-489c-9c9a-3751092cc456 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:52+08:00] Received get user request                     [36mrequest_id[0m=e123f16e-6f81-460f-befa-a33bc3a7b53a [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:03:52+08:00] User retrieved successfully                   [36mrequest_id[0m=e123f16e-6f81-460f-befa-a33bc3a7b53a [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:03:52+08:00] Received get user request                     [36mrequest_id[0m=cfe3b380-772f-4341-be7a-de38a81ccc0d [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:03:52+08:00] User retrieved successfully                   [36mrequest_id[0m=cfe3b380-772f-4341-be7a-de38a81ccc0d [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:03:52+08:00] Received get unread notifications count request  [36mrequest_id[0m=1a884d10-7b01-4efa-af41-3db6cea7f707 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:03:52+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=1a884d10-7b01-4efa-af41-3db6cea7f707 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:04:11+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:04:21+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:04:21+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:04:21+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:04:21+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:04:46+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:04:52+08:00] Received get unread notifications count request  [36mrequest_id[0m=031fff9e-06db-449b-bb7f-be86bd99943f [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:04:52+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=031fff9e-06db-449b-bb7f-be86bd99943f [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:04:52+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:04:52+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:04:52+08:00] Received get unread notifications count request  [36mrequest_id[0m=08760f57-3ac8-4e52-b21a-6559f228eb39 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:04:52+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=08760f57-3ac8-4e52-b21a-6559f228eb39 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:04:52+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:04:52+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:05:13+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:05:23+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:05:23+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:05:23+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:05:23+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:05:44+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:05:45+08:00] Received get user request                     [36mrequest_id[0m=d3e76a94-4985-497c-bf27-74c24cbdd39d [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:05:45+08:00] User retrieved successfully                   [36mrequest_id[0m=d3e76a94-4985-497c-bf27-74c24cbdd39d [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:05:45+08:00] Received get user request                     [36mrequest_id[0m=6e3a12f2-bac9-4cf8-ba67-918afa59a917 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:05:45+08:00] User retrieved successfully                   [36mrequest_id[0m=6e3a12f2-bac9-4cf8-ba67-918afa59a917 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:05:45+08:00] Received get unread notifications count request  [36mrequest_id[0m=0d21e730-8d47-44e2-821c-85fdcf31b306 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:05:45+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=0d21e730-8d47-44e2-821c-85fdcf31b306 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:05:52+08:00] Received get unread notifications count request  [36mrequest_id[0m=a6ce7754-66f2-4364-9755-6b1b9213b35d [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:05:52+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=a6ce7754-66f2-4364-9755-6b1b9213b35d [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:05:54+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:05:54+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:05:54+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:05:54+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:06:15+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:06:25+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:06:25+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:06:25+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:06:25+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:06:44+08:00] Received get unread notifications count request  [36mrequest_id[0m=296b3a38-ddc8-4759-b8b0-6bdbb626e67b [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:06:44+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=296b3a38-ddc8-4759-b8b0-6bdbb626e67b [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:06:46+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:06:52+08:00] Received get unread notifications count request  [36mrequest_id[0m=e70f9b72-2374-4411-a96f-94cdab844fb2 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:06:52+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=e70f9b72-2374-4411-a96f-94cdab844fb2 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:06:56+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:06:56+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:06:56+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:06:56+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:07:16+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:07:26+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:07:26+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:07:26+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:07:26+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:07:45+08:00] Received get unread notifications count request  [36mrequest_id[0m=d47b3057-1d4e-4413-bcf7-7c0fb16b66f7 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:07:45+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=d47b3057-1d4e-4413-bcf7-7c0fb16b66f7 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:07:49+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:07:52+08:00] Received get unread notifications count request  [36mrequest_id[0m=880c3ca4-908a-4f9d-beb2-18dd79f11881 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:07:52+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=880c3ca4-908a-4f9d-beb2-18dd79f11881 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:07:58+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:07:58+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:07:58+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:07:58+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:08:19+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:08:29+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:08:29+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:08:29+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:08:29+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:08:44+08:00] Received get unread notifications count request  [36mrequest_id[0m=1300a635-d59b-403e-b5a6-20d5b59172df [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:08:44+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=1300a635-d59b-403e-b5a6-20d5b59172df [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:08:50+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:09:00+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:09:00+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:09:00+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:09:00+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:09:13+08:00] Received get unread notifications count request  [36mrequest_id[0m=207661e0-9ff8-4de6-9f0e-e7ce4c8dd777 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:09:13+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=207661e0-9ff8-4de6-9f0e-e7ce4c8dd777 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:09:21+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:09:31+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:09:31+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:09:31+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:09:31+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:09:44+08:00] Received get unread notifications count request  [36mrequest_id[0m=bd330a0e-b7e8-4b43-9041-06a140a41870 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:09:44+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=bd330a0e-b7e8-4b43-9041-06a140a41870 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:09:52+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:10:03+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:10:03+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:10:03+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:10:03+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:10:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=99f98fc0-0d44-4ebc-9413-4ff51ba4999d [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:10:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=99f98fc0-0d44-4ebc-9413-4ff51ba4999d [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:10:23+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:10:34+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:10:34+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:10:34+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:10:34+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:10:44+08:00] Received get unread notifications count request  [36mrequest_id[0m=6b4cebdf-f76b-4d2a-b2dc-3f5f40fd143c [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:10:44+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=6b4cebdf-f76b-4d2a-b2dc-3f5f40fd143c [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:10:56+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:11:05+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:11:05+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:11:05+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:11:05+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:11:14+08:00] Received get unread notifications count request  [36mrequest_id[0m=5dc9bdcc-b90a-4fcd-8df3-81bd6ba783d2 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:14+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=5dc9bdcc-b90a-4fcd-8df3-81bd6ba783d2 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:25+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:11:36+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:11:36+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:11:36+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:11:36+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:11:44+08:00] Received get unread notifications count request  [36mrequest_id[0m=277b712f-f6b6-4230-8a93-db38b34627bd [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:44+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=277b712f-f6b6-4230-8a93-db38b34627bd [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:56+08:00] Received get user request                     [36mrequest_id[0m=1011021e-3a66-4764-a1c0-5134d8a9c920 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:11:56+08:00] Received get unread notifications count request  [36mrequest_id[0m=9c81b43e-5d78-4026-9e41-f2b0eb200dfc [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:56+08:00] User retrieved successfully                   [36mrequest_id[0m=1011021e-3a66-4764-a1c0-5134d8a9c920 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:11:56+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=9c81b43e-5d78-4026-9e41-f2b0eb200dfc [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:56+08:00] Received get user request                     [36mrequest_id[0m=032effd5-3a64-4638-bbe9-86b52c8a63d3 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:11:56+08:00] User retrieved successfully                   [36mrequest_id[0m=032effd5-3a64-4638-bbe9-86b52c8a63d3 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:11:56+08:00] Received get unread notifications count request  [36mrequest_id[0m=6ab64184-1aec-4d09-8cd4-c3c7896a2f0f [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:56+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=6ab64184-1aec-4d09-8cd4-c3c7896a2f0f [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:57+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:11:59+08:00] Received get user request                     [36mrequest_id[0m=c7aba4ad-9574-491c-873b-6394056531a3 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:11:59+08:00] User retrieved successfully                   [36mrequest_id[0m=c7aba4ad-9574-491c-873b-6394056531a3 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:11:59+08:00] Received get user request                     [36mrequest_id[0m=229c1a2b-b93d-4cd6-a94e-1d0e60e7cb88 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:11:59+08:00] User retrieved successfully                   [36mrequest_id[0m=229c1a2b-b93d-4cd6-a94e-1d0e60e7cb88 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:11:59+08:00] Received get unread notifications count request  [36mrequest_id[0m=26581e37-2e8f-4d2a-843b-64949de352d4 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:59+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=26581e37-2e8f-4d2a-843b-64949de352d4 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:59+08:00] Received get unread notifications count request  [36mrequest_id[0m=1c0f86b3-6556-4abd-a216-9248e29ecc46 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:11:59+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=1c0f86b3-6556-4abd-a216-9248e29ecc46 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:12:07+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:12:07+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:12:07+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:12:07+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:12:30+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:12:38+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:12:38+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:12:38+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:12:38+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:12:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:13:09+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:13:09+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:13:10+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:13:10+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:13:30+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:13:41+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:13:41+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:13:41+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:13:41+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:14:04+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:14:12+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:14:12+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:14:12+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:14:12+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T04:14:25+08:00] Received get user request                     [36mrequest_id[0m=53b10cd6-d301-487e-a6ed-80afe126eaed [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:14:25+08:00] User retrieved successfully                   [36mrequest_id[0m=53b10cd6-d301-487e-a6ed-80afe126eaed [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:14:25+08:00] Received get user request                     [36mrequest_id[0m=d7765888-c618-479c-b85d-7d64a1142191 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:14:25+08:00] User retrieved successfully                   [36mrequest_id[0m=d7765888-c618-479c-b85d-7d64a1142191 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:14:25+08:00] Received get unread notifications count request  [36mrequest_id[0m=6abb311e-3157-4530-ae36-9f6ebd7f77a8 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:14:25+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=6abb311e-3157-4530-ae36-9f6ebd7f77a8 [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:14:27+08:00] Received get user request                     [36mrequest_id[0m=2df59d05-4c44-463c-bec9-9d6af72b82db [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:14:27+08:00] User retrieved successfully                   [36mrequest_id[0m=2df59d05-4c44-463c-bec9-9d6af72b82db [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:14:27+08:00] Received get user request                     [36mrequest_id[0m=b615f814-8a55-400d-8e7b-9150af114dae [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:14:27+08:00] User retrieved successfully                   [36mrequest_id[0m=b615f814-8a55-400d-8e7b-9150af114dae [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T04:14:27+08:00] Received get unread notifications count request  [36mrequest_id[0m=94b54a2f-458b-4ddc-8a3b-1ad687d36b6e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:14:27+08:00] Unread notifications count retrieved successfully: 2  [36mrequest_id[0m=94b54a2f-458b-4ddc-8a3b-1ad687d36b6e [36mroute[0m=/api/v1/notifications/unread/count
+[36mINFO[0m[2025-04-16T04:14:32+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T04:14:43+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T04:14:43+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T04:14:43+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T04:14:43+08:00] Receiving messages with long polling (wait time: 20s) 

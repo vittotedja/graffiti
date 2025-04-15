@@ -8,6 +8,7 @@ import {Bell, Menu, Home, Users, Compass} from "lucide-react";
 import {Button} from "@/components/ui/button";
 // import {Input} from "@/components/ui/input";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { NotificationBadge } from "@/components/notification-badge";
 import {ThemeToggle} from "@/components/theme-toggle";
 import {
 	Sheet,
@@ -177,19 +178,7 @@ export function Navbar() {
 					{/* Search, Notifications, and Profile */}
 					<div className="flex items-center gap-2">
 						{/* Notifications */}
-						<Link href="/notifications">
-							<Button
-								variant="ghost"
-								size="icon"
-								className="relative"
-								aria-label="Notifications"
-							>
-								<Bell className="h-5 w-5" />
-								{hasNotifications && (
-									<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
-								)}
-							</Button>
-						</Link>
+						<NotificationBadge />
 
 						{/* Theme Toggle (Desktop) */}
 						<div className="hidden md:block">
