@@ -117,6 +117,17 @@ type Like struct {
 	LikedAt pgtype.Timestamp
 }
 
+type Notification struct {
+	ID          pgtype.UUID
+	RecipientID pgtype.UUID
+	SenderID    pgtype.UUID
+	Type        string
+	EntityID    pgtype.UUID
+	Message     string
+	IsRead      pgtype.Bool
+	CreatedAt   pgtype.Timestamp
+}
+
 type Post struct {
 	ID            pgtype.UUID
 	WallID        pgtype.UUID
