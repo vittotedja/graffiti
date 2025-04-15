@@ -1383,3 +1383,213 @@ time="2025-04-02T18:28:34+08:00" level=info msg="Walls listed successfully" requ
 [36mINFO[0m[2025-04-16T01:02:24+08:00] Successfully stored notification in database 
 [36mINFO[0m[2025-04-16T01:02:24+08:00] Deleting message from queue: MessageId=3e1719a1-2148-4369-a7ef-162a74c8c447 
 [36mINFO[0m[2025-04-16T01:02:24+08:00] Successfully deleted message from SQS queue: MessageId=3e1719a1-2148-4369-a7ef-162a74c8c447 
+[36mINFO[0m[2025-04-16T01:02:55+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:02:55+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:02:55+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:02:55+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:03:16+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:03:26+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:03:26+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:03:26+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:03:26+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:03:47+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:03:58+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:03:58+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:03:58+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:03:58+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:04:18+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:04:29+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:04:29+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:04:29+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:04:29+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:04:51+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:05:00+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:05:00+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:05:00+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:05:00+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:05:21+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:05:31+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:05:31+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:05:31+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:05:31+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:05:52+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:06:03+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:06:03+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:06:03+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:06:03+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:06:23+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:06:34+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:06:34+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:06:34+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:06:34+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:06:55+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:07:05+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:07:05+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:07:05+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:07:05+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:07:26+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:07:37+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:07:37+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:07:37+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:07:37+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:07:59+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:08:08+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:08:08+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:08:08+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:08:08+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:08:29+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:08:39+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:08:39+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:08:39+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:08:39+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:09:00+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:09:11+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:09:11+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:09:11+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:09:11+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:09:32+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:09:42+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:09:42+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:09:42+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:09:42+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:10:03+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:10:13+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:10:13+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:10:13+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:10:13+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:10:34+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:10:45+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:10:45+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:10:45+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:10:45+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:11:07+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:11:16+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:11:16+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:11:16+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:11:16+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:11:37+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:11:47+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:11:47+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:11:47+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:11:47+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:12:08+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:12:14+08:00] Received get user request                     [36mrequest_id[0m=b7bde404-7f99-4f0d-b1e2-13d43914889e [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T01:12:14+08:00] User retrieved successfully                   [36mrequest_id[0m=b7bde404-7f99-4f0d-b1e2-13d43914889e [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T01:12:14+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=b96aa975-fc09-4173-9d06-40ec9f610ff5 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T01:12:14+08:00] Listed friendship by user pairs successfully  [36mrequest_id[0m=b96aa975-fc09-4173-9d06-40ec9f610ff5 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T01:12:14+08:00] Received list walls by user request           [36mrequest_id[0m=0432e605-4025-4ead-9da4-0a2af7d6e6eb [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T01:12:14+08:00] Walls by user listed successfully             [36mrequest_id[0m=0432e605-4025-4ead-9da4-0a2af7d6e6eb [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T01:12:14+08:00] Received list walls by user request           [36mrequest_id[0m=3685d36f-da38-4c67-8bbb-67708090a1fd [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T01:12:14+08:00] Walls by user listed successfully             [36mrequest_id[0m=3685d36f-da38-4c67-8bbb-67708090a1fd [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T01:12:19+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:12:19+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:12:19+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:12:19+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:12:19+08:00] Received get own wall request                 [36mrequest_id[0m=a006b2ab-fdd4-4fb4-841b-593f8a3fe630 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:12:19+08:00] Walls listed successfully                     [36mrequest_id[0m=a006b2ab-fdd4-4fb4-841b-593f8a3fe630 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:12:19+08:00] Received get own wall request                 [36mrequest_id[0m=6b4641f1-b8e2-44d0-bd0a-d58d9c5979ba [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:12:19+08:00] Walls listed successfully                     [36mrequest_id[0m=6b4641f1-b8e2-44d0-bd0a-d58d9c5979ba [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:12:39+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:12:50+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:12:50+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:12:50+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:12:50+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:13:11+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:13:21+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:13:21+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:13:21+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:13:21+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:13:37+08:00] Received create wall request                  [36mrequest_id[0m=c882afcb-6985-457c-bbdf-fa70d6ce15ea [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:13:37+08:00] Wall created successfully                     [36mrequest_id[0m=c882afcb-6985-457c-bbdf-fa70d6ce15ea [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:13:37+08:00] Received get own wall request                 [36mrequest_id[0m=f752e455-c00a-4818-8485-9efc21fc2824 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:13:37+08:00] Walls listed successfully                     [36mrequest_id[0m=f752e455-c00a-4818-8485-9efc21fc2824 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:13:42+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:13:44+08:00] Received get wall request                     [36mrequest_id[0m=efa58668-300e-4827-a4e5-92608c2d25aa [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:13:44+08:00] Wall retrieved successfully                   [36mrequest_id[0m=efa58668-300e-4827-a4e5-92608c2d25aa [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:13:44+08:00] Received get wall request                     [36mrequest_id[0m=8cb124c2-cd99-4cd9-a40c-c00504e37f64 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:13:44+08:00] Wall retrieved successfully                   [36mrequest_id[0m=8cb124c2-cd99-4cd9-a40c-c00504e37f64 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:13:52+08:00] Received update wall request                  [36mrequest_id[0m=e06712f7-5c22-47c5-ad6a-3952d0824012 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:13:52+08:00] Wall updated successfully                     [36mrequest_id[0m=e06712f7-5c22-47c5-ad6a-3952d0824012 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:13:52+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:13:52+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:13:52+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:13:52+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:13:55+08:00] Received get wall request                     [36mrequest_id[0m=e39f242c-12d4-494c-bead-a6395eac6669 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:13:55+08:00] Wall retrieved successfully                   [36mrequest_id[0m=e39f242c-12d4-494c-bead-a6395eac6669 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:01+08:00] Received get own wall request                 [36mrequest_id[0m=47886f84-eab2-4668-a560-018b8a02d1e3 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:14:01+08:00] Walls listed successfully                     [36mrequest_id[0m=47886f84-eab2-4668-a560-018b8a02d1e3 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:14:01+08:00] Received get own wall request                 [36mrequest_id[0m=0a852601-984d-4d64-9dbc-61eefecfdab1 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:14:01+08:00] Walls listed successfully                     [36mrequest_id[0m=0a852601-984d-4d64-9dbc-61eefecfdab1 [36mroute[0m=/api/v2/walls
+[36mINFO[0m[2025-04-16T01:14:01+08:00] Received get wall request                     [36mrequest_id[0m=9d10c3e2-369c-4e23-a2bf-aa090ebf8a17 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:01+08:00] Wall retrieved successfully                   [36mrequest_id[0m=9d10c3e2-369c-4e23-a2bf-aa090ebf8a17 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:01+08:00] Received get wall request                     [36mrequest_id[0m=fd735993-383a-48a4-82e3-cba8acdef1ba [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:01+08:00] Wall retrieved successfully                   [36mrequest_id[0m=fd735993-383a-48a4-82e3-cba8acdef1ba [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:15+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:14:24+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:14:24+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:14:24+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:14:24+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:14:35+08:00] Received create post request                  [36mrequest_id[0m=f5dfb19a-c5e7-4081-a758-aafd68b1a067 [36mroute[0m=/api/v1/posts
+[36mINFO[0m[2025-04-16T01:14:35+08:00] Post created successfully                     [36mrequest_id[0m=f5dfb19a-c5e7-4081-a758-aafd68b1a067 [36mroute[0m=/api/v1/posts
+[36mINFO[0m[2025-04-16T01:14:36+08:00] Received get like request                     [36mrequest_id[0m=25530151-bf88-422a-90b9-917a6c22b52f [36mroute[0m="/api/v1/likes/:post_id"
+[36mINFO[0m[2025-04-16T01:14:44+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:14:50+08:00] Received get user request                     [36mrequest_id[0m=d1d11bca-2c7a-446b-b438-203d4889d543 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T01:14:50+08:00] User retrieved successfully                   [36mrequest_id[0m=d1d11bca-2c7a-446b-b438-203d4889d543 [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T01:14:50+08:00] Received get user request                     [36mrequest_id[0m=cd915be0-4758-44a9-a43b-4c70d92a6f8b [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T01:14:50+08:00] User retrieved successfully                   [36mrequest_id[0m=cd915be0-4758-44a9-a43b-4c70d92a6f8b [36mroute[0m="/api/v1/users/:id"
+[36mINFO[0m[2025-04-16T01:14:51+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=6b2c95ec-dbef-44d0-ae74-75373edc55a8 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T01:14:51+08:00] Received list friendship by user pairs request  [36mrequest_id[0m=08c6331c-f2e8-4b48-842f-1355a540071e [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T01:14:51+08:00] Listed friendship by user pairs successfully  [36mrequest_id[0m=6b2c95ec-dbef-44d0-ae74-75373edc55a8 [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T01:14:51+08:00] Listed friendship by user pairs successfully  [36mrequest_id[0m=08c6331c-f2e8-4b48-842f-1355a540071e [36mroute[0m=/api/v1/friendships
+[36mINFO[0m[2025-04-16T01:14:51+08:00] Received list walls by user request           [36mrequest_id[0m=9bd38469-29de-409b-9e85-3e8e87d4f944 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T01:14:51+08:00] Walls by user listed successfully             [36mrequest_id[0m=9bd38469-29de-409b-9e85-3e8e87d4f944 [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T01:14:51+08:00] Received list walls by user request           [36mrequest_id[0m=d332cc3b-fa7b-455a-a7e9-9e2d0ffe251e [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T01:14:51+08:00] Walls by user listed successfully             [36mrequest_id[0m=d332cc3b-fa7b-455a-a7e9-9e2d0ffe251e [36mroute[0m="/api/v1/users/:id/walls"
+[36mINFO[0m[2025-04-16T01:14:52+08:00] Received get wall request                     [36mrequest_id[0m=b83d7ff8-e6af-4b2b-b498-9261c4c68cf4 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:52+08:00] Wall retrieved successfully                   [36mrequest_id[0m=b83d7ff8-e6af-4b2b-b498-9261c4c68cf4 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:52+08:00] Received get wall request                     [36mrequest_id[0m=06f7d190-1372-41cb-998d-3e40bfe902b3 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:52+08:00] Wall retrieved successfully                   [36mrequest_id[0m=06f7d190-1372-41cb-998d-3e40bfe902b3 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:14:52+08:00] Received get like request                     [36mrequest_id[0m=b4692321-7ec8-4b78-b17a-305b897f2996 [36mroute[0m="/api/v1/likes/:post_id"
+[36mINFO[0m[2025-04-16T01:14:52+08:00] Received get like request                     [36mrequest_id[0m=ffc1f747-a263-44ce-9f2e-9497da2ec88a [36mroute[0m="/api/v1/likes/:post_id"
+[36mINFO[0m[2025-04-16T01:14:54+08:00] Received create like request                  [36mrequest_id[0m=114079c1-8efd-4fad-b741-b01b91021905 [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:14:54+08:00] Post liked successfully                       [36mrequest_id[0m=114079c1-8efd-4fad-b741-b01b91021905 [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:14:55+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:14:55+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:14:55+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:14:55+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:15:04+08:00] Received get wall request                     [36mrequest_id[0m=31cc8260-a894-497a-b0a3-723d89e5c853 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:15:04+08:00] Wall retrieved successfully                   [36mrequest_id[0m=31cc8260-a894-497a-b0a3-723d89e5c853 [36mroute[0m="/api/v1/walls/:id"
+[36mINFO[0m[2025-04-16T01:15:04+08:00] Received get like request                     [36mrequest_id[0m=c5e4ad0f-77e4-43e0-a505-245c0fbc173d [36mroute[0m="/api/v1/likes/:post_id"
+[36mINFO[0m[2025-04-16T01:15:16+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:15:26+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:15:26+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:15:26+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:15:26+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:15:47+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:15:55+08:00] Received create like request                  [36mrequest_id[0m=22b8acac-0cef-4266-ae53-d5a44e138fd2 [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:15:55+08:00] Post liked successfully                       [36mrequest_id[0m=22b8acac-0cef-4266-ae53-d5a44e138fd2 [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:15:58+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:15:58+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:15:58+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:15:58+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:16:07+08:00] Received create like request                  [36mrequest_id[0m=dfabba68-de01-418d-8efe-b13472112bf8 [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:16:07+08:00] Post unliked successfully                     [36mrequest_id[0m=dfabba68-de01-418d-8efe-b13472112bf8 [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:16:16+08:00] Received create like request                  [36mrequest_id[0m=9b80eacf-0d57-43ee-81ae-46e1436a7370 [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:16:16+08:00] Post unliked successfully                     [36mrequest_id[0m=9b80eacf-0d57-43ee-81ae-46e1436a7370 [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:16:17+08:00] Received create like request                  [36mrequest_id[0m=6a9e8bb0-07df-4497-8c2f-caac11fa95ec [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:16:17+08:00] Post liked successfully                       [36mrequest_id[0m=6a9e8bb0-07df-4497-8c2f-caac11fa95ec [36mroute[0m=/api/v1/likes
+[36mINFO[0m[2025-04-16T01:16:18+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:16:29+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:16:29+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:16:29+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:16:29+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:16:50+08:00] Received 0 messages from SQS queue           
+[36mINFO[0m[2025-04-16T01:17:00+08:00] Starting to poll for messages from SQS queue: https://sqs.ap-southeast-1.amazonaws.com/311286597151/notificationsQueue 
+[36mINFO[0m[2025-04-16T01:17:00+08:00] Initializing SQS client                      
+[36mINFO[0m[2025-04-16T01:17:00+08:00] SQS client initialized successfully          
+[36mINFO[0m[2025-04-16T01:17:00+08:00] Receiving messages with long polling (wait time: 20s) 
+[36mINFO[0m[2025-04-16T01:17:22+08:00] Received shutdown signal, shutting down gracefully... 
+[36mINFO[0m[2025-04-16T01:17:22+08:00] Attempting graceful shutdown...              
+[36mINFO[0m[2025-04-16T01:17:22+08:00] Database connection closed.                  
+[36mINFO[0m[2025-04-16T01:17:22+08:00] Server shut down successfully.               
+[36mINFO[0m[2025-04-16T01:17:22+08:00] Server shut down successfully                
