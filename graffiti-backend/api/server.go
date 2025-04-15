@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"time"
+	"errors"
 
 	cron "github.com/vittotedja/graffiti/graffiti-backend/util/cron"
 
@@ -206,7 +207,7 @@ func (s *Server) registerRoutes(env string) {
 		protected.GET("/v1/notifications", s.getNotifications)
 		protected.PUT("/v1/notifications/:id/read", s.markNotificationAsRead)
 		protected.PUT("/v1/notifications/read-all", s.markAllNotificationsAsRead)
-
+		protected.GET("/v1/notifications/unread/count", s.getUnreadNotificationsCount)
 	}
 
 	s.router.GET("/api/v1/users", s.listUsers) // working
@@ -323,3 +324,28 @@ func (s *Server) markAllNotificationsAsRead(ctx *gin.Context) {
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }
+
+// getUnreadNotificationsCount handles requests to get the count of unread notifications for the current user
+func (s *Server) getUnreadNotificationsCount(ctx *gin.Context) {
+    meta := logger.GetMetadata(ctx.Request.Context())
+    log := meta.GetLogger()
+    log.Info("Received get unread notifications count request")
+
+    currentUser, ok := ctx.MustGet("currentUser").(db.User)
+    if !ok {
+        log.Error("Failed to get current user from context", errors.New("unauthorized"))
+        ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized")))
+        return
+    }
+    
+    count, err := s.hub.CountUnreadNotifications(ctx, pgtype.UUID{Bytes: currentUser.ID.Bytes, Valid: true})
+    if err != nil {
+        log.Error("Failed to count unread notifications", err)
+        ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+        return
+    }
+    
+    log.Info("Unread notifications count retrieved successfully: %d", count)
+    ctx.JSON(http.StatusOK, gin.H{"count": count})
+}
+
