@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"time"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -110,6 +111,14 @@ func (s *Server) createPost(ctx *gin.Context) {
 		return
 	}
 
+	// Get the wall to check who owns it
+	wall, err := s.hub.GetWall(ctx, wallID)
+	if err != nil {
+		log.Error("Failed to get wall", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	postType := db.PostType(req.PostType)
 	arg := db.CreatePostParams{
 		WallID:   wallID,
@@ -123,6 +132,26 @@ func (s *Server) createPost(ctx *gin.Context) {
 		log.Error("Failed to create post", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
+	}
+
+	// Send notification if someone posts on another user's wall
+	if wall.UserID.Bytes != currentUser.ID.Bytes {
+		// Only send notification if the post author is not the wall owner
+		err = s.SendNotification(
+			ctx,
+			wall.UserID.String(),           // recipient (wall owner)
+			currentUser.ID.String(),        // sender (post author)
+			"wall_post",                    // notification type
+			post.ID.String(),               // entity ID (post ID)
+			fmt.Sprintf("%s posted on your wall", currentUser.Username), // message
+		)
+
+		if err != nil {
+			// Just log the error, don't fail the post creation
+			log.Error("Failed to send wall post notification", err)
+		} else {
+			log.Info("Wall post notification sent to user %s", wall.UserID.String())
+		}
 	}
 
 	log.Info("Post created successfully")

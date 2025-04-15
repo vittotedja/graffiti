@@ -47,3 +47,4 @@ time="2025-04-02T18:15:46+08:00" level=fatal msg="cannot load config: Config Fil
 [31mERRO[0m[2025-04-16T00:35:03+08:00] Server encountered an error: http: Server closed 
 [31mERRO[0m[2025-04-16T01:00:45+08:00] Server encountered an error: http: Server closed 
 [31mERRO[0m[2025-04-16T01:17:22+08:00] Server encountered an error: http: Server closed 
+[31mERRO[0m[2025-04-16T01:29:08+08:00] Server encountered an error: http: Server closed 
