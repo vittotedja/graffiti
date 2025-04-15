@@ -44,3 +44,5 @@ time="2025-04-02T18:15:46+08:00" level=fatal msg="cannot load config: Config Fil
 [31mERRO[0m[2025-04-15T23:42:12+08:00] Failed to send notification                   [31merror[0m="failed to send message to SQS: operation error SQS: SendMessage, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://sqs.ap-southeast-1.amazonaws.com/\": dial tcp 13.251.116.28:443: connect: connection refused" [31mrequest_id[0m=39742c3c-89a5-43f7-987a-4df10512519f [31mroute[0m=/api/v1/friend-requests
 [31mERRO[0m[2025-04-16T00:04:47+08:00] Server encountered an error: http: Server closed 
 [31mERRO[0m[2025-04-16T00:10:49+08:00] Server encountered an error: http: Server closed 
+[31mERRO[0m[2025-04-16T00:35:03+08:00] Server encountered an error: http: Server closed 
+[31mERRO[0m[2025-04-16T01:00:45+08:00] Server encountered an error: http: Server closed 
