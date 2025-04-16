@@ -66,6 +66,7 @@ func TestCreateGetDeleteFriendship(t *testing.T) {
 }
 
 func TestListFriendshipsAndListFriendshipsByUserId(t *testing.T) {
+	cleanupFriendships(t)
 	defer cleanupFriendships(t)
 
 	friendships, err := testHub.ListFriendships(context.Background())
