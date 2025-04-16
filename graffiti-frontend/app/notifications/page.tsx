@@ -25,7 +25,7 @@ export default function NotificationsPage() {
 			try {
 				setLoading(true);
 				const data = await notificationService.getNotifications();
-
+				if (!data) return;
 				// Enhance notifications with sender details from the user object if available
 				const enhancedNotifications = await Promise.all(
 					data.map(async (notification) => {
