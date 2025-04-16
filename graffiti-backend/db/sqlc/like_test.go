@@ -54,7 +54,27 @@ func TestCreateGetDeleteLike(t *testing.T) {
     require.Equal(t, pgtype.UUID{}, deletedLike.ID, "Deleted like ID should be empty")
 }
 
+func cleanupLikes(t *testing.T) {
+	likes, err := testHub.ListLikes(context.Background())
+	require.NoError(t, err, "Error occurred while listing likes before cleanup")
+
+	for _, like := range likes {
+		err := testHub.DeleteLike(context.Background(), DeleteLikeParams{
+			PostID: like.PostID,
+			UserID: like.UserID,
+		})
+		require.NoError(t, err, "Error occurred while deleting like")
+	}
+
+	remainingLikes, err := testHub.ListLikes(context.Background())
+	require.NoError(t, err, "Error occurred while listing likes after cleanup")
+	require.Len(t, remainingLikes, 0, "There are still likes in the database after cleanup")
+}
+
 func TestListLikes(t *testing.T) {
+	cleanupLikes(t)
+	defer cleanupLikes(t)
+	
 	initialLikes, err := testHub.ListLikes(context.Background())
 	require.NoError(t, err)
 	require.Len(t, initialLikes, 0, "Initial likes count should be 0")

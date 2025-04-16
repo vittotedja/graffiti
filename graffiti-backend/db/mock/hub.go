@@ -123,6 +123,21 @@ func (mr *MockHubMockRecorder) BlockUserTx(arg0, arg1, arg2 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BlockUserTx", reflect.TypeOf((*MockHub)(nil).BlockUserTx), arg0, arg1, arg2)
 }
 
+// CountUnreadNotifications mocks base method.
+func (m *MockHub) CountUnreadNotifications(arg0 context.Context, arg1 pgtype.UUID) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountUnreadNotifications", arg0, arg1)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountUnreadNotifications indicates an expected call of CountUnreadNotifications.
+func (mr *MockHubMockRecorder) CountUnreadNotifications(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountUnreadNotifications", reflect.TypeOf((*MockHub)(nil).CountUnreadNotifications), arg0, arg1)
+}
+
 // CreateFriendRequestTx mocks base method.
 func (m *MockHub) CreateFriendRequestTx(arg0 context.Context, arg1, arg2 pgtype.UUID) (db.Friendship, error) {
 	m.ctrl.T.Helper()
@@ -180,6 +195,21 @@ func (m *MockHub) CreateLikeTx(arg0 context.Context, arg1, arg2 pgtype.UUID) err
 func (mr *MockHubMockRecorder) CreateLikeTx(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLikeTx", reflect.TypeOf((*MockHub)(nil).CreateLikeTx), arg0, arg1, arg2)
+}
+
+// CreateNotification mocks base method.
+func (m *MockHub) CreateNotification(arg0 context.Context, arg1 db.CreateNotificationParams) (db.Notification, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateNotification", arg0, arg1)
+	ret0, _ := ret[0].(db.Notification)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateNotification indicates an expected call of CreateNotification.
+func (mr *MockHubMockRecorder) CreateNotification(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNotification", reflect.TypeOf((*MockHub)(nil).CreateNotification), arg0, arg1)
 }
 
 // CreateOrDeleteLikeTx mocks base method.
@@ -283,6 +313,20 @@ func (m *MockHub) DeleteLike(arg0 context.Context, arg1 db.DeleteLikeParams) err
 func (mr *MockHubMockRecorder) DeleteLike(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLike", reflect.TypeOf((*MockHub)(nil).DeleteLike), arg0, arg1)
+}
+
+// DeleteNotification mocks base method.
+func (m *MockHub) DeleteNotification(arg0 context.Context, arg1 pgtype.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteNotification", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteNotification indicates an expected call of DeleteNotification.
+func (mr *MockHubMockRecorder) DeleteNotification(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNotification", reflect.TypeOf((*MockHub)(nil).DeleteNotification), arg0, arg1)
 }
 
 // DeletePost mocks base method.
@@ -444,6 +488,21 @@ func (m *MockHub) GetLike(arg0 context.Context, arg1 db.GetLikeParams) (db.Like,
 func (mr *MockHubMockRecorder) GetLike(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLike", reflect.TypeOf((*MockHub)(nil).GetLike), arg0, arg1)
+}
+
+// GetNotificationsByUser mocks base method.
+func (m *MockHub) GetNotificationsByUser(arg0 context.Context, arg1 pgtype.UUID) ([]db.Notification, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNotificationsByUser", arg0, arg1)
+	ret0, _ := ret[0].([]db.Notification)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNotificationsByUser indicates an expected call of GetNotificationsByUser.
+func (mr *MockHubMockRecorder) GetNotificationsByUser(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNotificationsByUser", reflect.TypeOf((*MockHub)(nil).GetNotificationsByUser), arg0, arg1)
 }
 
 // GetNumberOfFriends mocks base method.
@@ -909,6 +968,34 @@ func (m *MockHub) ListWallsByUser(arg0 context.Context, arg1 pgtype.UUID) ([]db.
 func (mr *MockHubMockRecorder) ListWallsByUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListWallsByUser", reflect.TypeOf((*MockHub)(nil).ListWallsByUser), arg0, arg1)
+}
+
+// MarkAllNotificationsAsRead mocks base method.
+func (m *MockHub) MarkAllNotificationsAsRead(arg0 context.Context, arg1 pgtype.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MarkAllNotificationsAsRead", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// MarkAllNotificationsAsRead indicates an expected call of MarkAllNotificationsAsRead.
+func (mr *MockHubMockRecorder) MarkAllNotificationsAsRead(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MarkAllNotificationsAsRead", reflect.TypeOf((*MockHub)(nil).MarkAllNotificationsAsRead), arg0, arg1)
+}
+
+// MarkNotificationAsRead mocks base method.
+func (m *MockHub) MarkNotificationAsRead(arg0 context.Context, arg1 pgtype.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MarkNotificationAsRead", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// MarkNotificationAsRead indicates an expected call of MarkNotificationAsRead.
+func (mr *MockHubMockRecorder) MarkNotificationAsRead(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MarkNotificationAsRead", reflect.TypeOf((*MockHub)(nil).MarkNotificationAsRead), arg0, arg1)
 }
 
 // PinUnpinWall mocks base method.

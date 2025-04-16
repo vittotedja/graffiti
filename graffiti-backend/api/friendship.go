@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -88,6 +89,21 @@ func (s *Server) createFriendRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
+	// Send notification to the recipient
+	err = s.SendNotification(
+        ctx,
+        toUserID.String(),
+        user.ID.String(),
+        "friend_request",
+		friendship.ID.String(),
+        fmt.Sprintf("%s sent you a friend request", user.Username),
+    )
+    if err != nil {
+        // Just log the error, don't fail the request
+        log.Error("Failed to send notification", err)
+    }
+
 
 	log.Info("Friend request created successfully")
 	ctx.JSON(http.StatusOK, friendship)
@@ -187,6 +203,31 @@ func (s *Server) acceptFriendRequest(ctx *gin.Context) {
 		log.Error("Failed to accept friend request", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
+	}
+
+	// Determine who sent the request (the other user)
+	var senderID string
+	if currentUser.ID == friendships.FromUser {
+		senderID = friendships.ToUser.String()
+	} else {
+		senderID = friendships.FromUser.String()
+	}
+
+	// Send notification to the sender
+	err = s.SendNotification(
+		ctx,
+		senderID,                                           // recipient (original sender of the request)
+		currentUser.ID.String(),                            // sender (current user who accepted)
+		"friend_request_accepted",                          // notification type
+		currentUser.ID.String(),                            // entity ID (using the accepter's ID as the entity)
+		fmt.Sprintf("%s accepted your friend request", currentUser.Username), // message
+	)
+
+	if err != nil {
+		// Just log the error, don't fail the request
+		log.Error("Failed to send friend request acceptance notification", err)
+	} else {
+		log.Info("Friend request acceptance notification sent to user %s", senderID)
 	}
 
 	log.Info("Friend request accepted successfully")

@@ -390,3 +390,13 @@ func (h *SQLHub) RefreshMaterializedViews(ctx context.Context) error {
 	_, err := h.db.Exec(ctx, "REFRESH MATERIALIZED VIEW accepted_friendships_mv")
 	return err
 }
+
+// CountUnreadNotifications counts unread notifications for a user
+func (h *SQLHub) CountUnreadNotifications(ctx context.Context, userID pgtype.UUID) (int64, error) {
+	var count int64
+	err := h.db.QueryRow(ctx, "SELECT COUNT(*) FROM notifications WHERE recipient_id = $1 AND is_read = false", userID).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

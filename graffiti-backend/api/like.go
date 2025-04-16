@@ -53,6 +53,33 @@ func (s *Server) updateLike(ctx *gin.Context) {
 	action := "unliked"
 	if liked {
 		action = "liked"
+
+		// Only send notification when a post is liked (not when unliked)
+		// Get post details to find the post owner
+		post, err := s.hub.GetPost(ctx, postID)
+		if err != nil {
+			log.Error("Failed to get post details for notification", err)
+		} else {
+			// Only send notification if the post owner is not the same as the liker
+			if post.Author.Bytes != currentUser.ID.Bytes {
+				// Send notification to post owner
+				err = s.SendNotification(
+					ctx,
+					post.Author.String(),           // recipient (post owner)
+					currentUser.ID.String(),        // sender (user who liked)
+					"post_like",                    // notification type
+					post.WallID.String(),           // entity ID (wall ID)
+					fmt.Sprintf("%s liked your post", currentUser.Username), // message
+				)
+
+				if err != nil {
+					log.Error("Failed to send like notification", err)
+					// Continue execution - don't fail the like operation if notification fails
+				} else {
+					log.Info("Like notification sent to user %s", post.Author.String())
+				}
+			}
+		}
 	}
 
 	log.Info("Post %s successfully", action)

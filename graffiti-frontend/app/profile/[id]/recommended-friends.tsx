@@ -34,6 +34,7 @@ export default function RecommendedFriends({
 				});
 				if (!response.ok) throw new Error("Something went wrong");
 				const data = await response.json();
+				if (!data) return [];
 				const filteredData = data.filter(
 					(user: UserWithMutualFriends) => user.id !== friendId
 				);

@@ -393,8 +393,9 @@ func TestSearchUsersILike(t *testing.T) {
 
 	// Arrange - create a user that should match with ILIKE
 	targetUser := createRandomUser(t)
-	targetUser.Username = "vid"
-	targetUser.Fullname = pgtype.Text{String: "Vid Tonic", Valid: true}
+	uniqueUsername := "vid_" + util.RandomString(6)
+	targetUser.Username = uniqueUsername
+	targetUser.Fullname = pgtype.Text{String: "Vid Tonic " + util.RandomString(4), Valid: true}
 
 	_, err := testHub.UpdateUser(ctx, UpdateUserParams{
 		ID:             targetUser.ID,
@@ -420,7 +421,7 @@ func TestSearchUsersILike(t *testing.T) {
 	require.NoError(t, err)
 
 	// Act - ILIKE match (short term, <3)
-	searchTerm := pgtype.Text{String: "Vid Tonic", Valid: true}
+	searchTerm := pgtype.Text{String: targetUser.Username, Valid: true}
 	results, err := testHub.SearchUsersILike(ctx, searchTerm)
 	require.NoError(t, err)
 	require.NotEmpty(t, results, "Expected matches with ILIKE search")
@@ -441,8 +442,9 @@ func TestSearchUsersTrigram(t *testing.T) {
 
 	// Arrange - create a user that should match trigram search
 	targetUser := createRandomUser(t)
-	targetUser.Username = "vittotedja"
-	targetUser.Fullname = pgtype.Text{String: "Vitto Tedja", Valid: true}
+	uniqueUsername := "vittotedja_" + util.RandomString(6)
+	targetUser.Username = uniqueUsername
+	targetUser.Fullname = pgtype.Text{String: "Vitto Tedja " + util.RandomString(4), Valid: true}
 
 	_, err := testHub.UpdateUser(ctx, UpdateUserParams{
 		ID:             targetUser.ID,
@@ -468,7 +470,7 @@ func TestSearchUsersTrigram(t *testing.T) {
 	require.NoError(t, err)
 
 	// Act - trigram search
-	results, err := testHub.SearchUsersTrigram(ctx, "vit")
+	results, err := testHub.SearchUsersTrigram(ctx, targetUser.Username[:5])
 	require.NoError(t, err)
 	require.NotEmpty(t, results, "Expected results from trigram search")
 

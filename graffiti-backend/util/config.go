@@ -22,6 +22,8 @@ type Config struct {
 	FrontendURL              string `mapstructure:"FRONTEND_URL"`
 	TokenSymmetricKey        string `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	IsProduction             bool   `mapstructure:"IS_PRODUCTION"`
+	SQSQueueURL             string `mapstructure:"SQS_QUEUE_URL"`
+	SQSDeadLetterURL		string `mapstructure:"SQS_DLQ_URL"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

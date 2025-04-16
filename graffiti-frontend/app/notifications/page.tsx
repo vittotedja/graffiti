@@ -1,99 +1,126 @@
+"use client";
+import {useEffect, useState} from "react";
 import Link from "next/link";
-import {
-	ChevronLeft,
-	UserPlus,
-	Heart,
-	MessageSquare,
-	ImageIcon,
-	Check,
-	X,
-} from "lucide-react";
+import {ChevronLeft, UserPlus, Heart, ImageIcon, Loader2} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Card, CardContent} from "@/components/ui/card";
+import {notificationService} from "@/services/notificationService";
+import {useUser} from "@/hooks/useUser";
+import {fetchWithAuth} from "@/lib/auth";
+import {toast} from "sonner";
+import {Notification} from "@/types/notification";
 
 export default function NotificationsPage() {
-	// Mock data for notifications
-	const notifications = [
-		{
-			id: 1,
-			type: "post",
-			user: {
-				name: "Friend Name",
-				username: "friendname",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-			content: 'posted on your "Birthday Wall"',
-			time: "2h ago",
-			read: false,
-		},
-		{
-			id: 2,
-			type: "friend_request",
-			user: {
-				name: "Friend Name 2",
-				username: "friendname2",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-			content: "wants to befriend you!",
-			time: "5h ago",
-			read: false,
-		},
-		{
-			id: 3,
-			type: "friend_request",
-			user: {
-				name: "Friend Name 3",
-				username: "friendname3",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-			content: "wants to befriend you!",
-			time: "1d ago",
-			read: false,
-		},
-		{
-			id: 4,
-			type: "like",
-			user: {
-				name: "Friend Name 4",
-				username: "friendname4",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-			content: "liked your post on Other Friend Name's wall",
-			time: "2d ago",
-			read: true,
-		},
-		{
-			id: 5,
-			type: "friend_accept",
-			user: {
-				name: "Friend Name 5",
-				username: "friendname5",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-			content: "accepts your friend request",
-			time: "3d ago",
-			read: true,
-		},
-	];
+	const {user, loading: userLoading} = useUser(true); // Redirect if not logged in
+	const [notifications, setNotifications] = useState<Notification[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		// Only fetch notifications if user is logged in
+		if (!user || userLoading) return;
+
+		const fetchNotifications = async () => {
+			try {
+				setLoading(true);
+				const data = await notificationService.getNotifications();
+				if (!data) return;
+				// Enhance notifications with sender details from the user object if available
+				const enhancedNotifications = await Promise.all(
+					data.map(async (notification) => {
+						// If the sender is the current user, we already have the details
+						if (notification.sender_id === user.id) {
+							return {
+								...notification,
+								sender_name: user.fullname,
+								sender_username: user.username,
+								sender_avatar: user.profile_picture,
+							};
+						}
+
+						// Otherwise, we need to fetch the sender details
+						try {
+							const response = await fetchWithAuth(
+								`/api/v1/users/${notification.sender_id}`
+							);
+							if (response.ok) {
+								const sender = await response.json();
+								return {
+									...notification,
+									sender_name: sender.fullname,
+									sender_username: sender.username,
+									sender_avatar: sender.profile_picture,
+								};
+							}
+						} catch (error) {
+							console.error(
+								`Failed to fetch sender details for notification ${notification.id}:`,
+								error
+							);
+						}
+
+						// Return the original notification if we couldn't fetch sender details
+						return notification;
+					})
+				);
+
+				setNotifications(enhancedNotifications);
+				// Auto-mark all notifications as read when the page loads
+				await markAllAsRead();
+			} catch (error) {
+				console.error("Failed to fetch notifications:", error);
+				toast.error("Failed to load notifications");
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchNotifications();
+	}, [user, userLoading]);
+
+	// Function to mark all notifications as read
+	const markAllAsRead = async () => {
+		try {
+			await notificationService.markAllAsRead();
+			// Update local state
+			setNotifications((prevNotifications) =>
+				prevNotifications.map((notification) => ({
+					...notification,
+					is_read: true,
+				}))
+			);
+		} catch (error) {
+			console.error("Failed to mark all notifications as read:", error);
+			// Don't show a toast error here to avoid disrupting the user experience
+		}
+	};
 
 	// Function to render notification icon based on type
 	const getNotificationIcon = (type: string) => {
 		switch (type) {
-			case "post":
+			case "wall_post":
 				return <ImageIcon className="h-4 w-4" />;
 			case "friend_request":
-			case "friend_accept":
 				return <UserPlus className="h-4 w-4" />;
-			case "like":
+			case "friend_request_accepted":
+				return <UserPlus className="h-4 w-4" />;
+			case "post_like":
 				return <Heart className="h-4 w-4" />;
-			case "comment":
-				return <MessageSquare className="h-4 w-4" />;
 			default:
 				return <ImageIcon className="h-4 w-4" />;
 		}
 	};
+
+	if (userLoading || loading) {
+		return (
+			<div className="flex justify-center items-center min-h-screen">
+				<Loader2 className="h-8 w-8 animate-spin text-primary" />
+			</div>
+		);
+	}
+
+	if (!user) return null; // This shouldn't happen due to the redirect in useUser
 
 	return (
 		<div className="min-h-screen bg-[url('/images/concrete-texture.jpg')] bg-cover">
@@ -116,58 +143,89 @@ export default function NotificationsPage() {
 						<Card
 							key={notification.id}
 							className={`border-2 ${
-								notification.read ? "border-primary/10" : "border-primary/30"
+								notification.is_read ? "border-primary/10" : "border-primary/30"
 							} bg-black/5 backdrop-blur-sm`}
 						>
 							<CardContent className="p-4">
 								<div className="flex items-center gap-3">
 									<div
 										className={`p-2 rounded-full ${
-											notification.read ? "bg-muted" : "bg-primary/20"
+											notification.is_read ? "bg-muted" : "bg-primary/20"
 										}`}
 									>
 										{getNotificationIcon(notification.type)}
 									</div>
-									<Avatar>
-										<AvatarImage
-											src={notification.user.avatar}
-											alt={notification.user.name}
-										/>
-										<AvatarFallback>
-											{notification.user.name.charAt(0)}
-										</AvatarFallback>
-									</Avatar>
+									<Link href={`/profile/${notification.sender_id}`}>
+										<Avatar>
+											<AvatarImage
+												src={notification.sender_avatar}
+												alt={notification.sender_name}
+											/>
+											<AvatarFallback>
+												{notification.sender_name
+													? notification.sender_name.charAt(0)
+													: "U"}
+											</AvatarFallback>
+										</Avatar>
+									</Link>
 									<div className="flex-1">
 										<div className="flex items-center gap-1">
-											<span className="font-medium">
-												@{notification.user.username}
+											{/* <span className="font-medium">
+											</span> */}
+											<span>
+												@
+												{notification.message
+													? notification.message
+													: "Message not available."}
 											</span>
-											<span>{notification.content}</span>
 										</div>
-										<div className="text-xs text-muted-foreground">
-											{notification.time}
-										</div>
+										{/* <div className="text-xs text-muted-foreground">
+											{formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+										</div> */}
 									</div>
 
 									{notification.type === "friend_request" && (
-										<div className="flex items-center gap-2">
-											<Button size="sm" className="h-8 w-8 p-0 rounded-full">
-												<Check className="h-4 w-4" />
+										// <div className="flex items-center gap-2">
+										// 	<Button size="sm" className="h-8 w-8 p-0 rounded-full">
+										// 		<Check className="h-4 w-4" />
+										// 	</Button>
+										// 	<Button
+										// 		size="sm"
+										// 		variant="outline"
+										// 		className="h-8 w-8 p-0 rounded-full"
+										// 	>
+										// 		<X className="h-4 w-4" />
+										// 	</Button>
+										// </div>
+										<Link href={`/friends`}>
+											<Button size="sm" variant="outline">
+												View Friend Request
 											</Button>
-											<Button
-												size="sm"
-												variant="outline"
-												className="h-8 w-8 p-0 rounded-full"
-											>
-												<X className="h-4 w-4" />
-											</Button>
-										</div>
+										</Link>
 									)}
 
-									{notification.type === "friend_accept" && (
-										<Button size="sm" variant="outline">
-											View Profile
-										</Button>
+									{notification.type === "friend_request_accepted" && (
+										<Link href={`/profile/${notification.sender_id}`}>
+											<Button size="sm" variant="outline">
+												View Profile
+											</Button>
+										</Link>
+									)}
+
+									{notification.type === "wall_post" && (
+										<Link href={`/wall/${notification.entity_id}`}>
+											<Button size="sm" variant="outline">
+												View Post
+											</Button>
+										</Link>
+									)}
+
+									{notification.type === "post_like" && (
+										<Link href={`/wall/${notification.entity_id}`}>
+											<Button size="sm" variant="outline">
+												View Liked Post
+											</Button>
+										</Link>
 									)}
 								</div>
 							</CardContent>

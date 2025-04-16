@@ -3,11 +3,11 @@
 import {useState, useEffect} from "react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {Bell, Menu, Home, Users, Compass} from "lucide-react";
+import {Menu, Home, Users, Compass} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
-// import {Input} from "@/components/ui/input";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {NotificationBadge} from "@/components/notification-badge";
 import {ThemeToggle} from "@/components/theme-toggle";
 import {
 	Sheet,
@@ -30,10 +30,7 @@ import {useUser} from "@/hooks/useUser";
 export function Navbar() {
 	const pathname = usePathname();
 	const {user, loading} = useUser(true);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [hasNotifications, setHasNotifications] = useState(true);
 	const [isScrolled, setIsScrolled] = useState(false);
-	// const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
 	// Check if the current path matches the link
 	const isActive = (path: string) => {
@@ -177,19 +174,7 @@ export function Navbar() {
 					{/* Search, Notifications, and Profile */}
 					<div className="flex items-center gap-2">
 						{/* Notifications */}
-						<Link href="/notifications">
-							<Button
-								variant="ghost"
-								size="icon"
-								className="relative"
-								aria-label="Notifications"
-							>
-								<Bell className="h-5 w-5" />
-								{hasNotifications && (
-									<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
-								)}
-							</Button>
-						</Link>
+						<NotificationBadge />
 
 						{/* Theme Toggle (Desktop) */}
 						<div className="hidden md:block">

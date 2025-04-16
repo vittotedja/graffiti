@@ -38,11 +38,15 @@ func TestCreatePostAPI(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"wall_id":   wall.ID.String(),
+				"wall_id":   wall.ID,
 				"media_url": post.MediaUrl.String,
-				"post_type": validPostType, 
+				"post_type": validPostType,
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
+				mockHub.EXPECT().
+					GetWall(gomock.Any(), wall.ID).
+					Return(wall, nil)
+
 				mockHub.EXPECT().
 					CreatePost(gomock.Any(), gomock.Any()).
 					DoAndReturn(func(_ interface{}, params db.CreatePostParams) (db.Post, error) {
@@ -114,6 +118,9 @@ func TestCreatePostAPI(t *testing.T) {
 				"post_type": validPostType,
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
+				mockHub.EXPECT().
+					GetWall(gomock.Any(), wall.ID).
+					Return(wall, nil)
 				mockHub.EXPECT().
 					CreatePost(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -250,7 +257,7 @@ func TestGetPostAPI(t *testing.T) {
 func TestListPostsAPI(t *testing.T) {
 	user, _ := randomUser(t)
 	wall := randomWall(t, user.ID)
-	
+
 	n := 5
 	posts := make([]db.Post, n)
 	for i := 0; i < n; i++ {
@@ -314,7 +321,7 @@ func TestListPostsAPI(t *testing.T) {
 func TestListPostsByWallAPI(t *testing.T) {
 	user, _ := randomUser(t)
 	wall := randomWall(t, user.ID)
-	
+
 	n := 5
 	posts := make([]db.Post, n)
 	for i := 0; i < n; i++ {
@@ -397,7 +404,7 @@ func TestListPostsByWallAPI(t *testing.T) {
 func TestListPostsByWallWithAuthorsDetailsAPI(t *testing.T) {
 	user, _ := randomUser(t)
 	wall := randomWall(t, user.ID)
-	
+
 	n := 5
 	postsWithAuthors := make([]db.ListPostsByWallWithAuthorsDetailsRow, n)
 	for i := 0; i < n; i++ {
@@ -438,10 +445,10 @@ func TestListPostsByWallWithAuthorsDetailsAPI(t *testing.T) {
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				
+
 				data, err := io.ReadAll(recorder.Body)
 				require.NoError(t, err)
-				
+
 				var gotResponse []PostResponseWithAuthor
 				err = json.Unmarshal(data, &gotResponse)
 				require.NoError(t, err)
@@ -506,7 +513,7 @@ func TestListPostsByWallWithAuthorsDetailsAPI(t *testing.T) {
 func TestGetHighlightedPostsAPI(t *testing.T) {
 	user, _ := randomUser(t)
 	wall := randomWall(t, user.ID)
-	
+
 	n := 5
 	posts := make([]db.Post, n)
 	for i := 0; i < n; i++ {
@@ -572,7 +579,7 @@ func TestGetHighlightedPostsAPI(t *testing.T) {
 func TestGetHighlightedPostsByWallAPI(t *testing.T) {
 	user, _ := randomUser(t)
 	wall := randomWall(t, user.ID)
-	
+
 	n := 5
 	posts := make([]db.Post, n)
 	for i := 0; i < n; i++ {
@@ -658,7 +665,7 @@ func TestUpdatePostAPI(t *testing.T) {
 	user, _ := randomUser(t)
 	wall := randomWall(t, user.ID)
 	post := randomPost(t, wall.ID, user.ID)
-	
+
 	updatedPost := post
 	newMediaURL := "https://updated-url.com/image.jpg"
 	updatedPost.MediaUrl.String = newMediaURL
@@ -681,7 +688,7 @@ func TestUpdatePostAPI(t *testing.T) {
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(post, nil)
-					
+
 				mockHub.EXPECT().
 					UpdatePost(gomock.Any(), gomock.Any()).
 					DoAndReturn(func(_ interface{}, params db.UpdatePostParams) (db.Post, error) {
@@ -724,7 +731,7 @@ func TestUpdatePostAPI(t *testing.T) {
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(db.Post{}, db.ErrRecordNotFound)
-					
+
 				mockHub.EXPECT().
 					UpdatePost(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -744,7 +751,7 @@ func TestUpdatePostAPI(t *testing.T) {
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(post, nil)
-					
+
 				mockHub.EXPECT().
 					UpdatePost(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -788,7 +795,7 @@ func TestHighlightPostAPI(t *testing.T) {
 	wall := randomWall(t, user.ID)
 	post := randomPost(t, wall.ID, user.ID)
 	post.IsHighlighted.Bool = false
-	
+
 	highlightedPost := post
 	highlightedPost.IsHighlighted.Bool = true
 
@@ -825,7 +832,7 @@ func TestHighlightPostAPI(t *testing.T) {
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
-			}, 
+			},
 		},
 		{
 			name:   "InternalError",
@@ -870,7 +877,7 @@ func TestUnhighlightPostAPI(t *testing.T) {
 	wall := randomWall(t, user.ID)
 	post := randomPost(t, wall.ID, user.ID)
 	post.IsHighlighted.Bool = true
-	
+
 	unhighlightedPost := post
 	unhighlightedPost.IsHighlighted.Bool = false
 
@@ -963,25 +970,25 @@ func TestDeletePostAPI(t *testing.T) {
 		checkResponse func(recorder *httptest.ResponseRecorder)
 	}{
 		{
-			name:   "OK_PostOwner",
-			postID: post.ID.String(),
+			name:        "OK_PostOwner",
+			postID:      post.ID.String(),
 			currentUser: user,
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(post, nil)
-					
+
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(wall, nil)
-					
+
 				mockHub.EXPECT().
 					DeletePost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(nil)
-					
+
 				mockHub.EXPECT().
 					ListPostsByWall(gomock.Any(), gomock.Any()).
 					AnyTimes().
@@ -992,25 +999,25 @@ func TestDeletePostAPI(t *testing.T) {
 			},
 		},
 		{
-			name:   "OK_WallOwner",
-			postID: otherUserPost.ID.String(),
+			name:        "OK_WallOwner",
+			postID:      otherUserPost.ID.String(),
 			currentUser: user, // Wall owner but not post owner
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(otherUserPost, nil)
-					
+
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(wall, nil)
-					
+
 				mockHub.EXPECT().
 					DeletePost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(nil)
-					
+
 				mockHub.EXPECT().
 					ListPostsByWall(gomock.Any(), gomock.Any()).
 					AnyTimes().
@@ -1021,23 +1028,23 @@ func TestDeletePostAPI(t *testing.T) {
 			},
 		},
 		{
-			name:   "Unauthorized",
-			postID: otherUserPost.ID.String(),
+			name:        "Unauthorized",
+			postID:      otherUserPost.ID.String(),
 			currentUser: otherUser, // Neither wall owner nor post owner
 			setupMock: func(mockHub *mockdb.MockHub) {
 				differentWall := wall
-				differentWall.UserID = user.ID 
-				
+				differentWall.UserID = user.ID
+
 				mockHub.EXPECT().
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(post, nil)
-					
+
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(differentWall, nil)
-					
+
 				mockHub.EXPECT().
 					DeletePost(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -1047,8 +1054,8 @@ func TestDeletePostAPI(t *testing.T) {
 			},
 		},
 		{
-			name:   "InvalidID",
-			postID: "invalid-id",
+			name:        "InvalidID",
+			postID:      "invalid-id",
 			currentUser: user,
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
@@ -1066,15 +1073,15 @@ func TestDeletePostAPI(t *testing.T) {
 			},
 		},
 		{
-			name:   "PostNotFound",
-			postID: uuid.New().String(),
+			name:        "PostNotFound",
+			postID:      uuid.New().String(),
 			currentUser: user,
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(db.Post{}, db.ErrRecordNotFound)
-					
+
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -1087,20 +1094,20 @@ func TestDeletePostAPI(t *testing.T) {
 			},
 		},
 		{
-			name:   "WallNotFound",
-			postID: post.ID.String(),
+			name:        "WallNotFound",
+			postID:      post.ID.String(),
 			currentUser: user,
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(post, nil)
-					
+
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(db.Wall{}, db.ErrRecordNotFound)
-					
+
 				mockHub.EXPECT().
 					DeletePost(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -1110,20 +1117,20 @@ func TestDeletePostAPI(t *testing.T) {
 			},
 		},
 		{
-			name:   "DeleteError",
-			postID: post.ID.String(),
+			name:        "DeleteError",
+			postID:      post.ID.String(),
 			currentUser: user,
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetPost(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(post, nil)
-					
+
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(wall, nil)
-					
+
 				mockHub.EXPECT().
 					DeletePost(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -1165,25 +1172,25 @@ func TestDeletePostAPI(t *testing.T) {
 func randomPost(t *testing.T, wallID pgtype.UUID, authorID pgtype.UUID) db.Post {
 	id := pgtype.UUID{}
 	id.Scan(uuid.New().String())
-	
+
 	mediaURL := pgtype.Text{}
 	mediaURL.Scan(fmt.Sprintf("https://example.com/images/%s.jpg", util.RandomString(10)))
-	
+
 	postType := db.NullPostType{}
 	postType.Scan(db.PostTypeMedia)
-	
+
 	isHighlighted := pgtype.Bool{}
 	isHighlighted.Scan(false)
-	
+
 	likesCount := pgtype.Int4{}
 	likesCount.Scan(0)
-	
+
 	isDeleted := pgtype.Bool{}
 	isDeleted.Scan(false)
-	
+
 	createdAt := pgtype.Timestamp{}
 	createdAt.Scan(time.Now())
-	
+
 	return db.Post{
 		ID:            id,
 		WallID:        wallID,
@@ -1235,7 +1242,7 @@ func requireBodyMatchPostsResponse(t *testing.T, body *bytes.Buffer, posts []db.
 	for _, resp := range gotResponses {
 		originalPost, exists := postMap[resp.ID]
 		require.True(t, exists)
-		
+
 		require.Equal(t, originalPost.WallID.String(), resp.WallID)
 		require.Equal(t, originalPost.Author.String(), resp.Author)
 		require.Equal(t, originalPost.MediaUrl.String, resp.MediaURL)

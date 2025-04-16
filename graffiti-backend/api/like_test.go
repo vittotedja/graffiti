@@ -37,6 +37,10 @@ func TestUpdateLikeAPI(t *testing.T) {
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
+					GetPost(gomock.Any(), post.ID).
+					Return(post, nil)
+
+				mockHub.EXPECT().
 					CreateOrDeleteLikeTx(gomock.Any(), gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(true, nil) // true for liked
@@ -398,7 +402,7 @@ func TestListLikesAPI(t *testing.T) {
 // TestListLikesByPostAPI tests the listLikesByPost handler
 func TestListLikesByPostAPI(t *testing.T) {
 	post := randomPost(t, pgtype.UUID{}, pgtype.UUID{})
-	
+
 	n := 5
 	likes := make([]db.Like, n)
 	for i := 0; i < n; i++ {
@@ -413,7 +417,7 @@ func TestListLikesByPostAPI(t *testing.T) {
 		checkResponse func(recorder *httptest.ResponseRecorder)
 	}{
 		{
-			name: "OK",
+			name:   "OK",
 			postID: post.ID.String(),
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
@@ -481,7 +485,7 @@ func TestListLikesByPostAPI(t *testing.T) {
 // TestListLikesByUserAPI tests the listLikesByUser handler
 func TestListLikesByUserAPI(t *testing.T) {
 	user, _ := randomUser(t)
-	
+
 	n := 5
 	likes := make([]db.Like, n)
 	for i := 0; i < n; i++ {
@@ -566,19 +570,19 @@ func randomLike(t *testing.T) db.Like {
 	id := pgtype.UUID{}
 	err := id.Scan(uuid.New().String())
 	require.NoError(t, err)
-	
+
 	postID := pgtype.UUID{}
 	err = postID.Scan(uuid.New().String())
 	require.NoError(t, err)
-	
+
 	userID := pgtype.UUID{}
 	err = userID.Scan(uuid.New().String())
 	require.NoError(t, err)
-	
+
 	likedAt := pgtype.Timestamp{}
 	err = likedAt.Scan(time.Now())
 	require.NoError(t, err)
-	
+
 	return db.Like{
 		ID:      id,
 		PostID:  postID,
@@ -591,14 +595,14 @@ func randomLike(t *testing.T) db.Like {
 func requireBodyMatchLikes(t *testing.T, body *bytes.Buffer, likes []db.Like) {
 	data, err := json.Marshal(likes)
 	require.NoError(t, err)
-	
+
 	var expected []interface{}
 	err = json.Unmarshal(data, &expected)
 	require.NoError(t, err)
-	
+
 	var got []interface{}
 	err = json.Unmarshal(body.Bytes(), &got)
 	require.NoError(t, err)
-	
+
 	require.Equal(t, len(expected), len(got))
 }

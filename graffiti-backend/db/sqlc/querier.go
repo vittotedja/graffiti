@@ -15,14 +15,17 @@ type Querier interface {
 	AddLikesCount(ctx context.Context, id pgtype.UUID) (Post, error)
 	ArchiveWall(ctx context.Context, id pgtype.UUID) error
 	BlockFriendship(ctx context.Context, id pgtype.UUID) (Friendship, error)
+	CountUnreadNotifications(ctx context.Context, recipientID pgtype.UUID) (int64, error)
 	CreateFriendship(ctx context.Context, arg CreateFriendshipParams) (Friendship, error)
 	CreateLike(ctx context.Context, arg CreateLikeParams) (Like, error)
+	CreateNotification(ctx context.Context, arg CreateNotificationParams) (Notification, error)
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateTestWall(ctx context.Context, arg CreateTestWallParams) (Wall, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateWall(ctx context.Context, arg CreateWallParams) (Wall, error)
 	DeleteFriendship(ctx context.Context, id pgtype.UUID) error
 	DeleteLike(ctx context.Context, arg DeleteLikeParams) error
+	DeleteNotification(ctx context.Context, id pgtype.UUID) error
 	DeletePost(ctx context.Context, id pgtype.UUID) error
 	DeleteUser(ctx context.Context, id pgtype.UUID) error
 	DeleteWall(ctx context.Context, id pgtype.UUID) error
@@ -33,6 +36,7 @@ type Querier interface {
 	GetHighlightedPosts(ctx context.Context) ([]Post, error)
 	GetHighlightedPostsByWall(ctx context.Context, wallID pgtype.UUID) ([]Post, error)
 	GetLike(ctx context.Context, arg GetLikeParams) (Like, error)
+	GetNotificationsByUser(ctx context.Context, recipientID pgtype.UUID) ([]Notification, error)
 	GetNumberOfFriends(ctx context.Context, fromUser pgtype.UUID) (int64, error)
 	GetNumberOfLikesByPost(ctx context.Context, postID pgtype.UUID) (int64, error)
 	GetNumberOfMutualFriends(ctx context.Context, arg GetNumberOfMutualFriendsParams) (int64, error)
@@ -60,6 +64,8 @@ type Querier interface {
 	ListUsers(ctx context.Context) ([]User, error)
 	ListWalls(ctx context.Context) ([]Wall, error)
 	ListWallsByUser(ctx context.Context, userID pgtype.UUID) ([]Wall, error)
+	MarkAllNotificationsAsRead(ctx context.Context, recipientID pgtype.UUID) error
+	MarkNotificationAsRead(ctx context.Context, id pgtype.UUID) error
 	PinUnpinWall(ctx context.Context, id pgtype.UUID) (Wall, error)
 	PrivatizeWall(ctx context.Context, id pgtype.UUID) (Wall, error)
 	PublicizeWall(ctx context.Context, id pgtype.UUID) (Wall, error)
