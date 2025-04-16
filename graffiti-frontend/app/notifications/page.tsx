@@ -1,103 +1,96 @@
 "use client";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
-import {
-	ChevronLeft,
-	UserPlus,
-	Heart,
-	MessageSquare,
-	ImageIcon,
-	Check,
-	X,
-	Loader2,
-} from "lucide-react";
+import {ChevronLeft, UserPlus, Heart, ImageIcon, Loader2} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Card, CardContent} from "@/components/ui/card";
-import { notificationService } from "@/services/notificationService";
-import { useUser } from "@/hooks/useUser";
-import { formatDistanceToNow, set } from "date-fns";
-import { useRouter } from "next/navigation";
-import { fetchWithAuth } from "@/lib/auth";
-import { toast } from "sonner";
-import { Notification } from "@/types/notification";
+import {notificationService} from "@/services/notificationService";
+import {useUser} from "@/hooks/useUser";
+import {fetchWithAuth} from "@/lib/auth";
+import {toast} from "sonner";
+import {Notification} from "@/types/notification";
 
 export default function NotificationsPage() {
-	const { user, loading: userLoading } = useUser(true); // Redirect if not logged in
-  	const [notifications, setNotifications] = useState<Notification[]>([]);
-  	const [loading, setLoading] = useState(true);
-  	const router = useRouter();
-	
-	  useEffect(() => {
+	const {user, loading: userLoading} = useUser(true); // Redirect if not logged in
+	const [notifications, setNotifications] = useState<Notification[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
 		// Only fetch notifications if user is logged in
 		if (!user || userLoading) return;
-		
+
 		const fetchNotifications = async () => {
-		  try {
-			setLoading(true);
-			const data = await notificationService.getNotifications();
-			
-			// Enhance notifications with sender details from the user object if available
-			const enhancedNotifications = await Promise.all(
-			  data.map(async (notification) => {
-				// If the sender is the current user, we already have the details
-				if (notification.sender_id === user.id) {
-				  return {
-					...notification,
-					sender_name: user.fullname,
-					sender_username: user.username,
-					sender_avatar: user.profile_picture,
-				  };
-				}
-				
-				// Otherwise, we need to fetch the sender details
-				try {
-				  const response = await fetchWithAuth(`/api/v1/users/${notification.sender_id}`);
-				  if (response.ok) {
-					const sender = await response.json();
-					return {
-					  ...notification,
-					  sender_name: sender.fullname,
-					  sender_username: sender.username,
-					  sender_avatar: sender.profile_picture,
-					};
-				  }
-				} catch (error) {
-				  console.error(`Failed to fetch sender details for notification ${notification.id}:`, error);
-				}
-				
-				// Return the original notification if we couldn't fetch sender details
-				return notification;
-			  })
-			);
-			
-			setNotifications(enhancedNotifications);
-			// Auto-mark all notifications as read when the page loads
-			await markAllAsRead();
-		  } catch (error) {
-			console.error("Failed to fetch notifications:", error);
-			toast.error("Failed to load notifications");
-		  } finally {
-			setLoading(false);
-		  }
+			try {
+				setLoading(true);
+				const data = await notificationService.getNotifications();
+
+				// Enhance notifications with sender details from the user object if available
+				const enhancedNotifications = await Promise.all(
+					data.map(async (notification) => {
+						// If the sender is the current user, we already have the details
+						if (notification.sender_id === user.id) {
+							return {
+								...notification,
+								sender_name: user.fullname,
+								sender_username: user.username,
+								sender_avatar: user.profile_picture,
+							};
+						}
+
+						// Otherwise, we need to fetch the sender details
+						try {
+							const response = await fetchWithAuth(
+								`/api/v1/users/${notification.sender_id}`
+							);
+							if (response.ok) {
+								const sender = await response.json();
+								return {
+									...notification,
+									sender_name: sender.fullname,
+									sender_username: sender.username,
+									sender_avatar: sender.profile_picture,
+								};
+							}
+						} catch (error) {
+							console.error(
+								`Failed to fetch sender details for notification ${notification.id}:`,
+								error
+							);
+						}
+
+						// Return the original notification if we couldn't fetch sender details
+						return notification;
+					})
+				);
+
+				setNotifications(enhancedNotifications);
+				// Auto-mark all notifications as read when the page loads
+				await markAllAsRead();
+			} catch (error) {
+				console.error("Failed to fetch notifications:", error);
+				toast.error("Failed to load notifications");
+			} finally {
+				setLoading(false);
+			}
 		};
-	
+
 		fetchNotifications();
-	  }, [user, userLoading]);
+	}, [user, userLoading]);
 
 	// Function to mark all notifications as read
 	const markAllAsRead = async () => {
 		try {
 			await notificationService.markAllAsRead();
 			// Update local state
-			setNotifications(prevNotifications => 
-				prevNotifications.map(notification => ({
-				...notification,
-				is_read: true
+			setNotifications((prevNotifications) =>
+				prevNotifications.map((notification) => ({
+					...notification,
+					is_read: true,
 				}))
 			);
-			} catch (error) {
+		} catch (error) {
 			console.error("Failed to mark all notifications as read:", error);
 			// Don't show a toast error here to avoid disrupting the user experience
 		}
@@ -106,24 +99,24 @@ export default function NotificationsPage() {
 	// Function to render notification icon based on type
 	const getNotificationIcon = (type: string) => {
 		switch (type) {
-		  case "wall_post":
-			return <ImageIcon className="h-4 w-4" />;
-		  case "friend_request":
-			return <UserPlus className="h-4 w-4" />;
-		  case "friend_request_accepted":
-			return <UserPlus className="h-4 w-4" />;
-		  case "post_like":
-			return <Heart className="h-4 w-4" />;
-		  default:
-			return <ImageIcon className="h-4 w-4" />;
+			case "wall_post":
+				return <ImageIcon className="h-4 w-4" />;
+			case "friend_request":
+				return <UserPlus className="h-4 w-4" />;
+			case "friend_request_accepted":
+				return <UserPlus className="h-4 w-4" />;
+			case "post_like":
+				return <Heart className="h-4 w-4" />;
+			default:
+				return <ImageIcon className="h-4 w-4" />;
 		}
 	};
 
 	if (userLoading || loading) {
 		return (
-		  <div className="flex justify-center items-center min-h-screen">
-			<Loader2 className="h-8 w-8 animate-spin text-primary" />
-		  </div>
+			<div className="flex justify-center items-center min-h-screen">
+				<Loader2 className="h-8 w-8 animate-spin text-primary" />
+			</div>
 		);
 	}
 
@@ -169,15 +162,22 @@ export default function NotificationsPage() {
 												alt={notification.sender_name}
 											/>
 											<AvatarFallback>
-												{notification.sender_name ? notification.sender_name.charAt(0) : "U"}
+												{notification.sender_name
+													? notification.sender_name.charAt(0)
+													: "U"}
 											</AvatarFallback>
-									</Avatar>
+										</Avatar>
 									</Link>
 									<div className="flex-1">
 										<div className="flex items-center gap-1">
 											{/* <span className="font-medium">
 											</span> */}
-											<span>@{notification.message ? notification.message : "Message not available."}</span>
+											<span>
+												@
+												{notification.message
+													? notification.message
+													: "Message not available."}
+											</span>
 										</div>
 										{/* <div className="text-xs text-muted-foreground">
 											{formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
