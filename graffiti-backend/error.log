@@ -79,3 +79,5 @@ time="2025-04-02T18:15:46+08:00" level=fatal msg="cannot load config: Config Fil
 [31mERRO[0m[2025-04-16T04:41:15+08:00] Failed to get wall                            [31merror[0m="no rows in result set" [31mrequest_id[0m=de644486-eb43-4fd1-bb3e-9ebf3c252b70 [31mroute[0m="/api/v1/walls/:id"
 [31mERRO[0m[2025-04-16T04:43:06+08:00] Server encountered an error: http: Server closed 
 [31mERRO[0m[2025-04-16T04:50:25+08:00] Server encountered an error: http: Server closed 
+[31mERRO[0m[2025-04-20T23:03:46+08:00] Failed to store notification in DB (MessageId=f62f7524-ea26-427e-83a6-bf586dddc741):   [31merror[0m="ERROR: insert or update on table \"notifications\" violates foreign key constraint \"notifications_recipient_fk\" (SQLSTATE 23503)"
+[31mERRO[0m[2025-04-20T23:07:54+08:00] Server encountered an error: http: Server closed 

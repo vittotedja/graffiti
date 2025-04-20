@@ -95,6 +95,13 @@ func (s *Server) Shutdown() error {
 }
 
 func (s *Server) StartNotificationWorker(ctx context.Context) {
+	// Check if we're in production mode
+    if s.config.Env == "prod" || s.config.IsProduction {
+        logger.Global().Info("Running in production mode: SQS message processing handled by Lambda")
+        // In production, Lambda handles message processing, so we don't start the worker
+        return
+    }
+
     go func() {
         ticker := time.NewTicker(30 * time.Second) // Poll every 30 seconds
         defer ticker.Stop()
