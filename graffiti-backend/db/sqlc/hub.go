@@ -30,7 +30,6 @@ type Hub interface {
 // SQLHub provides all functions to execute db SQL queries and transactions
 type SQLHub struct {
 	// a composition, a preferred way to extend struct functionality in Golang instead of inheritance
-	// All individual query functions are defined in the Queries struct
 	*Queries
 	pool *pgxpool.Pool
 }
@@ -45,7 +44,6 @@ func NewHub(pool *pgxpool.Pool) Hub {
 // execTx executes a function within a database transaction
 // It rolls back the transaction if the function returns an error
 func (hub *SQLHub) execTx(ctx context.Context, fn func(*Queries) error) error {
-	// Create empty TxOptions for default options
 	txOptions := pgx.TxOptions{}
 
 	tx, err := hub.pool.BeginTx(ctx, txOptions)
@@ -68,7 +66,6 @@ func (hub *SQLHub) CreateFriendRequestTx(ctx context.Context, fromUser, toUser p
 	var friendship Friendship
 
 	err := hub.execTx(ctx, func(q *Queries) error {
-		// Check if the toUser has blocked the fromUser
 		isBlocked, err := hub.IsUserBlockedTx(ctx, toUser, fromUser)
 		if err != nil {
 			return err
@@ -77,13 +74,11 @@ func (hub *SQLHub) CreateFriendRequestTx(ctx context.Context, fromUser, toUser p
 			return fmt.Errorf("cannot send friend request, you are blocked by the user")
 		}
 
-		// Check if a relationship already exists in either direction
 		existingFriendships, err := q.ListFriendshipsByUserId(ctx, fromUser)
 		if err != nil {
 			return err
 		}
 
-		// Check for existing relationships in either direction
 		for _, f := range existingFriendships {
 			if (f.FromUser == fromUser && f.ToUser == toUser) ||
 				(f.FromUser == toUser && f.ToUser == fromUser) {
@@ -91,7 +86,6 @@ func (hub *SQLHub) CreateFriendRequestTx(ctx context.Context, fromUser, toUser p
 			}
 		}
 
-		// Create the friend request (fromUser -> toUser with pending status)
 		pendingStatus := NullStatus{Status: "pending", Valid: true}
 		arg := CreateFriendshipParams{
 			FromUser: fromUser,
@@ -108,7 +102,6 @@ func (hub *SQLHub) CreateFriendRequestTx(ctx context.Context, fromUser, toUser p
 
 func (hub *SQLHub) CreateLikeTx(ctx context.Context, postID, userID pgtype.UUID) error {
 	err := hub.execTx(ctx, func(q *Queries) error {
-		// Create the like
 		arg := CreateLikeParams{
 			PostID: postID,
 			UserID: userID,
@@ -118,7 +111,6 @@ func (hub *SQLHub) CreateLikeTx(ctx context.Context, postID, userID pgtype.UUID)
 			return err
 		}
 
-		// Increment the likes count for the post
 		_, err = q.AddLikesCount(ctx, postID)
 
 		return err
@@ -129,7 +121,6 @@ func (hub *SQLHub) CreateLikeTx(ctx context.Context, postID, userID pgtype.UUID)
 
 func (hub *SQLHub) CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgtype.UUID) (liked bool, err error) {
 	err = hub.execTx(ctx, func(q *Queries) error {
-		// Check if like already exists
 		_, err := q.GetLike(ctx, GetLikeParams{
 			PostID: postID,
 			UserID: userID,
@@ -137,7 +128,6 @@ func (hub *SQLHub) CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgty
 
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
-				// LIKE does NOT exist → need to CREATE like
 				if _, err := q.CreateLike(ctx, CreateLikeParams{
 					PostID: postID,
 					UserID: userID,
@@ -150,11 +140,9 @@ func (hub *SQLHub) CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgty
 				liked = true
 				return nil
 			}
-			// Other DB error
 			return err
 		}
 
-		// LIKE exists → need to DELETE like
 		if err := q.DeleteLike(ctx, DeleteLikeParams{
 			PostID: postID,
 			UserID: userID,
@@ -174,18 +162,15 @@ func (hub *SQLHub) CreateOrDeleteLikeTx(ctx context.Context, postID, userID pgty
 
 func (hub *SQLHub) AcceptFriendRequestTx(ctx context.Context, friendshipID pgtype.UUID) error {
 	return hub.execTx(ctx, func(q *Queries) error {
-		// Get the friendship to accept
 		friendship, err := q.GetFriendship(ctx, friendshipID)
 		if err != nil {
 			return err
 		}
 
-		// Verify it's a pending request
 		if friendship.Status.Status != "pending" {
 			return fmt.Errorf("friendship is not in pending state")
 		}
 
-		// Create a reciprocal friendship record
 		friendsStatus := NullStatus{Status: "friends", Valid: true}
 		reciprocalArg := CreateFriendshipParams{
 			FromUser: friendship.ToUser,
@@ -197,7 +182,6 @@ func (hub *SQLHub) AcceptFriendRequestTx(ctx context.Context, friendshipID pgtyp
 			return err
 		}
 
-		// Update the original friendship to friends status
 		_, err = q.AcceptFriendship(ctx, friendshipID)
 
 		return err
@@ -208,13 +192,11 @@ func (hub *SQLHub) AcceptFriendRequestTx(ctx context.Context, friendshipID pgtyp
 func (hub *SQLHub) BlockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) error {
 	return hub.execTx(ctx, func(q *Queries) error {
 
-		// First, try to find an existing friendship between these users
 		existingFriendship, err := q.ListFriendshipByUserPairs(ctx, ListFriendshipByUserPairsParams{
 			FromUser: fromUser,
 			ToUser:   toUser,
 		})
 
-		// If a friendship exists, block it
 		if err == nil {
 			_, err = q.BlockFriendship(ctx, existingFriendship.ID)
 			if err != nil {
@@ -223,7 +205,6 @@ func (hub *SQLHub) BlockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID
 			return nil
 		}
 
-		// If no existing friendship is found, create a new blocked friendship
 		blockedStatus := NullStatus{Status: "blocked", Valid: true}
 		_, err = q.CreateFriendship(ctx, CreateFriendshipParams{
 			FromUser: fromUser,
@@ -238,18 +219,16 @@ func (hub *SQLHub) BlockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID
 // UnblockUserTx removes a block between users
 func (hub *SQLHub) UnblockUserTx(ctx context.Context, fromUser, toUser pgtype.UUID) error {
 	return hub.execTx(ctx, func(q *Queries) error {
-		// Find existing friendship between users
+		
 		existingFriendship, err := q.ListFriendshipByUserPairs(ctx, ListFriendshipByUserPairsParams{
 			FromUser: fromUser,
 			ToUser:   toUser,
 		})
 
-		// If no existing friendship or the existing one isn't blocked, return
 		if err != nil || existingFriendship.Status.Status != "blocked" {
 			return fmt.Errorf("no blocked relationship to unblock")
 		}
 
-		// If there is a blocked relationship, delete it
 		err = q.DeleteFriendship(ctx, existingFriendship.ID)
 
 		return err
@@ -261,13 +240,11 @@ func (hub *SQLHub) GetFriendsTx(ctx context.Context, userID pgtype.UUID) ([]Frie
 	var friends []Friendship
 
 	err := hub.execTx(ctx, func(q *Queries) error {
-		// Get all relationships for this user
 		relationships, err := q.ListFriendshipsByUserId(ctx, userID)
 		if err != nil {
 			return err
 		}
 
-		// Find friendships (status = "friends") where the user is either initiator or recipient
 		for _, f := range relationships {
 			if f.Status.Status == "friends" &&
 				(f.FromUser == userID || f.ToUser == userID) {
@@ -286,13 +263,11 @@ func (hub *SQLHub) IsFriendTx(ctx context.Context, userID, otherUserID pgtype.UU
 	isFriend := false
 
 	err := hub.execTx(ctx, func(q *Queries) error {
-		// Get all relationships for this user
 		relationships, err := q.ListFriendshipsByUserId(ctx, userID)
 		if err != nil {
 			return err
 		}
 
-		// Check if there's a friendship relationship
 		for _, f := range relationships {
 			if f.Status.Status == "friends" {
 				if (f.FromUser == userID && f.ToUser == otherUserID) ||
@@ -314,13 +289,11 @@ func (hub *SQLHub) GetPendingFriendRequestsTx(ctx context.Context, userID pgtype
 	var pendingRequests []Friendship
 
 	err := hub.execTx(ctx, func(q *Queries) error {
-		// Get all relationships for this user
 		relationships, err := q.ListFriendshipsByUserId(ctx, userID)
 		if err != nil {
 			return err
 		}
 
-		// Find pending requests where the user is the recipient
 		for _, f := range relationships {
 			if f.Status.Status == "pending" && f.ToUser == userID {
 				pendingRequests = append(pendingRequests, f)
@@ -338,13 +311,11 @@ func (hub *SQLHub) GetSentFriendRequestsTx(ctx context.Context, userID pgtype.UU
 	var sentRequests []Friendship
 
 	err := hub.execTx(ctx, func(q *Queries) error {
-		// Get all relationships for this user
 		relationships, err := q.ListFriendshipsByUserId(ctx, userID)
 		if err != nil {
 			return err
 		}
 
-		// Find pending requests where the user is the sender
 		for _, f := range relationships {
 			if f.Status.Status == "pending" && f.FromUser == userID {
 				sentRequests = append(sentRequests, f)
@@ -362,13 +333,11 @@ func (hub *SQLHub) IsUserBlockedTx(ctx context.Context, fromUser, toUser pgtype.
 	var isBlocked bool
 
 	err := hub.execTx(ctx, func(q *Queries) error {
-		// Get all relationships for this user
 		relationships, err := q.ListFriendshipsByUserId(ctx, fromUser)
 		if err != nil {
 			return err
 		}
 
-		// Check if there's a block relationship
 		for _, f := range relationships {
 			if f.FromUser == fromUser && f.ToUser == toUser && f.Status.Status == "blocked" {
 				isBlocked = true
