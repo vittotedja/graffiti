@@ -381,7 +381,3 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 	log.Info("User search returned results successfully")
 	ctx.JSON(http.StatusOK, respList)
 }
-
-func hashPassword(password string) string {
-	return password
-}
