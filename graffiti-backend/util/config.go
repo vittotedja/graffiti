@@ -24,6 +24,8 @@ type Config struct {
 	IsProduction             bool   `mapstructure:"IS_PRODUCTION"`
 	SQSQueueURL             string `mapstructure:"SQS_QUEUE_URL"`
 	SQSDeadLetterURL		string `mapstructure:"SQS_DLQ_URL"`
+	SQSLambdaReadARN    	string `mapstructure:"SQS_LAMBDA_READ_ARN"`
+    SQSLambdaWriteARN   	string `mapstructure:"SQS_LAMBDA_WRITE_ARN"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

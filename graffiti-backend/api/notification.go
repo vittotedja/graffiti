@@ -1,17 +1,18 @@
 package api
 
 import (
-    "context"
-    "encoding/json"
-    "fmt"
-    "log"
-    "time"
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
 
-    "github.com/aws/aws-sdk-go-v2/aws"
-    "github.com/aws/aws-sdk-go-v2/service/sqs"
-    "github.com/google/uuid"
-    db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
-    "github.com/jackc/pgx/v5/pgtype"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/lambda"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
+	db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
 	logutil "github.com/vittotedja/graffiti/graffiti-backend/util/logger"
 )
 
@@ -54,6 +55,14 @@ func (s *Server) SendNotification(ctx context.Context, recipientID, senderID, no
         CreatedAt:   time.Now(),
     }
     
+    // Check if the environment is production or development
+    if (s.config.Env == "production" || s.config.IsProduction) {
+        // Production mode - use Lambda function to send SQS message
+        logger.Info("Production environment detected, sending notification to SQS via lambda")
+        return s.sendNotificationViaLambda(ctx, recipientID, senderID, notificationType, entityID, message)
+    }
+
+    // Development mode - use direct SQS
     messageBody, err := json.Marshal(notification)
     if err != nil {
 		logger.Error("Failed to marshal notification: %v", err)
@@ -81,6 +90,51 @@ func (s *Server) SendNotification(ctx context.Context, recipientID, senderID, no
     
     return nil
 }
+
+// sendNotificationViaLambda sends a notification using Lambda in production
+func (s *Server) sendNotificationViaLambda(ctx context.Context, recipientID, senderID, notificationType, entityID, message string) error {
+    logger := logutil.Global()
+    
+    // Create notification message
+    notification := NotificationMessage{
+        RecipientID: recipientID,
+        SenderID:    senderID,
+        Type:        notificationType,
+        EntityID:    entityID,
+        Message:     message,
+        IsRead:      false,
+        CreatedAt:   time.Now(),
+    }
+    
+    // Convert notification to JSON
+    messageBody, err := json.Marshal(notification)
+    if err != nil {
+        logger.Error("Failed to marshal notification: %v", err)
+        return fmt.Errorf("failed to marshal notification: %w", err)
+    }
+    
+    // Get AWS config
+    cfg, err := s.getAWSConfig()
+    if err != nil {
+        logger.Error("Failed to get AWS config: %v", err)
+        return fmt.Errorf("failed to get AWS config: %w", err)
+    }
+    
+    // Create Lambda client
+    lambdaClient := lambda.NewFromConfig(cfg)
+    
+    // Invoke Lambda function
+    _, err = lambdaClient.Invoke(ctx, &lambda.InvokeInput{
+        FunctionName: aws.String(s.config.SQSLambdaWriteARN),
+        Payload:      messageBody,
+    })
+    
+    if err != nil {
+        return fmt.Errorf("failed to invoke Lambda function: %w", err)
+    }
+    
+    return nil
+}  
 
 // ListQueues lists all available SQS queues
 func (s *Server) ListQueues(ctx context.Context) ([]string, error) {
