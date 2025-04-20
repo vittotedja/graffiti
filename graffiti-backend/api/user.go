@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
+	"github.com/vittotedja/graffiti/graffiti-backend/util"
 )
 
 type getUserResponse struct {
