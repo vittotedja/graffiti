@@ -35,7 +35,6 @@ func TestGetUserAPIFixed(t *testing.T) {
 			name:   "OK",
 			userID: user.ID.String(),
 			setupAuth: func(t *testing.T, request *http.Request, currentUser db.User) {
-				// No special setup needed, the test handler will inject the current user
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				var id pgtype.UUID
@@ -55,7 +54,6 @@ func TestGetUserAPIFixed(t *testing.T) {
 			name:   "UserNotFound",
 			userID: user.ID.String(),
 			setupAuth: func(t *testing.T, request *http.Request, currentUser db.User) {
-				// No special setup needed
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
@@ -71,7 +69,6 @@ func TestGetUserAPIFixed(t *testing.T) {
 			name:   "InvalidID",
 			userID: "invalid-id",
 			setupAuth: func(t *testing.T, request *http.Request, currentUser db.User) {
-				// No special setup needed
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
@@ -86,7 +83,6 @@ func TestGetUserAPIFixed(t *testing.T) {
 			name:   "InternalError",
 			userID: user.ID.String(),
 			setupAuth: func(t *testing.T, request *http.Request, currentUser db.User) {
-				// No special setup needed
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
@@ -111,9 +107,7 @@ func TestGetUserAPIFixed(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			// Create the test route with middleware that injects the current user
 			server.router.GET("/test/users/:id", func(ctx *gin.Context) {
-				// Inject current user into context
 				ctx.Set("currentUser", user)
 				server.getUser(ctx)
 			})
@@ -122,7 +116,6 @@ func TestGetUserAPIFixed(t *testing.T) {
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
 
-			// Set up authentication if required
 			tc.setupAuth(t, request, user)
 
 			server.router.ServeHTTP(recorder, request)
@@ -189,12 +182,10 @@ func TestListUsersAPIFixed(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			// Create the test route
 			url := "/test/users"
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
 
-			// Register the route
 			server.router.GET("/test/users", server.listUsers)
 
 			server.router.ServeHTTP(recorder, request)
@@ -207,7 +198,6 @@ func TestListUsersAPIFixed(t *testing.T) {
 func TestUpdateUserNewAPIFixed(t *testing.T) {
 	currentUser, _ := randomUser(t)
 	
-	// Create updated user
 	updatedUser := currentUser
 	newUsername := "new_" + currentUser.Username
 
@@ -249,7 +239,7 @@ func TestUpdateUserNewAPIFixed(t *testing.T) {
 		{
 			name: "InvalidRequest",
 			body: gin.H{
-				"username": []string{"invalid"}, // Invalid type
+				"username": []string{"invalid"},
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
@@ -293,7 +283,6 @@ func TestUpdateUserNewAPIFixed(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			// Marshal body data to JSON
 			data, err := json.Marshal(tc.body)
 			require.NoError(t, err)
 
@@ -371,7 +360,6 @@ func TestFinishOnboardingAPIFixed(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			// Register the route directly
 			server.router.PUT("/test/users/:id/onboarding", server.finishOnboarding)
 
 			url := "/test/users/" + tc.userID + "/onboarding"
@@ -458,7 +446,6 @@ func TestDeleteUserAPIFixed(t *testing.T) {
 			tc.setupMock(mockHub)
 			recorder := httptest.NewRecorder()
 
-			// Register the route directly
 			server.router.DELETE("/test/users/:id", server.deleteUser)
 
 			url := "/test/users/" + tc.userID
@@ -554,7 +541,7 @@ func randomUser(t *testing.T) (db.User, string) {
         Bio:             bio,
         HasOnboarded:    hasOnboarded,
         BackgroundImage: backgroundImage,
-        OnboardingAt:    pgtype.Timestamp{}, // Empty timestamp
+        OnboardingAt:    pgtype.Timestamp{},
         CreatedAt:       createdAt,
         UpdatedAt:       updateAt,
     }

@@ -54,15 +54,11 @@ func (s *Server) updateLike(ctx *gin.Context) {
 	if liked {
 		action = "liked"
 
-		// Only send notification when a post is liked (not when unliked)
-		// Get post details to find the post owner
 		post, err := s.hub.GetPost(ctx, postID)
 		if err != nil {
 			log.Error("Failed to get post details for notification", err)
 		} else {
-			// Only send notification if the post owner is not the same as the liker
 			if post.Author.Bytes != currentUser.ID.Bytes {
-				// Send notification to post owner
 				err = s.SendNotification(
 					ctx,
 					post.Author.String(),           // recipient (post owner)
@@ -74,7 +70,6 @@ func (s *Server) updateLike(ctx *gin.Context) {
 
 				if err != nil {
 					log.Error("Failed to send like notification", err)
-					// Continue execution - don't fail the like operation if notification fails
 				} else {
 					log.Info("Like notification sent to user %s", post.Author.String())
 				}
@@ -125,11 +120,9 @@ func (s *Server) getLike(ctx *gin.Context) {
 	_, err := s.hub.GetLike(ctx, arg)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			// No like found
 			ctx.JSON(http.StatusOK, gin.H{"liked": false})
 			return
 		}
-		// Other error (DB down, etc)
 		log.Error("Failed to get like", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

@@ -319,13 +319,11 @@ func TestUpdateWallAPI(t *testing.T) {
 				"description": newDescription,
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// First expect GetWall to check ownership
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(wall, nil)
 
-				// Then expect UpdateWall
 				mockHub.EXPECT().
 					UpdateWall(gomock.Any(), gomock.Any()).
 					DoAndReturn(func(_ interface{}, params db.UpdateWallParams) (db.Wall, error) {
@@ -353,7 +351,6 @@ func TestUpdateWallAPI(t *testing.T) {
 					Times(1).
 					Return(db.Wall{}, db.ErrRecordNotFound)
 
-				// UpdateWall should not be called
 				mockHub.EXPECT().
 					UpdateWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -370,7 +367,6 @@ func TestUpdateWallAPI(t *testing.T) {
 				"description": newDescription,
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// Return a wall with different user ID
 				differentUserWall := wall
 				differentUserID := pgtype.UUID{}
 				differentUserID.Scan(uuid.New().String())
@@ -381,7 +377,6 @@ func TestUpdateWallAPI(t *testing.T) {
 					Times(1).
 					Return(differentUserWall, nil)
 
-				// UpdateWall should not be called
 				mockHub.EXPECT().
 					UpdateWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -482,19 +477,16 @@ func TestDeleteWallAPI(t *testing.T) {
 			name:   "OK",
 			wallID: wall.ID.String(),
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// First expect GetWall to check ownership
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(wall, nil)
 
-				// Then expect DeleteWall
 				mockHub.EXPECT().
 					DeleteWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(nil)
 
-				// Mock ListPostsByWall for background goroutine
 				mockHub.EXPECT().
 					ListPostsByWall(gomock.Any(), gomock.Any()).
 					AnyTimes().
@@ -513,7 +505,6 @@ func TestDeleteWallAPI(t *testing.T) {
 					Times(1).
 					Return(db.Wall{}, db.ErrRecordNotFound)
 
-				// DeleteWall should not be called
 				mockHub.EXPECT().
 					DeleteWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -625,13 +616,11 @@ func TestPublicizeWallAPI(t *testing.T) {
 			name:   "OK",
 			wallID: wall.ID.String(),
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// First expect GetWall to check ownership
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(wall, nil)
 
-				// Then expect PublicizeWall
 				mockHub.EXPECT().
 					PublicizeWall(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -651,7 +640,6 @@ func TestPublicizeWallAPI(t *testing.T) {
 					Times(1).
 					Return(db.Wall{}, db.ErrRecordNotFound)
 
-				// PublicizeWall should not be called
 				mockHub.EXPECT().
 					PublicizeWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -664,7 +652,6 @@ func TestPublicizeWallAPI(t *testing.T) {
 			name:   "Unauthorized",
 			wallID: wall.ID.String(),
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// Return a wall with different user ID
 				differentUserWall := wall
 				differentUserID := pgtype.UUID{}
 				differentUserID.Scan(uuid.New().String())
@@ -675,7 +662,6 @@ func TestPublicizeWallAPI(t *testing.T) {
 					Times(1).
 					Return(differentUserWall, nil)
 
-				// PublicizeWall should not be called
 				mockHub.EXPECT().
 					PublicizeWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -754,9 +740,9 @@ func TestPublicizeWallAPI(t *testing.T) {
 func TestPrivatizeWallAPI(t *testing.T) {
 	user, _ := randomUser(t)
 	wall := randomWall(t, user.ID)
-	wall.IsPublic.Bool = true // Make sure it's public initially
+	wall.IsPublic.Bool = true 
 
-	// Create updated wall (privatized)
+	
 	privatizedWall := wall
 	privatizedWall.IsPublic.Bool = false
 
@@ -770,13 +756,11 @@ func TestPrivatizeWallAPI(t *testing.T) {
 			name:   "OK",
 			wallID: wall.ID.String(),
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// First expect GetWall to check ownership
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(wall, nil)
 
-				// Then expect PrivatizeWall
 				mockHub.EXPECT().
 					PrivatizeWall(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -796,7 +780,6 @@ func TestPrivatizeWallAPI(t *testing.T) {
 					Times(1).
 					Return(db.Wall{}, db.ErrRecordNotFound)
 
-				// PrivatizeWall should not be called
 				mockHub.EXPECT().
 					PrivatizeWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -809,7 +792,6 @@ func TestPrivatizeWallAPI(t *testing.T) {
 			name:   "Unauthorized",
 			wallID: wall.ID.String(),
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// Return a wall with different user ID
 				differentUserWall := wall
 				differentUserID := pgtype.UUID{}
 				differentUserID.Scan(uuid.New().String())
@@ -820,7 +802,6 @@ func TestPrivatizeWallAPI(t *testing.T) {
 					Times(1).
 					Return(differentUserWall, nil)
 
-				// PrivatizeWall should not be called
 				mockHub.EXPECT().
 					PrivatizeWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -900,7 +881,7 @@ func TestPrivatizeWallAPI(t *testing.T) {
 func TestPinWallAPI(t *testing.T) {
 	user, _ := randomUser(t)
 	wall := randomWall(t, user.ID)
-	wall.IsPinned.Bool = false // Make sure it's not pinned initially
+	wall.IsPinned.Bool = false
 
 	// Create updated wall (pinned)
 	pinnedWall := wall
@@ -916,13 +897,11 @@ func TestPinWallAPI(t *testing.T) {
 			name:   "OK",
 			wallID: wall.ID.String(),
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// First expect GetWall to check ownership
 				mockHub.EXPECT().
 					GetWall(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(wall, nil)
 
-				// Then expect PinUnpinWall
 				mockHub.EXPECT().
 					PinUnpinWall(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -942,7 +921,6 @@ func TestPinWallAPI(t *testing.T) {
 					Times(1).
 					Return(db.Wall{}, db.ErrRecordNotFound)
 
-				// PinUnpinWall should not be called
 				mockHub.EXPECT().
 					PinUnpinWall(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -955,7 +933,6 @@ func TestPinWallAPI(t *testing.T) {
 			name:   "Unauthorized",
 			wallID: wall.ID.String(),
 			setupMock: func(mockHub *mockdb.MockHub) {
-				// Return a wall with different user ID
 				differentUserWall := wall
 				differentUserID := pgtype.UUID{}
 				differentUserID.Scan(uuid.New().String())
@@ -966,7 +943,6 @@ func TestPinWallAPI(t *testing.T) {
 					Times(1).
 					Return(differentUserWall, nil)
 
-				// PinUnpinWall should not be called
 				mockHub.EXPECT().
 					PinUnpinWall(gomock.Any(), gomock.Any()).
 					Times(0)

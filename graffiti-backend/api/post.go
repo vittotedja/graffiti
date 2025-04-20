@@ -111,7 +111,6 @@ func (s *Server) createPost(ctx *gin.Context) {
 		return
 	}
 
-	// Get the wall to check who owns it
 	wall, err := s.hub.GetWall(ctx, wallID)
 	if err != nil {
 		log.Error("Failed to get wall", err)
@@ -136,7 +135,6 @@ func (s *Server) createPost(ctx *gin.Context) {
 
 	// Send notification if someone posts on another user's wall
 	if wall.UserID.Bytes != currentUser.ID.Bytes {
-		// Only send notification if the post author is not the wall owner
 		err = s.SendNotification(
 			ctx,
 			wall.UserID.String(),           // recipient (wall owner)
@@ -147,7 +145,6 @@ func (s *Server) createPost(ctx *gin.Context) {
 		)
 
 		if err != nil {
-			// Just log the error, don't fail the post creation
 			log.Error("Failed to send wall post notification", err)
 		} else {
 			log.Info("Wall post notification sent to user %s", wall.UserID.String())
@@ -544,7 +541,6 @@ func (s *Server) deletePost(ctx *gin.Context) {
 		// Delete media from S3
 		key := util.ExtractKeyFromMediaURL(post.MediaUrl.String)
 		go func(key string) {
-			// Use a background context so it won't get canceled when request is done
 			bgCtx := context.Background()
 
 			if err := s.DeleteFile(bgCtx, key); err != nil {

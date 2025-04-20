@@ -100,7 +100,6 @@ func (s *Server) createFriendRequest(ctx *gin.Context) {
         fmt.Sprintf("%s sent you a friend request", user.Username),
     )
     if err != nil {
-        // Just log the error, don't fail the request
         log.Error("Failed to send notification", err)
     }
 
@@ -475,7 +474,6 @@ func (s *Server) listFriendshipByUserPairs(ctx *gin.Context) {
 	friendship, err := s.hub.ListFriendshipByUserPairs(ctx, params)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			// No friendship found, but not an error you want to report
 			ctx.JSON(http.StatusOK, gin.H{
 				"ID":     "00000000",
 				"Status": gin.H{"Status": "none", "Valid": true},

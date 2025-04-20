@@ -163,7 +163,6 @@ func (s *Server) updateUserNew(ctx *gin.Context) {
 
 	currentUser := ctx.MustGet("currentUser").(db.User)
 
-	// Parse the request body
 	var req updateUserNewRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
@@ -171,7 +170,6 @@ func (s *Server) updateUserNew(ctx *gin.Context) {
 		return
 	}
 
-	// Handle optional fields with fallback to current values
 	username := currentUser.Username
 	if req.Username != nil && *req.Username != "" {
 		username = *req.Username
@@ -226,7 +224,6 @@ func (s *Server) updateUserNew(ctx *gin.Context) {
 		return
 	}
 
-	// Prepare response
 	resp := getUserResponse{
 		ID:              user.ID.String(),
 		Username:        user.Username,
@@ -340,7 +337,6 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 	searchTerm.Valid = true
 	searchTerm.String = req.SearchTerm
 
-	// Use different search methods based on the length of the search term as trigram search is more efficient for longer terms (>= 3 characters)
 	if len(req.SearchTerm) < 3 {
 		rawUsers, err = s.hub.SearchUsersILike(ctx, searchTerm)
 	} else {
@@ -387,6 +383,5 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 }
 
 func hashPassword(password string) string {
-	// TODO: Implement proper password hashing
 	return password
 }

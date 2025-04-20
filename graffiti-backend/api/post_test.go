@@ -65,9 +65,7 @@ func TestCreatePostAPI(t *testing.T) {
 		{
 			name: "BadRequest_MissingRequired",
 			body: gin.H{
-				// Missing wall_id which is required
 				"media_url": post.MediaUrl.String,
-				// Also missing post_type
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
@@ -99,7 +97,7 @@ func TestCreatePostAPI(t *testing.T) {
 			body: gin.H{
 				"wall_id":   wall.ID.String(),
 				"media_url": post.MediaUrl.String,
-				"post_type": "invalid_type", // not in oneof=media embed_link
+				"post_type": "invalid_type",
 			},
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
@@ -142,7 +140,6 @@ func TestCreatePostAPI(t *testing.T) {
 
 			tc.setupMock(mockHub)
 
-			// Add a special route for testing that sets the currentUser
 			server.router.POST("/test/posts", func(ctx *gin.Context) {
 				ctx.Set("currentUser", user)
 				server.createPost(ctx)
@@ -1001,7 +998,7 @@ func TestDeletePostAPI(t *testing.T) {
 		{
 			name:        "OK_WallOwner",
 			postID:      otherUserPost.ID.String(),
-			currentUser: user, // Wall owner but not post owner
+			currentUser: user, 
 			setupMock: func(mockHub *mockdb.MockHub) {
 				mockHub.EXPECT().
 					GetPost(gomock.Any(), gomock.Any()).
@@ -1030,7 +1027,7 @@ func TestDeletePostAPI(t *testing.T) {
 		{
 			name:        "Unauthorized",
 			postID:      otherUserPost.ID.String(),
-			currentUser: otherUser, // Neither wall owner nor post owner
+			currentUser: otherUser, 
 			setupMock: func(mockHub *mockdb.MockHub) {
 				differentWall := wall
 				differentWall.UserID = user.ID
@@ -1204,7 +1201,6 @@ func randomPost(t *testing.T, wallID pgtype.UUID, authorID pgtype.UUID) db.Post 
 	}
 }
 
-// Helper function to match post response
 func requireBodyMatchPostResponse(t *testing.T, body *bytes.Buffer, post db.Post) {
 	data, err := io.ReadAll(body)
 	require.NoError(t, err)
@@ -1223,7 +1219,6 @@ func requireBodyMatchPostResponse(t *testing.T, body *bytes.Buffer, post db.Post
 	require.Equal(t, post.IsDeleted.Bool, gotResponse.IsDeleted)
 }
 
-// Helper function to match multiple post responses
 func requireBodyMatchPostsResponse(t *testing.T, body *bytes.Buffer, posts []db.Post) {
 	data, err := io.ReadAll(body)
 	require.NoError(t, err)

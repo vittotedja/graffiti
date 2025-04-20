@@ -407,7 +407,7 @@ func TestListLikesByPostAPI(t *testing.T) {
 	likes := make([]db.Like, n)
 	for i := 0; i < n; i++ {
 		likes[i] = randomLike(t)
-		likes[i].PostID = post.ID // Same post ID for all likes
+		likes[i].PostID = post.ID
 	}
 
 	testCases := []struct {
@@ -490,7 +490,7 @@ func TestListLikesByUserAPI(t *testing.T) {
 	likes := make([]db.Like, n)
 	for i := 0; i < n; i++ {
 		likes[i] = randomLike(t)
-		likes[i].UserID = user.ID // Same user ID for all likes
+		likes[i].UserID = user.ID
 	}
 
 	testCases := []struct {

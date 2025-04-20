@@ -26,7 +26,7 @@ func addTokenAsCookie(
     require.NoError(t, err)
 
     cookie := &http.Cookie{
-        Name:     "token", // The cookie name expected by the middleware
+        Name:     "token",
         Value:    token,
         HttpOnly: true,
         Path:     "/",
@@ -54,7 +54,6 @@ func TestAuthMiddleware(t *testing.T) {
         {
             name: "NoToken",
             setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-                // Do not add any token
             },
             checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
                 require.Equal(t, http.StatusUnauthorized, recorder.Code)
@@ -63,7 +62,6 @@ func TestAuthMiddleware(t *testing.T) {
         {
             name: "InvalidToken",
             setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-                // Add an invalid token
                 cookie := &http.Cookie{
                     Name:     "token",
                     Value:    "invalid-token",
@@ -79,7 +77,6 @@ func TestAuthMiddleware(t *testing.T) {
         {
             name: "ExpiredToken",
             setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-                // Add an expired token
                 addTokenAsCookie(t, request, tokenMaker, username, -time.Minute)
             },
             checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
@@ -89,7 +86,6 @@ func TestAuthMiddleware(t *testing.T) {
         {
             name: "UserNotFound",
             setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-                // Add a valid token but simulate user not found
                 addTokenAsCookie(t, request, tokenMaker, "nonexistent-user", time.Minute)
             },
             checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
@@ -104,10 +100,8 @@ func TestAuthMiddleware(t *testing.T) {
         t.Run(tc.name, func(t *testing.T) {
             server := newTestServer(t)
             
-            // Set up expectations for any username that might be used
             mockHub := server.hub.(*mockdb.MockHub)
             
-            // For "OK" case
             if tc.name == "OK" {
                 mockHub.EXPECT().
                     GetUserByUsername(gomock.Any(), username).

@@ -14,7 +14,7 @@ import (
 
 func newTestServer(t *testing.T) *Server {
     config := util.Config{
-        TokenSymmetricKey: util.RandomString(32), // Random symmetric key for JWT
+        TokenSymmetricKey: util.RandomString(32),
     }
 
     tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
@@ -32,7 +32,6 @@ func newTestServer(t *testing.T) *Server {
     t.Cleanup(mockCtrl.Finish) 
     server.hub = mockdb.NewMockHub(mockCtrl)
 
-    // server.router.Use(logger.Middleware())
     server.registerRoutes("unit-test")
 
     return server

@@ -27,12 +27,11 @@ type Server struct {
 	hub        db.Hub
 	db         *pgxpool.Pool
 	config     util.Config
-	router     *gin.Engine // helps us send each API request to the correct handler for processing
+	router     *gin.Engine
 	tokenMaker token.Maker
 	httpServer *http.Server
 }
 
-// NewServer creates a new HTTP server and sets up all routes
 func NewServer(config util.Config) (*Server, error) {
 	tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
 	if err != nil {
@@ -42,7 +41,6 @@ func NewServer(config util.Config) (*Server, error) {
 	server.router.Use(logger.Middleware())
 	server.registerRoutes("server")
 
-	// Start the notification worker if SQS is configured
     if config.SQSQueueURL != "" {
         ctx := context.Background()
         server.StartNotificationWorker(ctx)
@@ -51,8 +49,6 @@ func NewServer(config util.Config) (*Server, error) {
 	return server, nil
 }
 
-// Start runs the HTTP server on a specific address
-// and returns an error if the server fails to start
 func (s *Server) Start() error {
 	// Init DB
 	ctx := context.Background()
@@ -98,7 +94,6 @@ func (s *Server) Shutdown() error {
 	return nil
 }
 
-// StartNotificationWorker starts a background worker to process notifications from SQS
 func (s *Server) StartNotificationWorker(ctx context.Context) {
     go func() {
         ticker := time.NewTicker(30 * time.Second) // Poll every 30 seconds
@@ -107,10 +102,8 @@ func (s *Server) StartNotificationWorker(ctx context.Context) {
         for {
             select {
             case <-ctx.Done():
-                // Context cancelled, stop the worker
                 return
             case <-ticker.C:
-                // Process notifications from SQS
                 err := s.ProcessNotifications(ctx)
                 if err != nil {
                     log.Printf("Error processing notifications: %v\n", err)
@@ -134,7 +127,7 @@ func (s *Server) registerRoutes(env string) {
 		}))
 	} else {
 		s.router.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{frontendURL}, // frontend URL
+			AllowOrigins:     []string{frontendURL}, 
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 			AllowCredentials: true,
@@ -166,37 +159,37 @@ func (s *Server) registerRoutes(env string) {
 		protected.GET("/v1/walls/:id", s.getWall) // working
 		protected.GET("/v2/walls", s.getOwnWall)
 		protected.GET("/v1/users/:id/walls", s.listWallsByUser)
-		protected.POST("/v2/walls", s.createNewWall)              //no test yet
-		protected.PUT("/v1/walls/:id", s.updateWall)              // working
-		protected.PUT("/v1/walls/:id/publicize", s.publicizeWall) // working
-		protected.PUT("/v1/walls/:id/privatize", s.privatizeWall) // working
-		protected.PUT("/v1/walls/:id/pin", s.pinWall)             // working
-		protected.DELETE("/v1/walls/:id", s.deleteWall)           // working
+		protected.POST("/v2/walls", s.createNewWall)              
+		protected.PUT("/v1/walls/:id", s.updateWall)              
+		protected.PUT("/v1/walls/:id/publicize", s.publicizeWall) 
+		protected.PUT("/v1/walls/:id/privatize", s.privatizeWall) 
+		protected.PUT("/v1/walls/:id/pin", s.pinWall)           
+		protected.DELETE("/v1/walls/:id", s.deleteWall)
 
 		protected.GET("/v1/walls/archived", s.getArchivedWalls)
 		protected.PUT("/v1/walls/:id/archive", s.archiveWall)
 		protected.PUT("/v1/walls/:id/unarchive", s.unarchiveWall)
 
 		// search
-		protected.POST("/v1/users/search", s.searchUsers) //no test
+		protected.POST("/v1/users/search", s.searchUsers)
 
 		//uploads
 		protected.POST("/v1/presign", s.presignHandler)
 
 		//friends
-		protected.POST("/v1/friend-requests", s.createFriendRequest) // working
+		protected.POST("/v1/friend-requests", s.createFriendRequest) 
 		protected.POST("/v1/friendships", s.listFriendshipByUserPairs)
-		protected.GET("/v1/friends", s.getFriendsByStatus)                 //status = friends, requested, sent
-		protected.PUT("/v1/friend-requests/accept", s.acceptFriendRequest) // working
+		protected.GET("/v1/friends", s.getFriendsByStatus)                
+		protected.PUT("/v1/friend-requests/accept", s.acceptFriendRequest) 
 		protected.DELETE("/v1/friendships", s.deleteFriendship)
 
 		//posts
-		protected.GET("/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) // no test yet
-		protected.DELETE("/v1/posts/:id", s.deletePost)                           // working
-		protected.POST("/v1/posts", s.createPost)                                 // working
+		protected.GET("/v2/walls/:id/posts", s.listPostsByWallWithAuthorsDetails) 
+		protected.DELETE("/v1/posts/:id", s.deletePost)
+		protected.POST("/v1/posts", s.createPost)
 
 		//likes
-		protected.POST("/v1/likes", s.updateLike) // add and delete likes in 1 endpoint in likes count
+		protected.POST("/v1/likes", s.updateLike)
 		protected.GET("/v1/likes/:post_id", s.getLike)
 
 		//discover
@@ -210,20 +203,20 @@ func (s *Server) registerRoutes(env string) {
 		protected.GET("/v1/notifications/unread/count", s.getUnreadNotificationsCount)
 	}
 
-	s.router.GET("/api/v1/users", s.listUsers) // working
+	s.router.GET("/api/v1/users", s.listUsers)
 	s.router.DELETE("/api/v1/users/:id", s.deleteUser)
-	s.router.PUT("/api/v1/users/:id/onboarding", s.finishOnboarding) // working
+	s.router.PUT("/api/v1/users/:id/onboarding", s.finishOnboarding)
 
-	s.router.GET("/api/v1/walls", s.listWalls) // working
+	s.router.GET("/api/v1/walls", s.listWalls)
 
-	s.router.GET("/api/v1/posts/:id", s.getPost)                                     // working
-	s.router.GET("/api/v1/posts", s.listPosts)                                       // working
-	s.router.GET("/api/v1/walls/:id/posts", s.listPostsByWall)                       // working
-	s.router.GET("/api/v1/posts/highlighted", s.getHighlightedPosts)                 // working
-	s.router.GET("/api/v1/walls/:id/posts/highlighted", s.getHighlightedPostsByWall) // working
-	s.router.PUT("/api/v1/posts/:id", s.updatePost)                                  // working
-	s.router.PUT("/api/v1/posts/:id/highlight", s.highlightPost)                     // working
-	s.router.PUT("/api/v1/posts/:id/unhighlight", s.unhighlightPost)                 // working
+	s.router.GET("/api/v1/posts/:id", s.getPost)                                    
+	s.router.GET("/api/v1/posts", s.listPosts)                                      
+	s.router.GET("/api/v1/walls/:id/posts", s.listPostsByWall)                       
+	s.router.GET("/api/v1/posts/highlighted", s.getHighlightedPosts)                 
+	s.router.GET("/api/v1/walls/:id/posts/highlighted", s.getHighlightedPostsByWall) 
+	s.router.PUT("/api/v1/posts/:id", s.updatePost)                                  
+	s.router.PUT("/api/v1/posts/:id/highlight", s.highlightPost)                    
+	s.router.PUT("/api/v1/posts/:id/unhighlight", s.unhighlightPost)                
 
 	// Friend Requests
 	s.router.POST("/api/v1/friends/mutual/count", s.getNumberOfMutualFriends)
@@ -233,14 +226,14 @@ func (s *Server) registerRoutes(env string) {
 	s.router.PUT("/api/v1/users/unblock", s.unblockUser)
 
 	// Friends Retrieval
-	s.router.GET("/api/v1/users/:id/accepted-friends", s.getFriends)                      // user_id; working
-	s.router.GET("/api/v1/users/:id/friend-requests/pending", s.getPendingFriendRequests) // user_id; working
-	s.router.GET("/api/v1/users/:id/friend-requests/sent", s.getSentFriendRequests)       // user_id; working
+	s.router.GET("/api/v1/users/:id/accepted-friends", s.getFriends)                      
+	s.router.GET("/api/v1/users/:id/friend-requests/pending", s.getPendingFriendRequests)
+	s.router.GET("/api/v1/users/:id/friend-requests/sent", s.getSentFriendRequests)      
 
 	// Existing friendship-related routes
-	s.router.GET("/api/v1/users/:id/friendships", s.listFriendshipsByUserId)                            // working
-	s.router.GET("/api/v1/users/:id/accepted-friends/count", s.getNumberOfFriends)                      // working
-	s.router.GET("/api/v1/users/:id/friend-requests/pending/count", s.getNumberOfPendingFriendRequests) // working
+	s.router.GET("/api/v1/users/:id/friendships", s.listFriendshipsByUserId)                            
+	s.router.GET("/api/v1/users/:id/accepted-friends/count", s.getNumberOfFriends)                      
+	s.router.GET("/api/v1/users/:id/friend-requests/pending/count", s.getNumberOfPendingFriendRequests) 
 	// router for listFriendshipByUserPairs
 
 	// Set up routes for the like API

@@ -9,7 +9,6 @@ import (
 
     "github.com/aws/aws-sdk-go-v2/aws"
     "github.com/aws/aws-sdk-go-v2/service/sqs"
-    // "github.com/aws/aws-sdk-go-v2/service/sqs/types"
     "github.com/google/uuid"
     db "github.com/vittotedja/graffiti/graffiti-backend/db/sqlc"
     "github.com/jackc/pgx/v5/pgtype"
@@ -32,23 +31,19 @@ func (s *Server) getSQSClient() (*sqs.Client, error) {
 	logger := logutil.Global()
     logger.Info("Initializing SQS client")
 
-	// Get AWS config
     cfg, err := s.getAWSConfig()
     if err != nil {
         return nil, fmt.Errorf("failed to get AWS config: %w", err)
     }
     
-    // Create SQS client
     sqsClient := sqs.NewFromConfig(cfg)
 	logger.Info("SQS client initialized successfully")
     return sqsClient, nil
 }
 
-// SendNotification sends a notification message to SQS
 func (s *Server) SendNotification(ctx context.Context, recipientID, senderID, notificationType, entityID, message string) error {
 	logger := logutil.Global()
     logger.Info("Preparing to send notification to SQS: type=%s, recipient=%s", notificationType, recipientID)
-    // Create notification message
     notification := NotificationMessage{
         RecipientID: recipientID,
         SenderID:    senderID,
@@ -59,14 +54,12 @@ func (s *Server) SendNotification(ctx context.Context, recipientID, senderID, no
         CreatedAt:   time.Now(),
     }
     
-    // Convert notification to JSON
     messageBody, err := json.Marshal(notification)
     if err != nil {
 		logger.Error("Failed to marshal notification: %v", err)
         return fmt.Errorf("failed to marshal notification: %w", err)
     }
     
-    // Get SQS client
     client, err := s.getSQSClient()
     if err != nil {
 		logger.Error("Failed to get SQS client: %v", err)
@@ -75,7 +68,6 @@ func (s *Server) SendNotification(ctx context.Context, recipientID, senderID, no
 
 	logger.Info("Sending message to SQS queue: %s", s.config.SQSQueueURL)
     
-    // Send message to SQS
     result, err := client.SendMessage(ctx, &sqs.SendMessageInput{
         QueueUrl:    aws.String(s.config.SQSQueueURL),
         MessageBody: aws.String(string(messageBody)),
@@ -90,7 +82,7 @@ func (s *Server) SendNotification(ctx context.Context, recipientID, senderID, no
     return nil
 }
 
-// ListQueues lists all available SQS queues (useful for debugging)
+// ListQueues lists all available SQS queues
 func (s *Server) ListQueues(ctx context.Context) ([]string, error) {
     client, err := s.getSQSClient()
     if err != nil {
@@ -116,14 +108,12 @@ func (s *Server) ProcessNotifications(ctx context.Context) error {
 	logger := logutil.Global()
     logger.Info("Starting to poll for messages from SQS queue: %s", s.config.SQSQueueURL)
     
-	// Get SQS client
     client, err := s.getSQSClient()
     if err != nil {
 		logger.Error("Failed to get SQS client for receiving messages: %v", err)
         return err
     }
     
-    // Receive messages from SQS
 	logger.Info("Receiving messages with long polling (wait time: 20s)")
     result, err := client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
         QueueUrl:            aws.String(s.config.SQSQueueURL),
@@ -138,15 +128,12 @@ func (s *Server) ProcessNotifications(ctx context.Context) error {
 	messageCount := len(result.Messages)
     logger.Info("Received %d messages from SQS queue", messageCount)
     
-    // Process each message
     for i, message := range result.Messages {
 		logger.Info("Processing message %d/%d: MessageId=%s", i+1, messageCount, *message.MessageId)
 
-        // Parse the notification message
         var notification NotificationMessage
         err := json.Unmarshal([]byte(*message.Body), &notification)
         if err != nil {
-            // Log the error but continue processing other messages
 			errorMessage := fmt.Sprintf("Failed to unmarshal notification (MessageId=%s): ", *message.MessageId)
 			logger.Error(errorMessage, err)
             log.Printf("Failed to unmarshal notification: %v\n", err)
@@ -156,7 +143,6 @@ func (s *Server) ProcessNotifications(ctx context.Context) error {
 		logger.Info("Notification details: Type=%s, Recipient=%s, Sender=%s", 
             notification.Type, notification.RecipientID, notification.SenderID)
         
-        // Store the notification in the database
         err = s.storeNotificationInDB(ctx, notification)
         if err != nil {
 			errorMessage := fmt.Sprintf("Failed to store notification in DB (MessageId=%s): ", *message.MessageId)
@@ -167,7 +153,6 @@ func (s *Server) ProcessNotifications(ctx context.Context) error {
 
 		logger.Info("Successfully stored notification in database")
         
-        // Delete the message from the queue after successful processing
 		logger.Info("Deleting message from queue: MessageId=%s", *message.MessageId)
         _, err = client.DeleteMessage(ctx, &sqs.DeleteMessageInput{
             QueueUrl:      aws.String(s.config.SQSQueueURL),
@@ -187,7 +172,6 @@ func (s *Server) ProcessNotifications(ctx context.Context) error {
 
 // storeNotificationInDB stores a notification in the database
 func (s *Server) storeNotificationInDB(ctx context.Context, notification NotificationMessage) error {
-    // Convert string IDs to UUID
     recipientID, err := uuid.Parse(notification.RecipientID)
     if err != nil {
         return fmt.Errorf("invalid recipient ID: %w", err)
@@ -203,7 +187,6 @@ func (s *Server) storeNotificationInDB(ctx context.Context, notification Notific
         return fmt.Errorf("invalid entity ID: %w", err)
     }
     
-    // Create notification in database
     params := db.CreateNotificationParams{
         RecipientID: pgtype.UUID{Bytes: recipientID, Valid: true},
         SenderID:    pgtype.UUID{Bytes: senderID, Valid: true},
