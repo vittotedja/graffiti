@@ -2,7 +2,7 @@
 
 Graffiti is a modern social platform that allows users to create and share content on customizable walls. Built with Next.js for the frontend and Go for the backend, this application features real-time notifications, friend requests, and interactive content sharing.
 
-[[Graffiti App](app.graffiti-cs464.com)]
+👉[Graffiti App](app.graffiti-cs464.com)
 
 ## Features
 
@@ -39,6 +39,7 @@ Graffiti is a modern social platform that allows users to create and share conte
 - AWS account (for S3 and SQS)
 - Docker and Docker Compose
 - Make (for running Makefile commands)
+- [golang-migrate](https://github.com/golang-migrate/migrate)
 
 
 ### Frontend Setup
@@ -107,13 +108,19 @@ Graffiti is a modern social platform that allows users to create and share conte
    SQS_QUEUE_URL=your_sqs_queue_url
    SQS_DLQ_URL=your_dlq_url
    ```
-
-3. Run the backend server:
+3. Set up your local database
+   ```bash
+   make postgres
+   make createdb
+   make migrateup
+   ```
+   
+4. Run the backend server:
    ```bash
    go run main.go
    ```
 
-4. The backend API will be available at [http://localhost:8080](http://localhost:8080)
+5. The backend API will be available at [http://localhost:8080](http://localhost:8080)
 
 ## Project Structure
 
@@ -148,10 +155,10 @@ Graffiti uses AWS SQS for asynchronous notification delivery. The system handles
 ## Deployment
 
 ### Frontend
-The frontend is deployed on [Vercel](app.graffiti-cs464.com). Any push to the main branch will trigger a new deployment.
+The frontend is deployed on [Vercel](app.graffiti-cs464.com). Any push to the master branch will trigger a new deployment.
 
 ### Backend
-The backend is deployed on a cloud provider with the following steps:
+The backend is deployed on a cloud provider on every new push to master branch with the following steps:
 1. Build the Go binary
 2. Set up environment variables
 3. Run the binary with proper configuration
