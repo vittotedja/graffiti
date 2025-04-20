@@ -188,7 +188,7 @@ func (s *Server) updateUserNew(ctx *gin.Context) {
 
 	hashedPassword := currentUser.HashedPassword
 	if req.Password != nil && *req.Password != "" {
-		hashedPassword, err = util.HashPassword(*req.Password)
+		hashedPassword, err := util.HashPassword(*req.Password)
 	}
 
 	profilePicture := currentUser.ProfilePicture
