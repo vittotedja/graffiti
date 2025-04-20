@@ -2,6 +2,8 @@
 
 Graffiti is a modern social platform that allows users to create and share content on customizable walls. Built with Next.js for the frontend and Go for the backend, this application features real-time notifications, friend requests, and interactive content sharing.
 
+[[Graffiti App](app.graffiti-cs464.com)]
+
 ## Features
 
 - **User Authentication**: Secure login and registration system
@@ -35,6 +37,9 @@ Graffiti is a modern social platform that allows users to create and share conte
 - Go (v1.19 or later)
 - PostgreSQL
 - AWS account (for S3 and SQS)
+- Docker and Docker Compose
+- Make (for running Makefile commands)
+
 
 ### Frontend Setup
 
@@ -143,7 +148,7 @@ Graffiti uses AWS SQS for asynchronous notification delivery. The system handles
 ## Deployment
 
 ### Frontend
-The frontend is deployed on [Vercel](https://example.com). Any push to the main branch will trigger a new deployment.
+The frontend is deployed on [Vercel](app.graffiti-cs464.com). Any push to the main branch will trigger a new deployment.
 
 ### Backend
 The backend is deployed on a cloud provider with the following steps:
