@@ -483,7 +483,7 @@ func TestGetFriendsByStatusAPI(t *testing.T) {
 			Username:       otherUser.Username,
 			ProfilePicture: otherUser.ProfilePicture,
 			Status:         status,
-			ID:             pgtype.UUID{}, // Friendship ID
+			ID:             pgtype.UUID{},
 		}
 	}
 
@@ -1094,7 +1094,6 @@ func randomFriendship(t *testing.T, fromUserID, toUserID pgtype.UUID) db.Friends
 	id := pgtype.UUID{}
 	id.Scan(uuid.New().String())
 	
-	// If toUserID is empty, generate a random one
 	if !toUserID.Valid {
 		toUserID = pgtype.UUID{}
 		toUserID.Scan(uuid.New().String())
@@ -1124,31 +1123,24 @@ func requireBodyMatchFriendshipResponse(t *testing.T, body *bytes.Buffer, friend
     data, err := io.ReadAll(body)
     require.NoError(t, err)
 
-    // Print the raw JSON for debugging
-    t.Logf("Raw JSON response: %s", string(data))
-
     var gotResponse map[string]interface{}
     err = json.Unmarshal(data, &gotResponse)
     require.NoError(t, err)
     
-    // Basic validations
     require.NotEmpty(t, gotResponse["ID"])
     require.NotEmpty(t, gotResponse["FromUser"])
     require.NotEmpty(t, gotResponse["ToUser"])
     
-    // Compare ID and user IDs as strings
     require.Equal(t, friendship.ID.String(), gotResponse["ID"])
     require.Equal(t, friendship.FromUser.String(), gotResponse["FromUser"])
     require.Equal(t, friendship.ToUser.String(), gotResponse["ToUser"])
     
-    // Get the Status map and extract the Status field
     statusMap, ok := gotResponse["Status"].(map[string]interface{})
     require.True(t, ok, "Status field is not a map")
     
     statusValue, exists := statusMap["Status"]
     require.True(t, exists, "Status.Status field not found")
     
-    // Convert db.Status to string explicitly for comparison
     expectedStatusStr := string(friendship.Status.Status)
     actualStatusStr := statusValue.(string)
     
@@ -1166,7 +1158,6 @@ func requireBodyMatchFriendshipsResponse(t *testing.T, body *bytes.Buffer, frien
 
     require.Equal(t, len(friendships), len(gotResponses))
     
-    // Create a map of friendship IDs for easier lookup
     friendshipMap := make(map[string]db.Friendship)
     for _, f := range friendships {
         friendshipMap[f.ID.String()] = f
@@ -1180,14 +1171,12 @@ func requireBodyMatchFriendshipsResponse(t *testing.T, body *bytes.Buffer, frien
         require.Equal(t, original.FromUser.String(), resp["FromUser"])
         require.Equal(t, original.ToUser.String(), resp["ToUser"])
         
-        // Get the Status map and extract the Status field
         statusMap, ok := resp["Status"].(map[string]interface{})
         require.True(t, ok, "Status field is not a map")
         
         statusValue, exists := statusMap["Status"]
         require.True(t, exists, "Status.Status field not found")
         
-        // Convert db.Status to string explicitly for comparison
         expectedStatusStr := string(original.Status.Status)
         actualStatusStr := statusValue.(string)
         

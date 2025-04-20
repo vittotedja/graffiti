@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/vittotedja/graffiti/graffiti-backend/util/logger"
+	"github.com/vittotedja/graffiti/graffiti-backend/util"
 )
 
 type getUserResponse struct {
@@ -163,7 +164,6 @@ func (s *Server) updateUserNew(ctx *gin.Context) {
 
 	currentUser := ctx.MustGet("currentUser").(db.User)
 
-	// Parse the request body
 	var req updateUserNewRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		log.Error("Failed to bind JSON", err)
@@ -171,7 +171,6 @@ func (s *Server) updateUserNew(ctx *gin.Context) {
 		return
 	}
 
-	// Handle optional fields with fallback to current values
 	username := currentUser.Username
 	if req.Username != nil && *req.Username != "" {
 		username = *req.Username
@@ -189,7 +188,14 @@ func (s *Server) updateUserNew(ctx *gin.Context) {
 
 	hashedPassword := currentUser.HashedPassword
 	if req.Password != nil && *req.Password != "" {
-		hashedPassword = hashPassword(*req.Password)
+		newHashPassword, err := util.HashPassword(*req.Password)
+		if err != nil {
+		log.Error("Failed to update user", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+		}
+
+		hashedPassword = newHashPassword
 	}
 
 	profilePicture := currentUser.ProfilePicture
@@ -226,7 +232,6 @@ func (s *Server) updateUserNew(ctx *gin.Context) {
 		return
 	}
 
-	// Prepare response
 	resp := getUserResponse{
 		ID:              user.ID.String(),
 		Username:        user.Username,
@@ -340,7 +345,6 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 	searchTerm.Valid = true
 	searchTerm.String = req.SearchTerm
 
-	// Use different search methods based on the length of the search term as trigram search is more efficient for longer terms (>= 3 characters)
 	if len(req.SearchTerm) < 3 {
 		rawUsers, err = s.hub.SearchUsersILike(ctx, searchTerm)
 	} else {
@@ -384,9 +388,4 @@ func (s *Server) searchUsers(ctx *gin.Context) {
 
 	log.Info("User search returned results successfully")
 	ctx.JSON(http.StatusOK, respList)
-}
-
-func hashPassword(password string) string {
-	// TODO: Implement proper password hashing
-	return password
 }

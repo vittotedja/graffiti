@@ -158,7 +158,6 @@ func (s *Server) getAWSConfig() (aws.Config, error) {
 }
 
 func (s *Server) getAWSRegion() string {
-	// awsRegion := os.Getenv("AWS_REGION")
 	awsRegion := s.config.AWSRegion
 	if awsRegion == "" {
 		return "us-east-1" // Default region
@@ -187,7 +186,6 @@ func (s *Server) DeleteFile(ctx context.Context, key string) error {
 		return fmt.Errorf("failed to delete object from S3: %w", err)
 	}
 
-	// Optionally, you might also want to invalidate CloudFront cache
 	go func() {
 		cfClient := cloudfront.NewFromConfig(cfg)
 		callerReference := fmt.Sprintf("invalidate-delete-%d", time.Now().UnixNano())
