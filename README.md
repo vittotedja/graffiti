@@ -4,6 +4,8 @@ Graffiti is a modern social platform that allows users to create and share conte
 
 👉[Graffiti App](app.graffiti-cs464.com)
 
+For our repository, check it out [here](https://github.com/vittotedja/graffiti)
+
 ## Features
 
 - **User Authentication**: Secure login and registration system
